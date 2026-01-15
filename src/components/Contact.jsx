@@ -1,29 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Linkedin, Twitter, Github } from 'lucide-react';
+import { Send, Mail, Linkedin, Twitter, Github, MessageSquare } from 'lucide-react';
 import './Contact.css';
 
 const Contact = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: ''
-    });
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission logic here
-        console.log(formData);
-        alert('Mensaje enviado (simulación)');
-    };
-
     return (
         <section id="contact" className="section contact-section">
             <div className="container contact-container">
+
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -39,54 +23,53 @@ const Contact = () => {
                     viewport={{ once: true }}
                     className="contact-text"
                 >
-                    ¿Tienes un proyecto en mente o simplemente quieres saludar?
-                    ¡Estoy disponible para nuevas oportunidades!
+                    ¿Tienes un proyecto en mente o simplemente quieres saludar? ¡Estoy disponible para nuevas oportunidades!
                 </motion.p>
 
-                <motion.form
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="contact-form"
-                    onSubmit={handleSubmit}
-                >
-                    <div className="form-group">
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Tu Nombre"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Tu Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <textarea
-                            name="message"
-                            placeholder="Tu Mensaje"
-                            value={formData.message}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="btn-primary flex justify-center items-center gap-2">
-                        Enviar Mensaje <Send size={18} />
-                    </button>
-                </motion.form>
+                {/* WhatsApp + QR */}
+                <div className="contact-actions">
 
+                    {/* BOTÓN WHATSAPP */}
+                    <motion.a
+                        href="https://wa.link/ip34wf"
+                        className="whatsapp-btn"
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.94 }}
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <MessageSquare size={22} />
+                        Cotizar vía WhatsApp
+                    </motion.a>
+
+                    {/* QR */}
+                    <motion.div
+                        className="qr-whatsapp"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        <span>O escanea el QR</span>
+                        <img
+                            src="src/assets/Qr-Whatsapp.png"
+                            alt="QR WhatsApp"
+                        />
+                    </motion.div>
+
+                </div>
+
+                {/* Redes */}
                 <div className="social-links">
                     <a href="#" className="social-icon" aria-label="Email">
                         <Mail size={24} />
+                    </a>
+                    <a href="https://wa.link/ip34wf" className="social-icon" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                        <MessageSquare size={24} />
+                    </a>
+                    <a href="https://t.me/yourusername" className="social-icon" aria-label="Telegram" target="_blank" rel="noopener noreferrer">
+                        <Send size={24} />
                     </a>
                     <a href="#" className="social-icon" aria-label="LinkedIn">
                         <Linkedin size={24} />
@@ -98,10 +81,11 @@ const Contact = () => {
                         <Twitter size={24} />
                     </a>
                 </div>
+
             </div>
 
             <footer className="footer">
-                <p>© 2026 Edisson pinza. Todos los derechos reservados. Diseñado & Construido con React.</p>
+                <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado & Construido con React.</p>
             </footer>
         </section>
     );
