@@ -86,6 +86,8 @@
     width: 100%;
     /* Scale with container */
     max-width: 600px;
+    mask-image: radial-gradient(circle, black 0%, black 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle, black 0%, black 60%, transparent 100%);
 }
 
 /* Photo Wrapper */
