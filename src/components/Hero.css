@@ -64,49 +64,96 @@
     gap: 1.5rem;
 }
 
+/* Image Container - This controls the position in the grid */
 .hero-img-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     position: relative;
+    min-height: 500px;
+    /* Ensure space for the full matrix height */
 }
 
+/* Matrix Canvas - positioned absolutely to not disrupt flow */
+.matrix-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    /* Background layer */
+    pointer-events: none;
+    width: 100%;
+    /* Scale with container */
+    max-width: 600px;
+}
+
+/* Photo Wrapper */
 .hero-img-wrapper {
     position: relative;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
+    width: 320px;
+    height: 380px;
+    border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10;
+    /* Above matrix */
+    background: rgba(5, 5, 5, 0.8);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    backdrop-filter: blur(5px);
 }
 
 .hero-img-wrapper::before {
     content: '';
     position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #00f2ff, #7000ff, transparent);
-    animation: spin-border 10s linear infinite;
+    inset: -15px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--accent-primary);
+    border-bottom: 2px solid var(--accent-secondary);
+    border-radius: 24px;
+    animation: rotate-frame 10s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-img-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
     z-index: 1;
 }
 
 .hero-img {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 20px;
     object-fit: cover;
-    border: 6px solid #050505;
-    position: relative;
-    z-index: 2;
+    filter: brightness(1.1) contrast(1.1);
 }
 
-@keyframes spin-border {
-    from {
-        transform: rotate(0deg);
+@keyframes rotate-frame {
+    0% {
+        clip-path: inset(0 0 95% 0);
     }
 
-    to {
-        transform: rotate(360deg);
+    25% {
+        clip-path: inset(0 95% 0 0);
+    }
+
+    50% {
+        clip-path: inset(95% 0 0 0);
+    }
+
+    75% {
+        clip-path: inset(0 0 0 95%);
+    }
+
+    100% {
+        clip-path: inset(0 0 95% 0);
     }
 }
 
@@ -130,8 +177,8 @@
     }
 
     .hero-img-wrapper {
-        width: 300px;
-        height: 300px;
+        width: 280px;
+        height: 340px;
         margin: 0 auto;
     }
 }
