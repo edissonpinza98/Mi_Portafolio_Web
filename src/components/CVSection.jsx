@@ -1,9 +1,21 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FileText, Download, Mail, ExternalLink, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, Download, Mail, ExternalLink, User, Github, RefreshCw } from 'lucide-react';
+import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
 
 const CVSection = () => {
+    const [carnetKey, setCarnetKey] = useState(0);
+    const [isRetracted, setIsRetracted] = useState(false);
+
+    const reloadCarnet = () => {
+        setIsRetracted(true);
+        setTimeout(() => {
+            setCarnetKey(prev => prev + 1);
+            setIsRetracted(false);
+        }, 800);
+    };
+
     return (
         <section className="section cv-section" id="cv">
             <div className="container cv-container">
@@ -36,6 +48,17 @@ const CVSection = () => {
                             <FileText size={20} />
                             Ver Online
                         </motion.a>
+
+                        <motion.button
+                            onClick={reloadCarnet}
+                            className="btn-outline cv-btn"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{ padding: '0.8rem 1.5rem', cursor: 'pointer', background: 'rgba(0, 242, 255, 0.05)' }}
+                        >
+                            <RefreshCw size={20} />
+                            Recargar ID
+                        </motion.button>
                     </div>
 
                     <div className="additional-docs">
@@ -54,43 +77,25 @@ const CVSection = () => {
                 {/* Right Side: The Falling Carnet */}
                 <div className="carnet-wrapper">
                     <motion.div
+                        key={carnetKey}
                         className="carnet-fall-container"
-                        initial={{ y: -500, rotate: 5 }}
-                        whileInView={{ y: 0, rotate: 0 }}
-                        viewport={{ once: true }}
+                        initial={{ y: -1000, rotate: 5 }}
+                        animate={{ y: isRetracted ? -1500 : 0, rotate: 0 }}
                         transition={{
                             type: "spring",
-                            stiffness: 60,
-                            damping: 8,
-                            mass: 2
+                            stiffness: 50,
+                            damping: 12,
+                            mass: 2,
+                            duration: 1.5
                         }}
                         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                     >
-                        {/* Lanyard/Strap visual connector */}
-                        <div className="spring-connector">
-                            <svg width="60" height="160" viewBox="0 0 60 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="strapGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stopColor="#00f2ff" />
-                                        <stop offset="100%" stopColor="#7000ff" />
-                                    </linearGradient>
-                                </defs>
-                                {/* Strap (Cordón) */}
-                                <path
-                                    d="M30 0 L30 140"
-                                    stroke="url(#strapGradient)"
-                                    strokeWidth="8"
-                                    fill="none"
-                                />
-                                {/* Metal Clip at the bottom */}
-                                <rect x="20" y="135" width="20" height="15" rx="2" fill="#aaa" />
-                                <circle cx="30" cy="142" r="3" fill="#333" />
-                                <path d="M25 150 L35 150 L32 160 L28 160 Z" fill="#ccc" />
-                            </svg>
-                        </div>
+
 
                         <motion.div
                             className="carnet glass-card"
+                            onClick={reloadCarnet}
+                            style={{ cursor: 'pointer' }}
                             animate={{
                                 rotate: [0, 2, 0, -2, 0],
                                 y: [0, 5, 0, 5, 0]
@@ -119,25 +124,29 @@ const CVSection = () => {
                             <div className="carnet-body">
                                 <div className="carnet-photo-frame">
                                     <div className="carnet-photo-placeholder">
-                                        <User size={64} color="#a0a0a0" />
+                                        <img src={carnetImg} alt="Edisson Pinza" className="carnet-photo" />
                                     </div>
                                 </div>
 
-                                <h3 className="carnet-name">Tu Nombre</h3>
-                                <p className="carnet-role">Full Stack Developer</p>
+                                <h3 className="carnet-name">Edisson Hernando Pinza Jojoa</h3>
+                                <p className="carnet-role" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
+                                    Técnico en sistemas y <br /> Desarrollador de Software Full Stack
+                                </p>
 
                                 <div className="carnet-info">
                                     <div className="info-row">
                                         <span className="label">ID:</span>
-                                        <span className="value">DEV-2024-88</span>
+                                        <span className="value">1233191088</span>
                                     </div>
                                     <div className="info-row">
                                         <span className="label">EXP:</span>
-                                        <span className="value">User</span>
+                                        <span className="value">Mid-Level</span>
                                     </div>
                                     <div className="info-row">
-                                        <span className="label">WEB:</span>
-                                        <span className="value">mi-portfolio.com</span>
+                                        <span className="label">GITHUB:</span>
+                                        <a href="https://github.com/edissonpinza98" target="_blank" rel="noopener noreferrer" className="value link">
+                                            @edissonpinza98
+                                        </a>
                                     </div>
                                 </div>
                             </div>
