@@ -1,0 +1,265 @@
+.cv-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    overflow: visible;
+    /* Important for animation not to be clipped */
+    min-height: 500px;
+    /* Space for the card to fall into */
+}
+
+.cv-content {
+    flex: 1;
+}
+
+.cv-description {
+    margin: 1.5rem 0 2rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 500px;
+}
+
+.cv-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.cv-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.additional-docs h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--accent-primary);
+}
+
+.docs-list {
+    list-style: none;
+}
+
+.docs-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.docs-list li:hover {
+    color: var(--text-color);
+}
+
+/* CARNET STYLES */
+.carnet-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center everything */
+    perspective: 1000px;
+    position: relative;
+    min-height: 500px;
+    /* Ensure space for falling */
+    overflow: visible;
+    /* Allow spring to start "outside" */
+}
+
+/* 
+   We removed .spring-connector absolute positioning because 
+   it is now flex-stacked inside the falling container 
+*/
+.spring-connector {
+    z-index: 0;
+    margin-bottom: -10px;
+    /* Overlap slightly with the card */
+    /* Remove absolute positioning to let it stack in the flex container */
+    position: relative;
+    height: 150px;
+    /* Match SVG height */
+    animation: springStretch 3s infinite ease-in-out;
+}
+
+@keyframes springStretch {
+
+    0%,
+    100% {
+        transform: translateX(-50%) scaleY(1);
+    }
+
+    50% {
+        transform: translateX(-50%) scaleY(1.1);
+    }
+}
+
+.carnet {
+    width: 320px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+    transform-origin: top center;
+    /* Removed top margin so it connects to spring */
+}
+
+/* The hole for the lanyard/clip */
+.carnet-hole {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.carnet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.carnet-company {
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent-secondary);
+    font-size: 0.9rem;
+}
+
+.carnet-chip {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(135deg, #ffd700, #b8860b);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.carnet-chip::before {
+    content: '';
+    position: absolute;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 60%;
+    top: 20%;
+    border-radius: 2px;
+}
+
+.carnet-body {
+    text-align: center;
+}
+
+.carnet-photo-frame {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 12px;
+    padding: 4px;
+    background: linear-gradient(to bottom right, var(--accent-primary), var(--accent-secondary));
+}
+
+.carnet-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #2a2a2a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.carnet-photo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carnet-name {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    color: white;
+}
+
+.carnet-role {
+    color: var(--accent-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.carnet-info {
+    text-align: left;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-row .label {
+    color: var(--text-muted);
+}
+
+.info-row .value {
+    color: var(--text-color);
+    font-family: monospace;
+}
+
+.carnet-footer {
+    margin-top: 1.5rem;
+    opacity: 0.7;
+}
+
+.barcode {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+    transform: scaleY(0.5);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .cv-container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .cv-actions {
+        justify-content: center;
+    }
+
+    .docs-list li {
+        justify-content: center;
+    }
+
+    .carnet-wrapper {
+        margin-bottom: 2rem;
+    }
+}
