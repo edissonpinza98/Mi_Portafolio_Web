@@ -1,6 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Linkedin, Twitter, Github, MessageSquare } from 'lucide-react';
+import {
+    Mail,
+    Github,
+    Linkedin,
+    Send,
+    Facebook,
+    MessageSquare
+} from 'lucide-react';
 import './Contact.css';
 
 const Contact = () => {
@@ -53,7 +60,7 @@ const Contact = () => {
                     >
                         <span>O escanea el QR</span>
                         <img
-                            src="src/assets/Qr-Whatsapp.png"
+                            src={new URL('../assets/Qr-Whatsapp.png', import.meta.url).href}
                             alt="QR WhatsApp"
                         />
                     </motion.div>
@@ -62,30 +69,66 @@ const Contact = () => {
 
                 {/* Redes */}
                 <div className="social-links">
-                    <a href="#" className="social-icon" aria-label="Email">
+
+                    {/* Correo */}
+                    <a
+                        href="mailto:tuemail@correo.com"
+                        className="social-icon"
+                        aria-label="Correo electrónico"
+                    >
                         <Mail size={24} />
                     </a>
-                    <a href="https://wa.link/ip34wf" className="social-icon" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
-                        <MessageSquare size={24} />
-                    </a>
-                    <a href="https://t.me/yourusername" className="social-icon" aria-label="Telegram" target="_blank" rel="noopener noreferrer">
-                        <Send size={24} />
-                    </a>
-                    <a href="#" className="social-icon" aria-label="LinkedIn">
-                        <Linkedin size={24} />
-                    </a>
-                    <a href="#" className="social-icon" aria-label="GitHub">
+
+                    {/* GitHub */}
+                    <a
+                        href="https://github.com/edissonpinza98"
+                        className="social-icon"
+                        aria-label="GitHub"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         <Github size={24} />
                     </a>
-                    <a href="#" className="social-icon" aria-label="Twitter">
-                        <Twitter size={24} />
+
+                    {/* Facebook */}
+                    <a
+                        href="https://www.facebook.com/tuusuario"
+                        className="social-icon"
+                        aria-label="Facebook"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Facebook size={24} />
                     </a>
+
+                    {/* LinkedIn */}
+                    <a
+                        href="https://www.linkedin.com/in/edisson-pinza-613160249"
+                        className="social-icon"
+                        aria-label="LinkedIn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Linkedin size={24} />
+                    </a>
+
+                    {/* Telegram */}
+                    <a
+                        href="https://t.me/Dev_Edi"
+                        className="social-icon"
+                        aria-label="Telegram"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Send size={24} />
+                    </a>
+
                 </div>
 
             </div>
 
             <footer className="footer">
-                <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado & Construido con React.</p>
+                <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado &amp; Construido con React.</p>
             </footer>
         </section>
     );

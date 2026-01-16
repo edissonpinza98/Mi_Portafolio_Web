@@ -143,7 +143,7 @@
 
 .qr-whatsapp img:hover {
     transform: scale(1.05);
-    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+    box-shadow: 0 10px 15px rgba(37, 211, 102, 0.35);
 }
 
 @keyframes qrFloat {
@@ -188,12 +188,46 @@
         color 0.3s ease;
 }
 
-/* Hover con vida (como antes, incluso mejor) */
+/* EFECTO BASE (NO SE TOCA) */
 .social-icon:hover {
-    background: #00f2ff;
-    color: #000;
     transform: translateY(-6px) scale(1.08);
-    box-shadow: 0 12px 28px rgba(0, 242, 255, 0.45);
+    color: #fff;
+}
+
+/* =========================
+   COLORES REALES + GLOW
+========================= */
+
+/* EMAIL */
+.social-icon[aria-label="Correo electrónico"]:hover {
+    background: #ea4335;
+    box-shadow: 0 12px 28px rgba(234, 67, 53, 0.55);
+}
+
+/* GITHUB */
+.social-links .social-icon[aria-label="GitHub"]:hover {
+    background: #2b04974f;
+    box-shadow: 0 12px 28px rgba(2, 41, 126, 0.65);
+    color: #fff;
+}
+
+/* FACEBOOK */
+.social-icon[aria-label="Facebook"]:hover {
+    background: #1877f2;
+    box-shadow: 0 12px 28px rgba(24, 119, 242, 0.6);
+}
+
+/* LINKEDIN */
+.social-icon[aria-label="LinkedIn"]:hover {
+    background: #0a66c2;
+    box-shadow: 0 12px 28px rgba(10, 102, 194, 0.6);
+}
+
+/* TELEGRAM */
+.social-links .social-icon[aria-label="Telegram"]:hover {
+    background: #229ed9;
+    box-shadow: 0 12px 28px rgba(34, 159, 217, 0.274);
+    color: #fff;
 }
 
 /* =========================
