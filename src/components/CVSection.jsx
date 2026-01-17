@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { FileText, Download, Mail, ExternalLink, User, Github, RefreshCw } from 'lucide-react';
 import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
@@ -9,6 +9,25 @@ const CVSection = () => {
     const [isRetracted, setIsRetracted] = useState(false);
     const [showCV, setShowCV] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    // 3D Tilt Logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const rotateX = useTransform(y, [-100, 100], [15, -15]);
+    const rotateY = useTransform(x, [-100, 100], [-15, 15]);
+
+    const handleMouseMove = (event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        x.set(event.clientX - centerX);
+        y.set(event.clientY - centerY);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     const reloadCarnet = () => {
         setIsRetracted(true);
@@ -85,7 +104,7 @@ const CVSection = () => {
                 </div>
 
                 {/* Right Side: The Falling Carnet */}
-                <div className="carnet-wrapper">
+                <div className="carnet-wrapper" style={{ perspective: "1000px" }}>
                     <motion.div
                         key={carnetKey}
                         className="carnet-fall-container"
@@ -98,24 +117,23 @@ const CVSection = () => {
                             mass: 2,
                             duration: 1.5
                         }}
-                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        style={{ transformStyle: 'preserve-3d' }}
                     >
-
-
                         <motion.div
                             className="carnet glass-card"
                             onClick={reloadCarnet}
-                            style={{ cursor: 'pointer' }}
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
+                            style={{
+                                rotateX,
+                                rotateY,
+                                transformStyle: 'preserve-3d',
+                                cursor: 'pointer'
+                            }}
                             animate={{
-                                rotate: [0, 2, 0, -2, 0],
                                 y: [0, 5, 0, 5, 0]
                             }}
                             transition={{
-                                rotate: {
-                                    repeat: Infinity,
-                                    duration: 5,
-                                    ease: "easeInOut"
-                                },
                                 y: {
                                     repeat: Infinity,
                                     duration: 3,
@@ -123,8 +141,16 @@ const CVSection = () => {
                                 }
                             }}
                         >
-                            {/* Hanging String Visualization (Visual sugar) */}
-                            <div className="carnet-hole"></div>
+                            {/* Realistic Reflective Layer */}
+                            <div className="carnet-glare"></div>
+
+                            {/* Escarapela / Badge Holder Clip */}
+                            <div className="badge-clip">
+                                <div className="clip-front"></div>
+                                <div className="clip-back"></div>
+                                <div className="carnet-hole"></div>
+                            </div>
+                            <div className="carnet-strap"></div>
 
                             <div className="carnet-header">
                                 <span className="carnet-company">DEVELOPER ID</span>
@@ -139,7 +165,7 @@ const CVSection = () => {
                                 </div>
 
                                 <h3 className="carnet-name">Edisson Hernando Pinza Jojoa</h3>
-                                <p className="carnet-role" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
+                                <p className="carnet-role">
                                     Técnico en sistemas y <br /> Desarrollador de Software Full Stack
                                 </p>
 
@@ -166,7 +192,14 @@ const CVSection = () => {
                             </div>
 
                             <div className="carnet-footer">
-                                <div className="barcode">||| || ||| || ||||</div>
+                                <div className="barcode-container">
+                                    <div className="barcode-bars">
+                                        {[...Array(20)].map((_, i) => (
+                                            <div key={i} className={`bar bar-${i % 4}`}></div>
+                                        ))}
+                                    </div>
+                                    <span className="barcode-label">SN-1233191088-2026</span>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>
