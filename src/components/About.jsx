@@ -3,112 +3,55 @@ import { motion } from 'framer-motion';
 import { Code2 } from 'lucide-react';
 import './About.css';
 
-const TagCloud = ({ skills }) => {
-    const containerRef = React.useRef(null);
-    const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
-    const [isHovered, setIsHovered] = React.useState(false);
-
-    // Flatten skills with their categories for color coding
-    const allSkills = React.useMemo(() => {
-        return skills.flatMap(cat =>
-            cat.skills.map(skill => ({
-                name: skill,
-                category: cat.title,
-                color: cat.title === "Frontend" ? "#00f2ff" :
-                    cat.title === "Backend" ? "#00ff88" :
-                        cat.title === "Diseño" ? "#ff0088" : "#ffff00"
-            }))
-        );
-    }, [skills]);
-
-    const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });
-
-    React.useEffect(() => {
-        const handleMouseMove = (e) => {
-            if (!containerRef.current) return;
-            const rect = containerRef.current.getBoundingClientRect();
-            const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-            const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-            setMousePos({ x, y });
-        };
-
-        // Add event listener to window or container
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
-
-    React.useEffect(() => {
-        let animationFrame;
-        const animate = () => {
-            setRotation(prev => ({
-                // Continuous rotation + mouse influence
-                // Base speed 0.003, mouse adds up to +/- 0.01
-                x: prev.x + 0.002 - (mousePos.y * 0.005),
-                y: prev.y + 0.002 + (mousePos.x * 0.005)
-            }));
-            animationFrame = requestAnimationFrame(animate);
-        };
-        animationFrame = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(animationFrame);
-    }, [mousePos]);
-
-    // Calculate positions on a sphere
-    const points = React.useMemo(() => {
-        const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
-        return allSkills.map((skill, i) => {
-            const y = 1 - (i / (allSkills.length - 1)) * 2;
-            const radius = Math.sqrt(1 - y * y);
-            const theta = phi * i;
-
-            return {
-                ...skill,
-                x: Math.cos(theta) * radius,
-                y: y,
-                z: Math.sin(theta) * radius
-            };
-        });
-    }, [allSkills]);
-
+const CyberMatrix = ({ categories }) => {
     return (
-        <div
-            className="tag-cloud-container"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            ref={containerRef}
-            style={{ minHeight: '300px' }}
-        >
-            <div className="tag-cloud-sphere">
-                {points.map((point, i) => {
-                    // Rotate point
-                    const cosX = Math.cos(rotation.x);
-                    const sinX = Math.sin(rotation.x);
-                    const cosY = Math.cos(rotation.y);
-                    const sinY = Math.sin(rotation.y);
+        <div className="cyber-matrix">
+            <div className="matrix-grid">
+                {categories.map((cat, idx) => (
+                    <motion.div
+                        key={cat.title}
+                        className={`matrix-panel ${cat.title.toLowerCase()}`}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    >
+                        <div className="panel-header">
+                            <div className="header-label">
+                                <span className="label-code">{`0${idx + 1}`}</span>
+                                <span className="label-text">{cat.title}</span>
+                            </div>
+                            <div className="header-status">
+                                <span className="status-bit"></span>
+                                <span className="status-bit"></span>
+                                <span className="status-bit"></span>
+                            </div>
+                        </div>
 
-                    // Rotation logic
-                    let y = point.y * cosX - point.z * sinX;
-                    let z = point.y * sinX + point.z * cosX;
-                    let x = point.x * cosY - z * sinY;
-                    z = point.x * sinY + z * cosY;
+                        <div className="panel-body">
+                            <div className="skills-matrix">
+                                {cat.skills.map((skill, sIdx) => (
+                                    <div key={skill} className="skill-cell">
+                                        <div className="cell-bracket"></div>
+                                        <span className="skill-name">{skill}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                    const scale = (z + 2) / 2.5; // Depth scale (increased base size)
-                    const opacity = Math.max(0.2, (z + 1.5) / 2.5); // Better visibility for back items
+                        <div className="panel-footer">
+                            <div className="footer-line"></div>
+                            <div className="footer-meta">
+                                <span>TYPE: SYSTEM_MODULE</span>
+                                <span>STATUS: ACTIVE</span>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
 
-                    return (
-                        <span
-                            key={i}
-                            className="tag-item"
-                            style={{
-                                transform: `translate3d(${x * 160}px, ${y * 160}px, 0) scale(${scale})`, // Increased radius
-                                opacity: opacity,
-                                color: point.color,
-                                zIndex: Math.floor(scale * 100)
-                            }}
-                        >
-                            {point.name}
-                        </span>
-                    );
-                })}
+            <div className="matrix-fx">
+                <div className="scan-line"></div>
             </div>
         </div>
     );
@@ -117,20 +60,20 @@ const TagCloud = ({ skills }) => {
 const About = () => {
     const skillCategories = [
         {
-            title: "Frontend",
-            skills: ["React", "Angular", "Vue", "JavaScript (ES6+)", "HTML5", "CSS3", "Tailwind CSS", "Framer Motion"]
+            title: "LANGUAGES_DEV",
+            skills: ["JavaScript (TypeScript)", "Python", "PHP", "Java / Kotlin", "Node.js", "Express"]
         },
         {
-            title: "Backend",
-            skills: ["Node.js", "Consumo de APIs REST"]
+            title: "DATA_ARCHITECTURE",
+            skills: ["MySQL", "PostgreSQL", "MongoDB", "Power BI", "Data Analysis"]
         },
         {
-            title: "Diseño",
-            skills: ["UI/UX Design"]
+            title: "INFRA_SYSTEMS",
+            skills: ["Redes & Infraestructura", "Soporte Técnico", "Ofimática Avanzada", "Git / GitHub", "UI/UX Design"]
         },
         {
-            title: "Control de versiones",
-            skills: ["Git"]
+            title: "AUTOMATION_AI",
+            skills: ["IA Systematization", "Excel (Contaduría)", "VBA / Macros", "Workplace Optimization"]
         }
     ];
 
@@ -146,39 +89,44 @@ const About = () => {
                     Sobre <span className="gradient-text">Mí</span>
                 </motion.h2>
 
-                <div className="about-grid">
+                <div className="about-stack">
                     <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         className="about-text"
                     >
                         <p>
-                            Soy desarrollador web enfocado en crear soluciones funcionales y bien diseñadas. Me gusta
-                            combinar lógica, rendimiento y diseño UI/UX para construir interfaces claras, intuitivas y
-                            centradas en el usuario.
+                            Soy <span className="tech-highlight">Tecnólogo en Análisis y Desarrollo de Software</span> y <span className="tech-highlight">Técnico en Sistemas</span>,
+                            con homologación activa en <span className="tech-highlight">Ingeniería de Software</span> y una formación técnica en constante evolución.
                         </p>
                         <p>
-                            Trabajo principalmente con el ecosistema de JavaScript, utilizando React, Angular y Vue,
-                            consumo APIs REST e integro inteligencia artificial en proyectos reales. Me enfoco en
-                            escribir código limpio, escalable y fácil de mantener.
+                            Trabajo con desarrollo de software y soluciones web, con conocimientos funcionales en
+                            <span className="tech-highlight">JavaScript (TypeScript), Python, PHP, Java y Kotlin</span>, lo que me permite desenvolverme con
+                            solvencia en la lógica de negocio, el desarrollo frontend y backend, y la resolución de problemas técnicos.
                         </p>
                         <p>
-                            Siempre estoy aprendiendo y explorando nuevas tecnologías, especialmente en inteligencia
-                            artificial y tendencias de diseño, porque el desarrollo web evoluciona constantemente.
+                            Tengo experiencia en bases de datos como <span className="tech-highlight">MySQL, PostgreSQL y MongoDB</span>, además de una base sólida en
+                            <span className="tech-highlight">soporte técnico, redes y ofimática avanzada</span>. Integro <span className="tech-highlight">Inteligencia Artificial</span> como herramienta
+                            de apoyo para automatizar procesos, optimizar tareas y mejorar la eficiencia en distintos entornos laborales.
+                        </p>
+                        <p>
+                            Complemento mi perfil con el desarrollo de soluciones prácticas en <span className="tech-highlight">Excel aplicado a contaduría</span> y
+                            paneles en <span className="tech-highlight">Power BI</span>, enfocados en transformar datos operativos en información clara y útil para
+                            la toma de decisiones.
                         </p>
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         className="skills-wrapper"
                     >
-                        <h3 className="skills-title flex items-center gap-2">
+                        <h3 className="skills-subtitle flex items-center gap-2">
                             <Code2 className="text-cyan-400" /> Habilidades
                         </h3>
-                        <TagCloud skills={skillCategories} />
+                        <CyberMatrix categories={skillCategories} />
                     </motion.div>
                 </div>
             </div>
