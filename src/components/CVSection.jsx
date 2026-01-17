@@ -7,6 +7,8 @@ import './CVSection.css';
 const CVSection = () => {
     const [carnetKey, setCarnetKey] = useState(0);
     const [isRetracted, setIsRetracted] = useState(false);
+    const [showCV, setShowCV] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const reloadCarnet = () => {
         setIsRetracted(true);
@@ -30,7 +32,8 @@ const CVSection = () => {
 
                     <div className="cv-actions">
                         <motion.a
-                            href="#"
+                            href="/CV-sola-edisonpinza.pdf"
+                            download="Edisson_Pinza_CV.pdf"
                             className="btn-primary cv-btn"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -39,15 +42,16 @@ const CVSection = () => {
                             Descargar CV
                         </motion.a>
 
-                        <motion.a
-                            href="#"
+                        <motion.button
+                            onClick={() => setShowCV(true)}
                             className="btn-outline cv-btn"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
+                            style={{ cursor: 'pointer' }}
                         >
                             <FileText size={20} />
                             Ver Online
-                        </motion.a>
+                        </motion.button>
 
                         <motion.button
                             onClick={reloadCarnet}
@@ -62,13 +66,19 @@ const CVSection = () => {
                     </div>
 
                     <div className="additional-docs">
-                        <h3>Documentos Adicionales</h3>
+                        <h3 className="docs-title">Documentación Técnica</h3>
                         <ul className="docs-list">
                             <li>
-                                <ExternalLink size={16} /> Certificaciones
+                                <div className="doc-icon-wrapper">
+                                    <ExternalLink size={14} />
+                                </div>
+                                <span>Certificaciones de Ingeniería</span>
                             </li>
                             <li>
-                                <ExternalLink size={16} /> Portafolio PDF
+                                <div className="doc-icon-wrapper">
+                                    <ExternalLink size={14} />
+                                </div>
+                                <span>Portafolio de Proyectos PDF</span>
                             </li>
                         </ul>
                     </div>
@@ -148,6 +158,10 @@ const CVSection = () => {
                                             @edissonpinza98
                                         </a>
                                     </div>
+                                    <div className="info-row">
+                                        <span className="label">STATUS:</span>
+                                        <span className="value status-active">AUTHENTICATED</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -159,6 +173,76 @@ const CVSection = () => {
                 </div>
 
             </div>
+
+            {/* PDF Viewer Modal */}
+            <AnimatePresence>
+                {showCV && (
+                    <motion.div
+                        className="cv-modal-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowCV(false)}
+                    >
+                        {/* Futuristic Background Grid */}
+                        <div className="cyber-grid-bg"></div>
+
+                        <motion.div
+                            className="cv-modal-content glass-card"
+                            initial={{ scale: 0.8, opacity: 0, y: 100, rotateX: -15 }}
+                            animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+                            exit={{ scale: 0.8, opacity: 0, y: 100, rotateX: 15 }}
+                            transition={{ type: "spring", damping: 30, stiffness: 200 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Scanning line effect */}
+                            <div className="modal-scan-line"></div>
+                            <div className="cv-modal-header">
+                                <div className="modal-title-group">
+                                    <FileText className="modal-icon" size={24} />
+                                    <div className="header-text">
+                                        <h3>Curriculum Vitae</h3>
+                                        <span className="file-info">Edisson_Pinza_CV.pdf • PDF</span>
+                                    </div>
+                                </div>
+                                <button className="close-btn" onClick={() => setShowCV(false)} aria-label="Cerrar">
+                                    <RefreshCw size={24} className="close-icon" />
+                                </button>
+                            </div>
+
+                            <div className="cv-viewer-container">
+                                {isLoading && (
+                                    <div className="cv-loader-overlay">
+                                        <div className="loader-spinner"></div>
+                                        <p>Preparando documento...</p>
+                                    </div>
+                                )}
+                                <iframe
+                                    src="/CV-sola-edisonpinza.pdf#toolbar=0&navpanes=0&scrollbar=0"
+                                    title="CV Viewer"
+                                    className="cv-iframe"
+                                    onLoad={() => setIsLoading(false)}
+                                />
+                            </div>
+
+                            <div className="cv-modal-footer">
+                                <div className="footer-actions">
+                                    <a href="/CV-sola-edisonpinza.pdf" download="Edisson_Pinza_CV.pdf" className="btn-primary footer-btn">
+                                        <Download size={18} /> Descargar PDF
+                                    </a>
+                                    <button className="btn-outline footer-btn" onClick={() => setShowCV(false)}>
+                                        Cerrar Vista
+                                    </button>
+                                </div>
+                                <div className="modal-tech-details">
+                                    <span>SECURE_VIEWER_V1.0</span>
+                                    <span className="scan-line-text">SYSTEM_READY</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

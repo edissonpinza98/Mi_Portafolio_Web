@@ -92,7 +92,7 @@ const Contact = () => {
 
                     {/* Facebook */}
                     <a
-                        href="https://www.facebook.com/tuusuario"
+                        href="https://www.facebook.com/Dev.Edi98"
                         className="social-icon"
                         aria-label="Facebook"
                         target="_blank"
