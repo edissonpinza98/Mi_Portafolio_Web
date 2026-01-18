@@ -279,12 +279,20 @@
 
 /* Responsive Overrides */
 @media (max-width: 1024px) {
+    .about-stack {
+        padding: 0 20px;
+    }
+
     .matrix-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    .about-section {
+        padding: 60px 0;
+    }
+
     .about-stack {
         gap: 3rem;
     }
@@ -295,5 +303,25 @@
 
     .skills-matrix {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-text p {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .skills-matrix {
+        grid-template-columns: 1fr;
+    }
+
+    .matrix-panel {
+        padding: 1rem;
+    }
+
+    .label-text {
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
     }
 }
