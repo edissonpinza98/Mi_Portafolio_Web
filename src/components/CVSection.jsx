@@ -10,6 +10,19 @@ const CVSection = () => {
     const [showCV, setShowCV] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const openSecureCV = () => {
+        setIsLoading(true);
+        setShowCV(true);
+    };
+
+    // Fallback security: ensure loader dismisses
+    React.useEffect(() => {
+        if (showCV) {
+            const timer = setTimeout(() => setIsLoading(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [showCV]);
+
     // 3D Tilt Logic
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -50,26 +63,31 @@ const CVSection = () => {
                     </p>
 
                     <div className="cv-actions">
-                        <motion.a
-                            href="/CV-sola-edisonpinza.pdf"
-                            download="Edisson_Pinza_CV.pdf"
-                            className="btn-primary cv-btn"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Download size={20} />
-                            Descargar CV
-                        </motion.a>
-
                         <motion.button
-                            onClick={() => setShowCV(true)}
-                            className="btn-outline cv-btn"
-                            whileHover={{ scale: 1.05 }}
+                            onClick={openSecureCV}
+                            className="btn-primary cv-btn security-btn"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{
+                                x: 0,
+                                opacity: 1,
+                                boxShadow: [
+                                    "0 0 0px rgba(0, 242, 255, 0)",
+                                    "0 0 20px rgba(0, 242, 255, 0.4)",
+                                    "0 0 0px rgba(0, 242, 255, 0)"
+                                ]
+                            }}
+                            transition={{
+                                duration: 0.8,
+                                boxShadow: {
+                                    repeat: Infinity,
+                                    duration: 2
+                                }
+                            }}
+                            whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
-                            style={{ cursor: 'pointer' }}
                         >
                             <FileText size={20} />
-                            Ver Online
+                            Ingreso Seguro al CV
                         </motion.button>
 
                         <motion.button
@@ -84,23 +102,6 @@ const CVSection = () => {
                         </motion.button>
                     </div>
 
-                    <div className="additional-docs">
-                        <h3 className="docs-title">Documentación Técnica</h3>
-                        <ul className="docs-list">
-                            <li>
-                                <div className="doc-icon-wrapper">
-                                    <ExternalLink size={14} />
-                                </div>
-                                <span>Certificaciones de Ingeniería</span>
-                            </li>
-                            <li>
-                                <div className="doc-icon-wrapper">
-                                    <ExternalLink size={14} />
-                                </div>
-                                <span>Portafolio de Proyectos PDF</span>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
 
                 {/* Right Side: The Falling Carnet */}
@@ -207,75 +208,85 @@ const CVSection = () => {
 
             </div>
 
-            {/* PDF Viewer Modal */}
+            {/* SECURE PROTECTED VIEWER MODAL */}
             <AnimatePresence>
                 {showCV && (
                     <motion.div
-                        className="cv-modal-overlay"
+                        className="cv-modal-overlay security-overlay"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setShowCV(false)}
                     >
-                        {/* Futuristic Background Grid */}
-                        <div className="cyber-grid-bg"></div>
-
                         <motion.div
-                            className="cv-modal-content glass-card"
-                            initial={{ scale: 0.8, opacity: 0, y: 100, rotateX: -15 }}
-                            animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
-                            exit={{ scale: 0.8, opacity: 0, y: 100, rotateX: 15 }}
-                            transition={{ type: "spring", damping: 30, stiffness: 200 }}
+                            className="cv-modal-content glass-card security-card"
+                            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 50 }}
                             onClick={(e) => e.stopPropagation()}
+                            onContextMenu={(e) => e.preventDefault()}
                         >
-                            {/* Scanning line effect */}
-                            <div className="modal-scan-line"></div>
+                            <div className="security-alert-bar">
+                                <Zap size={14} />
+                                <span>DOCUMENTO ENCRIPTADO • PROHIBIDA LA CAPTURA O REPRODUCCIÓN POR DERECHOS DE AUTOR</span>
+                            </div>
+
                             <div className="cv-modal-header">
                                 <div className="modal-title-group">
                                     <FileText className="modal-icon" size={24} />
                                     <div className="header-text">
-                                        <h3>Curriculum Vitae</h3>
-                                        <span className="file-info">Edisson_Pinza_CV.pdf • PDF</span>
+                                        <h3>Terminal de Visualización Segura</h3>
+                                        <span className="file-info">ESTADO: ACCESO_PROTEGIDO_ACTIVO</span>
                                     </div>
                                 </div>
-                                <button className="close-btn" onClick={() => setShowCV(false)} aria-label="Cerrar">
-                                    <RefreshCw size={24} className="close-icon" />
+                                <button className="close-btn" onClick={() => setShowCV(false)}>
+                                    <RefreshCw size={24} />
                                 </button>
                             </div>
 
-                            <div className="cv-viewer-container">
+                            <div className="cv-viewer-container secure-viewer">
                                 {isLoading && (
-                                    <div className="cv-loader-overlay">
+                                    <div className="cv-loader-overlay security-loader">
                                         <div className="loader-spinner"></div>
-                                        <p>Preparando documento...</p>
+                                        <p>VALIDANDO INTEGRIDAD Y CIFRADO...</p>
                                     </div>
                                 )}
+
+                                <div className="viewer-protection-layer">
+                                    <div className="scan-line-security"></div>
+                                    <div className="copyright-watermark">
+                                        EDISSON PINZA © 2026 - PROTECTED IDENTITY
+                                    </div>
+                                </div>
+
                                 <iframe
-                                    src="/CV-sola-edisonpinza.pdf#toolbar=0&navpanes=0&scrollbar=0"
-                                    title="CV Viewer"
+                                    src="https://drive.google.com/file/d/1aetcGvjH-k7fQVyc0XIWneJ9ubzPPk-N/preview"
+                                    title="CV Secure Viewer"
                                     className="cv-iframe"
-                                    onLoad={() => setIsLoading(false)}
+                                    onLoad={() => {
+                                        console.log("Drive PDF Cargado");
+                                        setIsLoading(false);
+                                    }}
+                                    style={{
+                                        backgroundColor: 'white',
+                                        display: 'block'
+                                    }}
                                 />
                             </div>
 
-                            <div className="cv-modal-footer">
-                                <div className="footer-actions">
-                                    <a href="/CV-sola-edisonpinza.pdf" download="Edisson_Pinza_CV.pdf" className="btn-primary footer-btn">
-                                        <Download size={18} /> Descargar PDF
-                                    </a>
-                                    <button className="btn-outline footer-btn" onClick={() => setShowCV(false)}>
-                                        Cerrar Vista
-                                    </button>
+                            <div className="cv-modal-footer security-footer">
+                                <div className="terms-notice">
+                                    Aviso: Este visor cuenta con protección de derechos de autor. Cualquier intento de extracción de datos está estrictamente prohibido por el desarrollador.
                                 </div>
                                 <div className="modal-tech-details">
-                                    <span>SECURE_VIEWER_V1.0</span>
-                                    <span className="scan-line-text">SYSTEM_READY</span>
+                                    <span className="text-red">ENCRYPTION_LAYER_01</span>
+                                    <span className="scan-line-text">SYSTEM_STABLE</span>
                                 </div>
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
         </section>
     );
 };
