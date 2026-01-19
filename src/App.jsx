@@ -9,6 +9,8 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Preloader from './components/Preloader';
 import NotFound from './components/NotFound';
+import DannaAssistant from './components/VirtualAssistant';
+
 
 const HomePage = () => (
   <>
@@ -43,6 +45,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <DannaAssistant />
+
           </motion.div>
         )}
       </AnimatePresence>

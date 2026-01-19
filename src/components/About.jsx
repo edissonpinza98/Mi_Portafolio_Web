@@ -108,9 +108,10 @@ const About = () => {
                     >
                         <div className="bio-content">
                             <p>
-                                Soy <span className="tech-highlight">Tecnólogo en Análisis y Desarrollo de Software</span> y <span className="tech-highlight">Técnico en Sistemas</span>,
+                                Soy <span className="tech-highlight">Desarrollador de Software</span> y <span className="tech-highlight">Técnico en Sistemas</span>,
                                 con homologación activa en <span className="tech-highlight">Ingeniería de Software</span> y una formación técnica en constante evolución.
                             </p>
+
                             <p>
                                 Trabajo con desarrollo de software y soluciones web, integrando frameworks modernos como <span className="tech-highlight">React, Angular y Vue</span>. Poseo conocimientos funcionales en
                                 <span className="tech-highlight">JavaScript (TypeScript), Python, PHP, Java y Kotlin</span>, lo que me permite desenvolverme con
