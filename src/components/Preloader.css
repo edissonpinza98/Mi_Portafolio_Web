@@ -1,11 +1,12 @@
-/* Ethereal Prism Preloader Redesign */
-.prism-preloader {
+/* Ethereal Zenith V2 - Ultra Visible & Premium */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+.ethereal-preloader {
     position: fixed;
     inset: 0;
-    background: #020408;
+    background: #02040a;
     z-index: 10000;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -13,221 +14,297 @@
     font-family: 'Outfit', sans-serif;
 }
 
-/* Ambient Background */
-.prism-bg {
+/* Aurora Mesh Background - More vibrant and textured */
+.aurora-mesh {
     position: absolute;
     inset: 0;
     z-index: 1;
+    overflow: hidden;
 }
 
-.bg-glow {
+.mesh-ball {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.5;
+}
+
+.m1 {
     width: 60vw;
     height: 60vw;
-    background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
-    filter: blur(60px);
+    top: -20%;
+    left: -10%;
+    background: #00f2ff;
+    animation: float-mesh 20s infinite alternate;
 }
 
-.star-particles {
+.m2 {
+    width: 50vw;
+    height: 50vw;
+    bottom: -10%;
+    right: -10%;
+    background: #7000ff;
+    animation: float-mesh 25s infinite alternate-reverse;
+}
+
+.m3 {
+    width: 40vw;
+    height: 40vw;
+    top: 30%;
+    left: 30%;
+    background: #0066ff;
+    opacity: 0.3;
+    animation: pulse-mesh 15s infinite;
+}
+
+.m4 {
+    width: 30vw;
+    height: 30vw;
+    top: 10%;
+    right: 20%;
+    background: #00ffd5;
+    opacity: 0.2;
+}
+
+@keyframes float-mesh {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(100px, 50px) scale(1.1);
+    }
+}
+
+@keyframes pulse-mesh {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.2;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.4;
+    }
+}
+
+.noise-texture {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.3;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.15;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
 }
 
-/* Main Layout */
-.prism-main-content {
+/* Main Content Wrapper */
+.main-content-wrapper {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4rem;
+    gap: 3rem;
 }
 
-/* Geometric Prism Stage */
-.geometric-stage {
+/* Sculpture Container */
+.sculpture-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     perspective: 1000px;
 }
 
-.prism-container {
+.glass-panel {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    z-index: 2;
+}
+
+/* Bolder Progress Ring */
+.progress-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    z-index: 5;
+}
+
+.ring-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 3px;
+}
+
+.ring-fill {
+    fill: none;
+    stroke: #00f2ff;
+    stroke-width: 4px;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 12px #00f2ff);
+    stroke-dasharray: 1;
+    /* Essential for pathLength animation */
+}
+
+/* Percentage Box */
+.percentage-box {
     position: relative;
-    width: 180px;
-    height: 180px;
-    transform-style: preserve-3d;
-    animation: prism-rotate 10s linear infinite;
-}
-
-.prism-wire {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-}
-
-.wire {
-    position: absolute;
-    inset: 0;
-    border: 1px solid rgba(0, 242, 255, 0.2);
-    border-radius: 4px;
-}
-
-.w1 {
-    transform: rotateY(0deg) translateZ(40px);
-}
-
-.w2 {
-    transform: rotateY(60deg) translateZ(40px);
-}
-
-.w3 {
-    transform: rotateY(120deg) translateZ(40px);
-}
-
-.w4 {
-    transform: rotateX(90deg) translateZ(40px);
-}
-
-.w5 {
-    transform: rotateX(45deg) translateZ(40px);
-}
-
-.w6 {
-    transform: rotateX(-45deg) translateZ(40px);
-}
-
-.prism-core {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    background: #00f2ff;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.05);
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    filter: blur(15px);
-    box-shadow: 0 0 30px #00f2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
 }
 
-@keyframes prism-rotate {
-    0% {
-        transform: rotateX(0deg) rotateY(0deg);
-    }
-
-    100% {
-        transform: rotateX(360deg) rotateY(360deg);
-    }
+.progress-text {
+    display: flex;
+    align-items: baseline;
+    font-weight: 800;
 }
 
-/* Info Panel */
-.prism-info-panel {
+.num {
+    font-size: 4rem;
+    letter-spacing: -2px;
+    background: linear-gradient(to bottom, #fff, #00f2ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.suffix {
+    font-size: 1rem;
+    color: #00f2ff;
+    margin-left: 2px;
+}
+
+/* Status Interface */
+.status-interface {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+    width: 300px;
 }
 
-.percentage-box {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-}
-
-.p-number {
-    font-size: 5rem;
-    font-weight: 200;
-    letter-spacing: -4px;
-    line-height: 1;
-}
-
-.p-percent {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #00f2ff;
-    letter-spacing: 2px;
-}
-
-/* Modern Status Bar */
-.modern-status-bar {
+.loader-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.status-indicator {
-    width: 6px;
-    height: 6px;
+.pulse-dot {
+    width: 8px;
+    height: 8px;
     background: #00f2ff;
     border-radius: 50%;
-    box-shadow: 0 0 8px #00f2ff;
-}
-
-.status-label-new {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 2px;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    min-width: 120px;
-    text-align: center;
-}
-
-/* Loading Line */
-.loading-line-wrapper {
-    width: 200px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.05);
-    margin-top: 1rem;
-}
-
-.loading-line-fill {
-    height: 100%;
-    background: #00f2ff;
     box-shadow: 0 0 10px #00f2ff;
-    transition: width 0.3s ease-out;
+    animation: flash 1s infinite;
 }
 
-/* UI Decorative Points */
-.ui-decor {
+@keyframes flash {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.shimmer-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.6);
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Horizontal Visibility Progress */
+.h-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.h-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7000ff, #00f2ff);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+.loading-sub {
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 500;
+}
+
+/* Accents */
+.tech-corner {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    border: 1px solid rgba(0, 242, 255, 0.1);
-    opacity: 0.5;
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .top-left {
-    top: 40px;
-    left: 40px;
+    top: 30px;
+    left: 30px;
     border-right: 0;
     border-bottom: 0;
 }
 
 .bottom-right {
-    bottom: 40px;
-    right: 40px;
+    bottom: 30px;
+    right: 30px;
     border-left: 0;
     border-top: 0;
 }
 
 @media (max-width: 480px) {
-    .p-number {
-        font-size: 3.5rem;
+    .sculpture-container {
+        scale: 0.8;
     }
 
-    .prism-container {
-        width: 140px;
-        height: 140px;
+    .num {
+        font-size: 3rem;
     }
 
-    .loading-line-wrapper {
-        width: 150px;
+    .status-interface {
+        width: 220px;
     }
 }
