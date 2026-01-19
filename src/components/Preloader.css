@@ -1,54 +1,46 @@
-.futuristic-preloader {
+/* Ethereal Prism Preloader Redesign */
+.prism-preloader {
     position: fixed;
     inset: 0;
-    background: #000205;
+    background: #020408;
     z-index: 10000;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    perspective: 1000px;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
 }
 
-/* Hyper Grid Background */
-.hyper-grid {
+/* Ambient Background */
+.prism-bg {
     position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -50%;
-    left: -50%;
-    background-image:
-        linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-    transform: rotateX(60deg);
-    animation: grid-drift 20s linear infinite;
-    pointer-events: none;
+    inset: 0;
+    z-index: 1;
 }
 
-@keyframes grid-drift {
-    from {
-        transform: rotateX(60deg) translateY(0);
-    }
-
-    to {
-        transform: rotateX(60deg) translateY(50px);
-    }
-}
-
-/* Particles */
-.particle {
+.bg-glow {
     position: absolute;
-    width: 2px;
-    height: 2px;
-    background: #00f2ff;
-    border-radius: 50%;
-    filter: blur(1px);
-    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+    filter: blur(60px);
 }
 
-/* Core Visualizer */
-.core-focus {
+.star-particles {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+}
+
+/* Main Layout */
+.prism-main-content {
     position: relative;
     z-index: 10;
     display: flex;
@@ -57,271 +49,185 @@
     gap: 4rem;
 }
 
-.hologram-circles {
+/* Geometric Prism Stage */
+.geometric-stage {
+    perspective: 1000px;
+}
+
+.prism-container {
     position: relative;
-    width: 280px;
-    height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 180px;
+    height: 180px;
+    transform-style: preserve-3d;
+    animation: prism-rotate 10s linear infinite;
 }
 
-.ring {
+.prism-wire {
     position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+}
+
+.wire {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    border-radius: 4px;
+}
+
+.w1 {
+    transform: rotateY(0deg) translateZ(40px);
+}
+
+.w2 {
+    transform: rotateY(60deg) translateZ(40px);
+}
+
+.w3 {
+    transform: rotateY(120deg) translateZ(40px);
+}
+
+.w4 {
+    transform: rotateX(90deg) translateZ(40px);
+}
+
+.w5 {
+    transform: rotateX(45deg) translateZ(40px);
+}
+
+.w6 {
+    transform: rotateX(-45deg) translateZ(40px);
+}
+
+.prism-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    background: #00f2ff;
     border-radius: 50%;
-    border: 1px solid rgba(0, 242, 255, 0.1);
+    filter: blur(15px);
+    box-shadow: 0 0 30px #00f2ff;
 }
 
-.r1 {
-    width: 100%;
-    height: 100%;
-    animation: spin 10s linear infinite;
-    border-top-color: #00f2ff;
-}
+@keyframes prism-rotate {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
 
-.r2 {
-    width: 85%;
-    height: 85%;
-    animation: spin-reverse 7s linear infinite;
-    border-right-color: #7c3aed;
-}
-
-.r3 {
-    width: 70%;
-    height: 70%;
-    animation: spin 5s linear infinite;
-    border-bottom-color: #00f2ff;
-    border-width: 2px;
-}
-
-.hexagon-wrapper {
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
-}
-
-.hexagon-svg {
-    width: 100%;
-    height: 100%;
-    transform: rotate(0deg);
-    animation: hex-float 4s ease-in-out infinite;
-}
-
-@keyframes hex-float {
-
-    0%,
     100% {
-        transform: scale(1) rotate(0deg);
-    }
-
-    50% {
-        transform: scale(1.1) rotate(5deg);
+        transform: rotateX(360deg) rotateY(360deg);
     }
 }
 
-.loading-core {
-    position: relative;
-    z-index: 5;
-    text-align: center;
-}
-
-.core-glow {
-    position: absolute;
-    inset: -30px;
-    background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
-}
-
-.progress-number {
-    font-family: 'Outfit', sans-serif;
-    color: white;
+/* Info Panel */
+.prism-info-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1.5rem;
 }
 
-.progress-number .count {
-    font-size: 3.5rem;
-    font-weight: 900;
-    letter-spacing: -2px;
+.percentage-box {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
 }
 
-.progress-number .percent {
+.p-number {
+    font-size: 5rem;
+    font-weight: 200;
+    letter-spacing: -4px;
+    line-height: 1;
+}
+
+.p-percent {
     font-size: 1rem;
+    font-weight: 600;
     color: #00f2ff;
-    font-weight: 500;
-    margin-top: -10px;
-}
-
-/* Tech Info Panel */
-.tech-info {
-    text-align: center;
-    width: 320px;
-}
-
-.status-code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    color: rgba(0, 242, 255, 0.4);
-    letter-spacing: 3px;
-    margin-bottom: 0.5rem;
-}
-
-.status-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: white;
     letter-spacing: 2px;
-    margin-bottom: 1.5rem;
-    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
-.access-bar {
-    width: 100%;
-    height: 3px;
+/* Modern Status Bar */
+.modern-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-indicator {
+    width: 6px;
+    height: 6px;
+    background: #00f2ff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00f2ff;
+}
+
+.status-label-new {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Loading Line */
+.loading-line-wrapper {
+    width: 200px;
+    height: 1px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-}
-
-.access-bar .fill {
-    position: absolute;
-    height: 100%;
-    background: linear-gradient(90deg, #00f2ff, #7c3aed);
-    box-shadow: 0 0 20px #00f2ff;
-}
-
-.bit-stream {
     margin-top: 1rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: rgba(0, 242, 255, 0.2);
-    letter-spacing: 1px;
 }
 
-/* Frame Design */
-.frame-border .corner {
+.loading-line-fill {
+    height: 100%;
+    background: #00f2ff;
+    box-shadow: 0 0 10px #00f2ff;
+    transition: width 0.3s ease-out;
+}
+
+/* UI Decorative Points */
+.ui-decor {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 2px solid #00f2ff;
-    opacity: 0.3;
+    width: 100px;
+    height: 100px;
+    border: 1px solid rgba(0, 242, 255, 0.1);
+    opacity: 0.5;
 }
 
-.tl {
+.top-left {
     top: 40px;
     left: 40px;
     border-right: 0;
     border-bottom: 0;
 }
 
-.tr {
-    top: 40px;
-    right: 40px;
-    border-left: 0;
-    border-bottom: 0;
-}
-
-.bl {
-    bottom: 40px;
-    left: 40px;
-    border-right: 0;
-    border-top: 0;
-}
-
-.br {
+.bottom-right {
     bottom: 40px;
     right: 40px;
     border-left: 0;
     border-top: 0;
-}
-
-/* Scanning Sweep */
-.scanning-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 15vh;
-    background: linear-gradient(to bottom,
-            transparent,
-            rgba(0, 242, 255, 0.05),
-            transparent);
-    animation: sweep 4s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes sweep {
-    0% {
-        transform: translateY(-100%);
-    }
-
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-/* Base Animations */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes spin-reverse {
-    from {
-        transform: rotate(360deg);
-    }
-
-    to {
-        transform: rotate(0deg);
-    }
 }
 
 @media (max-width: 480px) {
-    .hologram-circles {
-        width: 200px;
-        height: 200px;
+    .p-number {
+        font-size: 3.5rem;
     }
 
-    .progress-number .count {
-        font-size: 2.5rem;
+    .prism-container {
+        width: 140px;
+        height: 140px;
     }
 
-    .tech-info {
-        width: 240px;
-    }
-
-    .frame-border .corner {
-        width: 20px;
-        height: 20px;
-        top: 20px;
-        left: 20px;
-    }
-
-    .tl {
-        top: 20px;
-        left: 20px;
-    }
-
-    .tr {
-        top: 20px;
-        right: 20px;
-    }
-
-    .bl {
-        bottom: 20px;
-        left: 20px;
-    }
-
-    .br {
-        bottom: 20px;
-        right: 20px;
+    .loading-line-wrapper {
+        width: 150px;
     }
 }
