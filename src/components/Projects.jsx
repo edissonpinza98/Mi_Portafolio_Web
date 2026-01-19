@@ -1,53 +1,58 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import project1 from '../assets/project1.png';
 import project2 from '../assets/project2.png';
 import project3 from '../assets/project3.png';
 import './Projects.css';
 
 const Projects = () => {
-    const projects = [
-        {
-            title: "Dashboard Analítico AI",
-            desc: "Plataforma de visualización de datos en tiempo real con integración de IA para predicciones de mercado. Diseño futurista con modo oscuro.",
-            img: project1,
-            tags: ["React", "D3.js", "Node.js"],
-            demo: "#",
-            repo: "#"
-        },
-        {
-            title: "NeoBank Mobile App",
-            desc: "Interfaz moderna para una aplicación bancaria de nueva generación. Enfoque en la experiencia de usuario y transiciones fluidas.",
-            img: project2,
-            tags: ["React Native", "TypeScript", "Framer"],
-            demo: "#",
-            repo: "#"
-        },
-        {
-            title: "LUXE E-Commerce",
-            desc: "Tienda online minimalista para marcas de moda de lujo. Optimizado para conversión y velocidad.",
-            img: project3,
-            tags: ["Next.js", "Stripe", "Tailwind"],
-            demo: "#",
-            repo: "#"
-        }
-    ];
 
     return (
         <section id="projects" className="section">
             <div className="container">
-                <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="section-title"
-                >
-                    Mis <span className="gradient-text">Proyectos</span>
-                </motion.h2>
+                <div className="section-header centered">
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="section-title"
+                    >
+                        Mis <span className="gradient-text">Proyectos</span>
+                    </motion.h2>
+                    <div className="header-decoration">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
 
                 <div className="projects-grid">
-                    {projects.map((project, index) => (
+                    {[
+                        {
+                            title: "AI Business Automation",
+                            desc: "Sistema de automatización industrial integrando Python y modelos de IA para la optimización de flujos de trabajo operativos.",
+                            img: project1,
+                            tags: ["Python", "TensorFlow", "Node.js"],
+                            demo: "/not-found",
+                            repo: "/not-found"
+                        },
+                        {
+                            title: "Financial Data Dashboard",
+                            desc: "Panel avanzado desarrollado en Power BI y React para la visualización de métricas contables y análisis predictivo.",
+                            img: project2,
+                            tags: ["Power BI", "React", "D3.js"],
+                            demo: "/not-found",
+                            repo: "/not-found"
+                        },
+                        {
+                            title: "Inventory Control Sysem",
+                            desc: "Aplicación Full Stack robusta para el control de inventarios y gestión de recursos empresariales a gran escala.",
+                            img: project3,
+                            tags: ["Java", "Spring Boot", "MySQL"],
+                            demo: "/not-found",
+                            repo: "/not-found"
+                        }
+                    ].map((project, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 30 }}
@@ -68,12 +73,12 @@ const Projects = () => {
                                 </div>
                                 <p className="project-desc">{project.desc}</p>
                                 <div className="project-links">
-                                    <a href={project.demo} className="project-link">
+                                    <Link to={project.demo} className="project-link">
                                         <ExternalLink size={18} /> Demo
-                                    </a>
-                                    <a href={project.repo} className="project-link">
+                                    </Link>
+                                    <Link to={project.repo} className="project-link">
                                         <Github size={18} /> Código
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>

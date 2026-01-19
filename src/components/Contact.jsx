@@ -43,7 +43,7 @@ const Contact = () => {
 
                     {/* BOTÓN WHATSAPP */}
                     <motion.a
-                        href="https://wa.link/ip34wf"
+                        href="https://wa.link/y26h7a"
                         className="whatsapp-btn"
                         whileHover={{ scale: 1.06 }}
                         whileTap={{ scale: 0.94 }}
