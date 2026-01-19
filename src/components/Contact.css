@@ -201,70 +201,190 @@
    ICONOS SOCIALES
 ========================= */
 
+/* =========================
+   ICONOS SOCIALES FUTURISTAS
+ ========================= */
+
 .social-links {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 3rem;
+    margin-top: 4rem;
+    flex-wrap: wrap;
 }
 
-.social-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
+.social-icon-wrapper {
+    position: relative;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.icon-tooltip {
+    position: absolute;
+    top: -45px;
+    background: rgba(10, 15, 24, 0.95);
     color: white;
-    font-size: 1.2rem;
-    transition:
-        transform 0.3s ease,
-        background 0.3s ease,
-        box-shadow 0.3s ease,
-        color 0.3s ease;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 242, 255, 0.1);
+    z-index: 10;
 }
 
-/* EFECTO BASE (NO SE TOCA) */
-.social-icon:hover {
-    transform: translateY(-6px) scale(1.08);
-    color: #fff;
+.icon-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 242, 255, 0.3);
 }
 
-/* =========================
-   COLORES REALES + GLOW
-========================= */
-
-/* EMAIL */
-.social-icon[aria-label="Correo electrónico"]:hover {
-    background: #ea4335;
-    box-shadow: 0 12px 28px rgba(234, 67, 53, 0.55);
+.social-icon-wrapper:hover .icon-tooltip {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
-/* GITHUB */
-.social-links .social-icon[aria-label="GitHub"]:hover {
-    background: #2b04974f;
-    box-shadow: 0 12px 28px rgba(2, 41, 126, 0.65);
-    color: #fff;
+.icon-main {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: rgba(10, 15, 24, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    transition: all 0.4s ease;
 }
 
-/* FACEBOOK */
-.social-icon[aria-label="Facebook"]:hover {
-    background: #1877f2;
-    box-shadow: 0 12px 28px rgba(24, 119, 242, 0.6);
+.icon-glow {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    filter: blur(15px);
+    transition: opacity 0.4s ease;
+    z-index: -1;
 }
 
-/* LINKEDIN */
-.social-icon[aria-label="LinkedIn"]:hover {
-    background: #0a66c2;
-    box-shadow: 0 12px 28px rgba(10, 102, 194, 0.6);
+.tech-ring {
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(0, 242, 255, 0.1);
+    border-radius: 15px;
+    z-index: 1;
+    transition: all 0.4s ease;
 }
 
-/* TELEGRAM */
-.social-links .social-icon[aria-label="Telegram"]:hover {
-    background: #229ed9;
-    box-shadow: 0 12px 28px rgba(34, 159, 217, 0.274);
-    color: #fff;
+.tech-ring::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 20%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00f2ff, transparent);
+    opacity: 0;
+}
+
+.corner-dots span {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #00f2ff;
+    border-radius: 50%;
+    opacity: 0.3;
+    transition: all 0.4s ease;
+}
+
+.corner-dots span:nth-child(1) {
+    top: 0;
+    left: 0;
+}
+
+.corner-dots span:nth-child(2) {
+    bottom: 0;
+    right: 0;
+}
+
+/* Hover States */
+.social-icon-wrapper:hover .icon-main {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.social-icon-wrapper:hover .icon-glow {
+    opacity: 0.4;
+}
+
+.social-icon-wrapper:hover .tech-ring {
+    inset: -12px;
+    border-color: rgba(0, 242, 255, 0.4);
+    transform: rotate(45deg);
+}
+
+.social-icon-wrapper:hover .tech-ring::before {
+    opacity: 1;
+    animation: ring-flow 2s linear infinite;
+}
+
+.social-icon-wrapper:hover .corner-dots span {
+    opacity: 1;
+    box-shadow: 0 0 10px #00f2ff;
+}
+
+@keyframes ring-flow {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Red-specific Glows (Optional overrides if needed, but the dynamic style handles it) */
+.social-icon-wrapper[aria-label="GitHub"]:hover .tech-ring {
+    border-color: #00f2ff;
+}
+
+.social-icon-wrapper[aria-label="LinkedIn"]:hover .tech-ring {
+    border-color: #0a66c2;
+}
+
+.social-icon-wrapper[aria-label="Correo electrónico"]:hover .tech-ring {
+    border-color: #ea4335;
+}
+
+.social-icon-wrapper[aria-label="Facebook"]:hover .tech-ring {
+    border-color: #1877f2;
+}
+
+.social-icon-wrapper[aria-label="Telegram"]:hover .tech-ring {
+    border-color: #229ed9;
 }
 
 /* =========================
@@ -327,7 +447,12 @@
         height: 130px;
     }
 
-    .social-icon {
+    .social-icon-wrapper {
+        width: 55px;
+        height: 55px;
+    }
+
+    .icon-main {
         width: 45px;
         height: 45px;
         font-size: 1.1rem;

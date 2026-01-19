@@ -74,60 +74,37 @@ const Contact = () => {
 
                 {/* Redes */}
                 <div className="social-links">
-
-                    {/* Correo */}
-                    <a
-                        href="mailto:tuemail@correo.com"
-                        className="social-icon"
-                        aria-label="Correo electrónico"
-                    >
-                        <Mail size={24} />
-                    </a>
-
-                    {/* GitHub */}
-                    <a
-                        href="https://github.com/edissonpinza98"
-                        className="social-icon"
-                        aria-label="GitHub"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Github size={24} />
-                    </a>
-
-                    {/* Facebook */}
-                    <a
-                        href="https://www.facebook.com/Dev.Edi98"
-                        className="social-icon"
-                        aria-label="Facebook"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Facebook size={24} />
-                    </a>
-
-                    {/* LinkedIn */}
-                    <a
-                        href="https://www.linkedin.com/in/edisson-pinza-613160249"
-                        className="social-icon"
-                        aria-label="LinkedIn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Linkedin size={24} />
-                    </a>
-
-                    {/* Telegram */}
-                    <a
-                        href="https://t.me/Dev_Edi"
-                        className="social-icon"
-                        aria-label="Telegram"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Send size={24} />
-                    </a>
-
+                    {[
+                        { icon: <Mail size={24} />, label: "Correo electrónico", href: "mailto:edissonpinza.98@gmail.com", color: "#ea4335" },
+                        { icon: <Github size={24} />, label: "GitHub", href: "https://github.com/edissonpinza98", color: "#00f2ff" },
+                        { icon: <Facebook size={24} />, label: "Facebook", href: "https://www.facebook.com/Dev.Edi98", color: "#1877f2" },
+                        { icon: <Linkedin size={24} />, label: "LinkedIn", href: "https://www.linkedin.com/in/edisson-pinza-613160249", color: "#0a66c2" },
+                        { icon: <Send size={24} />, label: "Telegram", href: "https://t.me/Dev_Edi", color: "#229ed9" }
+                    ].map((link, idx) => (
+                        <motion.a
+                            key={link.label}
+                            href={link.href}
+                            className="social-icon-wrapper"
+                            aria-label={link.label}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4, delay: idx * 0.1 }}
+                            whileHover={{ y: -10 }}
+                        >
+                            <div className="icon-tooltip">{link.label.split(' ')[0]}</div>
+                            <div className="icon-main">
+                                {link.icon}
+                                <div className="icon-glow" style={{ backgroundColor: link.color }}></div>
+                            </div>
+                            <div className="tech-ring"></div>
+                            <div className="corner-dots">
+                                <span></span><span></span>
+                            </div>
+                        </motion.a>
+                    ))}
                 </div>
 
             </div>
