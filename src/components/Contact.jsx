@@ -15,14 +15,19 @@ const Contact = () => {
         <section id="contact" className="section contact-section">
             <div className="container contact-container">
 
-                <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="section-title"
-                >
-                    Contáct<span className="gradient-text">ame</span>
-                </motion.h2>
+                <div className="section-header centered">
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="section-title"
+                    >
+                        Contáct<span className="gradient-text">ame</span>
+                    </motion.h2>
+                    <div className="header-decoration">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
 
                 <motion.p
                     initial={{ opacity: 0 }}
