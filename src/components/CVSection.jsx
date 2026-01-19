@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { FileText, Download, Mail, ExternalLink, User, Github, RefreshCw } from 'lucide-react';
+import { FileText, ExternalLink, RefreshCw, X, Maximize2, ArrowLeft } from 'lucide-react';
 import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
 
@@ -9,11 +9,20 @@ const CVSection = () => {
     const [isRetracted, setIsRetracted] = useState(false);
     const [showCV, setShowCV] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [modalConfig, setModalConfig] = useState({
+        url: '',
+        title: ''
+    });
 
-    const openSecureCV = () => {
+    const openCVModal = (url, title) => {
+        setModalConfig({ url, title });
         setIsLoading(true);
+        setIsFullscreen(false);
         setShowCV(true);
     };
+
+    const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
 
     // Fallback security: ensure loader dismisses
     React.useEffect(() => {
@@ -56,15 +65,24 @@ const CVSection = () => {
 
                 {/* Left Side: Documents & CV */}
                 <div className="cv-content">
-                    <h2 className="section-title">Mi <span className="gradient-text">Hoja de Vida</span></h2>
+                    <div className="section-header">
+                        <h2 className="section-title">Mi <span className="gradient-text">Hoja de Vida</span></h2>
+                        <div className="header-decoration">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+
                     <p className="cv-description">
-                        Aquí puedes visualizar mi experiencia profesional detallada y descargar mi currículum actualizado a la fecha.
-                        Estoy disponible para nuevas oportunidades.
+                        Aquí puedes visualizar mi trayectoria profesional. He dispuesto dos versiones para tu revisión:
+                        una <span className="tech-highlight">versión completa</span> con certificaciones bajo protocolo de seguridad,
+                        y una <span className="tech-highlight">versión ejecutiva</span> de acceso rápido.
                     </p>
 
                     <div className="cv-actions">
-                        <motion.button
-                            onClick={openSecureCV}
+                        <motion.a
+                            href="https://wa.link/y26h7a"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="btn-primary cv-btn security-btn"
                             initial={{ x: -20, opacity: 0 }}
                             animate={{
@@ -85,9 +103,20 @@ const CVSection = () => {
                             }}
                             whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
+                            style={{ textDecoration: 'none' }}
                         >
                             <FileText size={20} />
-                            Ingreso Seguro al CV
+                            Solicitar Full CV
+                        </motion.a>
+
+                        <motion.button
+                            onClick={() => openCVModal("/CV-sola-edisonpinza.pdf", "Visualizador CV Ejecutivo")}
+                            className="btn-outline cv-btn"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <ExternalLink size={20} />
+                            Ver CV (Básico)
                         </motion.button>
 
                         <motion.button
@@ -218,54 +247,52 @@ const CVSection = () => {
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="cv-modal-content glass-card security-card"
+                            className={`cv-modal-content glass-card security-card ${isFullscreen ? 'is-fullscreen' : ''}`}
                             initial={{ scale: 0.9, opacity: 0, y: 50 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 50 }}
                             onClick={(e) => e.stopPropagation()}
                             onContextMenu={(e) => e.preventDefault()}
                         >
-                            <div className="security-alert-bar">
-                                <Zap size={14} />
-                                <span>DOCUMENTO ENCRIPTADO • PROHIBIDA LA CAPTURA O REPRODUCCIÓN POR DERECHOS DE AUTOR</span>
-                            </div>
-
                             <div className="cv-modal-header">
                                 <div className="modal-title-group">
-                                    <FileText className="modal-icon" size={24} />
+                                    <button className="back-btn" onClick={() => setShowCV(false)}>
+                                        <ArrowLeft size={20} />
+                                        <span>Regresar</span>
+                                    </button>
+                                    <div className="header-divider"></div>
                                     <div className="header-text">
-                                        <h3>Terminal de Visualización Segura</h3>
-                                        <span className="file-info">ESTADO: ACCESO_PROTEGIDO_ACTIVO</span>
+                                        <h3>{modalConfig.title}</h3>
+                                        <span className="file-info">ESTADO: LECTURA_PUBLICA</span>
                                     </div>
                                 </div>
-                                <button className="close-btn" onClick={() => setShowCV(false)}>
-                                    <RefreshCw size={24} />
-                                </button>
+                                <div className="header-actions">
+                                    <button
+                                        className="maximize-btn"
+                                        onClick={toggleFullscreen}
+                                        title={isFullscreen ? "Restaurar" : "Pantalla Grande"}
+                                    >
+                                        <Maximize2 size={20} />
+                                    </button>
+                                    <button className="close-btn" onClick={() => setShowCV(false)}>
+                                        <X size={24} />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="cv-viewer-container secure-viewer">
                                 {isLoading && (
                                     <div className="cv-loader-overlay security-loader">
                                         <div className="loader-spinner"></div>
-                                        <p>VALIDANDO INTEGRIDAD Y CIFRADO...</p>
+                                        <p>CARGANDO DOCUMENTO...</p>
                                     </div>
                                 )}
 
-                                <div className="viewer-protection-layer">
-                                    <div className="scan-line-security"></div>
-                                    <div className="copyright-watermark">
-                                        EDISSON PINZA © 2026 - PROTECTED IDENTITY
-                                    </div>
-                                </div>
-
                                 <iframe
-                                    src="https://drive.google.com/file/d/1aetcGvjH-k7fQVyc0XIWneJ9ubzPPk-N/preview"
-                                    title="CV Secure Viewer"
+                                    src={modalConfig.url}
+                                    title="CV Viewer"
                                     className="cv-iframe"
-                                    onLoad={() => {
-                                        console.log("Drive PDF Cargado");
-                                        setIsLoading(false);
-                                    }}
+                                    onLoad={() => setIsLoading(false)}
                                     style={{
                                         backgroundColor: 'white',
                                         display: 'block'
@@ -275,10 +302,9 @@ const CVSection = () => {
 
                             <div className="cv-modal-footer security-footer">
                                 <div className="terms-notice">
-                                    Aviso: Este visor cuenta con protección de derechos de autor. Cualquier intento de extracción de datos está estrictamente prohibido por el desarrollador.
+                                    Aviso: Visualización optimizada para navegadores modernos. Todos los derechos reservados © {new Date().getFullYear()}.
                                 </div>
                                 <div className="modal-tech-details">
-                                    <span className="text-red">ENCRYPTION_LAYER_01</span>
                                     <span className="scan-line-text">SYSTEM_STABLE</span>
                                 </div>
                             </div>

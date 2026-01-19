@@ -1,0 +1,327 @@
+.futuristic-preloader {
+    position: fixed;
+    inset: 0;
+    background: #000205;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+/* Hyper Grid Background */
+.hyper-grid {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background-image:
+        linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: rotateX(60deg);
+    animation: grid-drift 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes grid-drift {
+    from {
+        transform: rotateX(60deg) translateY(0);
+    }
+
+    to {
+        transform: rotateX(60deg) translateY(50px);
+    }
+}
+
+/* Particles */
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00f2ff;
+    border-radius: 50%;
+    filter: blur(1px);
+    pointer-events: none;
+}
+
+/* Core Visualizer */
+.core-focus {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4rem;
+}
+
+.hologram-circles {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 242, 255, 0.1);
+}
+
+.r1 {
+    width: 100%;
+    height: 100%;
+    animation: spin 10s linear infinite;
+    border-top-color: #00f2ff;
+}
+
+.r2 {
+    width: 85%;
+    height: 85%;
+    animation: spin-reverse 7s linear infinite;
+    border-right-color: #7c3aed;
+}
+
+.r3 {
+    width: 70%;
+    height: 70%;
+    animation: spin 5s linear infinite;
+    border-bottom-color: #00f2ff;
+    border-width: 2px;
+}
+
+.hexagon-wrapper {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+}
+
+.hexagon-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(0deg);
+    animation: hex-float 4s ease-in-out infinite;
+}
+
+@keyframes hex-float {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+.loading-core {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+}
+
+.core-glow {
+    position: absolute;
+    inset: -30px;
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.progress-number {
+    font-family: 'Outfit', sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.progress-number .count {
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+}
+
+.progress-number .percent {
+    font-size: 1rem;
+    color: #00f2ff;
+    font-weight: 500;
+    margin-top: -10px;
+}
+
+/* Tech Info Panel */
+.tech-info {
+    text-align: center;
+    width: 320px;
+}
+
+.status-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(0, 242, 255, 0.4);
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+}
+
+.status-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+.access-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.access-bar .fill {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, #00f2ff, #7c3aed);
+    box-shadow: 0 0 20px #00f2ff;
+}
+
+.bit-stream {
+    margin-top: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: rgba(0, 242, 255, 0.2);
+    letter-spacing: 1px;
+}
+
+/* Frame Design */
+.frame-border .corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #00f2ff;
+    opacity: 0.3;
+}
+
+.tl {
+    top: 40px;
+    left: 40px;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.tr {
+    top: 40px;
+    right: 40px;
+    border-left: 0;
+    border-bottom: 0;
+}
+
+.bl {
+    bottom: 40px;
+    left: 40px;
+    border-right: 0;
+    border-top: 0;
+}
+
+.br {
+    bottom: 40px;
+    right: 40px;
+    border-left: 0;
+    border-top: 0;
+}
+
+/* Scanning Sweep */
+.scanning-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15vh;
+    background: linear-gradient(to bottom,
+            transparent,
+            rgba(0, 242, 255, 0.05),
+            transparent);
+    animation: sweep 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes sweep {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+/* Base Animations */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .hologram-circles {
+        width: 200px;
+        height: 200px;
+    }
+
+    .progress-number .count {
+        font-size: 2.5rem;
+    }
+
+    .tech-info {
+        width: 240px;
+    }
+
+    .frame-border .corner {
+        width: 20px;
+        height: 20px;
+        top: 20px;
+        left: 20px;
+    }
+
+    .tl {
+        top: 20px;
+        left: 20px;
+    }
+
+    .tr {
+        top: 20px;
+        right: 20px;
+    }
+
+    .bl {
+        bottom: 20px;
+        left: 20px;
+    }
+
+    .br {
+        bottom: 20px;
+        right: 20px;
+    }
+}
