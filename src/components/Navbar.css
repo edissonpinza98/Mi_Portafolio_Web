@@ -5,69 +5,146 @@
     width: 100%;
     z-index: 1000;
     padding: 1.5rem 0;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
 }
 
 .navbar.scrolled {
-    background: rgba(5, 5, 5, 0.85);
-    backdrop-filter: blur(12px);
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    ;
+    background: rgba(2, 4, 8, 0.8);
+    backdrop-filter: blur(15px);
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.logo {
+/* Logo Futurista */
+.logo-wrapper {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    cursor: pointer;
+    gap: 0.8rem;
+    position: relative;
+    padding: 0.5rem;
+}
+
+.logo-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-text .name {
     color: white;
+}
+
+.logo-text .dot {
+    color: #00f2ff;
 }
 
 .logo-icon {
     color: #00f2ff;
+    filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
+    animation: icon-pulse 3s infinite;
 }
 
+.logo-cursor {
+    width: 10px;
+    height: 20px;
+    background: #00f2ff;
+    margin-left: 4px;
+    box-shadow: 0 0 10px #00f2ff;
+}
+
+@keyframes icon-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+/* Nav Link Estilo HUD */
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .nav-link {
-    color: #a0a0a0;
+    position: relative;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: color 0.3s;
+    padding: 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
-    color: #00f2ff;
+    color: white;
+    text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
 }
 
+.link-indicator {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00f2ff, #7c3aed);
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px #00f2ff;
+}
+
+.nav-link:hover .link-indicator,
+.nav-link.active .link-indicator {
+    width: 100%;
+}
+
+/* Mobile */
 .mobile-toggle {
     display: none;
-    color: white;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
+    color: #00f2ff;
+    background: rgba(0, 242, 255, 0.05);
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    padding: 0.5rem;
+    border-radius: 8px;
     cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mobile-toggle:hover {
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
 }
 
 .mobile-menu {
-    background: #111;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 4, 8, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -75,21 +152,23 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 0;
+    padding: 2rem;
     gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .nav-container {
-        padding: 0 15px;
-    }
-
+@media (max-width: 992px) {
     .nav-links {
         display: none;
     }
 
     .mobile-toggle {
         display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 20px;
     }
 
     .mobile-menu-links {
@@ -103,7 +182,7 @@
 }
 
 @media (max-width: 480px) {
-    .logo {
-        font-size: 1.25rem;
+    .logo-text {
+        font-size: 1.1rem;
     }
 }

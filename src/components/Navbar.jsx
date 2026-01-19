@@ -27,10 +27,21 @@ const Navbar = () => {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
         <Link to="hero" smooth={true} className="logo">
-          <Terminal className="logo-icon" size={30} />
-          <span>Portafolio</span>
+          <div className="logo-wrapper">
+            <Terminal className="logo-icon" size={24} />
+            <div className="logo-text">
+              <span className="name">EDISSON</span>
+              <span className="dot">.</span>
+              <span className="dev-tag gradient-text">DEV</span>
+            </div>
+            <motion.div
+              className="logo-cursor"
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+            />
+          </div>
         </Link>
-        
+
         {/* Desktop Menu */}
         <div className="nav-links">
           {navLinks.map((link) => (
@@ -43,7 +54,8 @@ const Navbar = () => {
               offset={-80}
               className="nav-link"
             >
-              {link.name}
+              <span className="link-text">{link.name}</span>
+              <div className="link-indicator"></div>
             </Link>
           ))}
         </div>
@@ -58,9 +70,9 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
             className="mobile-menu"
           >
             <div className="mobile-menu-links">
