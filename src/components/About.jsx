@@ -6,6 +6,7 @@ import './About.css';
 const SkillsFluid = ({ categories }) => {
     const getIcon = (title) => {
         switch (title) {
+            case "FRAMEWORKS_LIBS": return <Layers size={18} />;
             case "LANGUAGES_DEV": return <Globe size={18} />;
             case "DATA_ARCHITECTURE": return <Database size={18} />;
             case "INFRA_SYSTEMS": return <Cpu size={18} />;
@@ -13,6 +14,18 @@ const SkillsFluid = ({ categories }) => {
             default: return <Layers size={18} />;
         }
     };
+
+    const formatTitle = (title) => {
+        const titles = {
+            "FRAMEWORKS_LIBS": "FRAMEWORKS & LIBRARIES",
+            "LANGUAGES_DEV": "PROGRAMMING LANGUAGES",
+            "DATA_ARCHITECTURE": "DATA & ARCHITECTURE",
+            "INFRA_SYSTEMS": "INFRASTRUCTURE & TOOLS",
+            "AUTOMATION_AI": "AUTOMATION & AI"
+        };
+        return titles[title] || title;
+    };
+
 
     return (
         <div className="skills-fluid">
@@ -28,8 +41,9 @@ const SkillsFluid = ({ categories }) => {
                     >
                         <div className="category-header">
                             <span className="category-icon">{getIcon(cat.title)}</span>
-                            <h4 className="category-title">{cat.title}</h4>
+                            <h4 className="category-title">{formatTitle(cat.title)}</h4>
                         </div>
+
                         <div className="skills-list">
                             {cat.skills.map((skill) => (
                                 <span key={skill} className="skill-pill">
@@ -47,22 +61,27 @@ const SkillsFluid = ({ categories }) => {
 const About = () => {
     const skillCategories = [
         {
+            title: "FRAMEWORKS_LIBS",
+            skills: ["React", "Angular", "Vue", "Bootstrap", "Tailwind CSS"]
+        },
+        {
             title: "LANGUAGES_DEV",
-            skills: ["JavaScript", "TypeScript", "Python", "Java", "Kotlin", "HTML", "CSS"]
+            skills: ["JavaScript", "TypeScript", "Python", "PHP", "Java", "Kotlin", "HTML", "CSS"]
         },
         {
             title: "DATA_ARCHITECTURE",
-            skills: ["MySQL", "PostgreSQL", "MongoDB", "Power BI", "Data Analysis"]
+            skills: ["MySQL", "PostgreSQL", "MongoDB", "DBMS", "Power BI", "Data Analysis"]
         },
         {
             title: "INFRA_SYSTEMS",
-            skills: ["Redes & Infraestructura", "Soporte Técnico", "Ofimática Avanzada", "Git / GitHub", "UI/UX Design"]
+            skills: ["Git / GitHub", "Redes & Infraestructura", "Soporte Técnico", "Ofimática Avanzada", "UI/UX Design"]
         },
         {
             title: "AUTOMATION_AI",
-            skills: ["IA Systematization", "Excel (Contaduría)", "VBA / Macros", "Workplace Optimization"]
+            skills: ["IA Systematization", "Workplace Optimization", "Excel (VBA / Macros)", "Prompt Engineering"]
         }
     ];
+
 
     return (
         <section id="about" className="section about-section">
@@ -93,10 +112,11 @@ const About = () => {
                                 con homologación activa en <span className="tech-highlight">Ingeniería de Software</span> y una formación técnica en constante evolución.
                             </p>
                             <p>
-                                Trabajo con desarrollo de software y soluciones web, con conocimientos funcionales en
+                                Trabajo con desarrollo de software y soluciones web, integrando frameworks modernos como <span className="tech-highlight">React, Angular y Vue</span>. Poseo conocimientos funcionales en
                                 <span className="tech-highlight">JavaScript (TypeScript), Python, PHP, Java y Kotlin</span>, lo que me permite desenvolverme con
                                 solvencia en la lógica de negocio, el desarrollo frontend y backend, y la resolución de problemas técnicos.
                             </p>
+
                             <p>
                                 Tengo experiencia en bases de datos como <span className="tech-highlight">MySQL, PostgreSQL y MongoDB</span>, además de una base sólida en
                                 <span className="tech-highlight">soporte técnico, redes y ofimática avanzada</span>. Integro <span className="tech-highlight">Inteligencia Artificial</span> como herramienta
@@ -123,8 +143,9 @@ const About = () => {
                         </div>
                         <h3 className="skills-subtitle">
                             <Code2 size={20} className="subtitle-icon" />
-                            <span>CORE_ESTACK_IDENTITY</span>
+                            <span>MI STACK TECNOLÓGICO</span>
                         </h3>
+
                         <div className="header-decoration">
                             <span></span><span></span><span></span>
                         </div>
