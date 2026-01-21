@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import project1 from '../assets/project1.png';
 import project2 from '../assets/project2.png';
 import project3 from '../assets/project3.png';
+import project4 from '../assets/project4.png';
 import './Projects.css';
 
 const Projects = () => {
@@ -28,6 +29,14 @@ const Projects = () => {
 
                 <div className="projects-grid">
                     {[
+                        {
+                            title: "Mocondino Conecta",
+                            desc: "Plataforma digital comunitaria integral para la gestión de juntas, promoción de talento local y negocios en Mocondino. Fomentando transparencia y participación ciudadana.",
+                            img: project4,
+                            tags: ["Vue.js", "Vite", "Firebase"],
+                            demo: "https://mocondinoconecta.netlify.app/",
+                            repo: "/not-found"
+                        },
                         {
                             title: "AI Business Automation",
                             desc: "Sistema de automatización industrial integrando Python y modelos de IA para la optimización de flujos de trabajo operativos.",
@@ -73,12 +82,24 @@ const Projects = () => {
                                 </div>
                                 <p className="project-desc">{project.desc}</p>
                                 <div className="project-links">
-                                    <Link to={project.demo} className="project-link">
-                                        <ExternalLink size={18} /> Demo
-                                    </Link>
-                                    <Link to={project.repo} className="project-link">
-                                        <Github size={18} /> Código
-                                    </Link>
+                                    {project.demo.startsWith('http') ? (
+                                        <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-link">
+                                            <ExternalLink size={18} /> Demo
+                                        </a>
+                                    ) : (
+                                        <Link to={project.demo} className="project-link">
+                                            <ExternalLink size={18} /> Demo
+                                        </Link>
+                                    )}
+                                    {project.repo.startsWith('http') ? (
+                                        <a href={project.repo} target="_blank" rel="noopener noreferrer" className="project-link">
+                                            <Github size={18} /> Código
+                                        </a>
+                                    ) : (
+                                        <Link to={project.repo} className="project-link">
+                                            <Github size={18} /> Código
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
