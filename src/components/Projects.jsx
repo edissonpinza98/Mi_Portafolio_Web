@@ -6,6 +6,7 @@ import project1 from '../assets/project1.png';
 import project2 from '../assets/project2.png';
 import project3 from '../assets/project3.png';
 import project4 from '../assets/project4.png';
+import project5 from '../assets/project5.png';
 import './Projects.css';
 
 const Projects = () => {
@@ -29,6 +30,14 @@ const Projects = () => {
 
                 <div className="projects-grid">
                     {[
+                        {
+                            title: "BBQ Sabor y Presentación",
+                            desc: "Sistema de gestión y carta digital interactiva para restaurante, con administración de platillos, categorías y pedidos en tiempo real.",
+                            img: project5,
+                            tags: ["Vue.js", "Vite", "Firebase"],
+                            demo: "https://bbq-saborypresentacion.netlify.app/",
+                            repo: "/not-found"
+                        },
                         {
                             title: "Mocondino Conecta",
                             desc: "Plataforma digital comunitaria integral para la gestión de juntas, promoción de talento local y negocios en Mocondino. Fomentando transparencia y participación ciudadana.",
