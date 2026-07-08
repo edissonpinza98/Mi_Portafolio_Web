@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-scroll';
-import { ArrowRight, Github, Linkedin, Download } from 'lucide-react';
+import { ArrowRight, Github, Linkedin, Download, Zap } from 'lucide-react';
 import profileImg from '../assets/Foto-inicio.jpg';
 import './Hero.css';
 
@@ -25,10 +25,10 @@ const Hero = () => {
     const letters = '01';
 
     const draw = () => {
-      ctx.fillStyle = 'rgba(10, 10, 15, 0.06)';
+      ctx.fillStyle = 'rgba(7, 7, 15, 0.07)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(79, 142, 247, 0.18)';
-      ctx.font = `${fontSize}px var(--font-mono)`;
+      ctx.fillStyle = 'rgba(91, 155, 255, 0.15)';
+      ctx.font = `${fontSize}px JetBrains Mono, monospace`;
 
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
@@ -38,7 +38,7 @@ const Hero = () => {
       }
     };
 
-    const interval = setInterval(draw, 40);
+    const interval = setInterval(draw, 42);
     const ro = new ResizeObserver(() => {
       resize();
       columns = Math.floor(canvas.width / fontSize);
@@ -47,27 +47,25 @@ const Hero = () => {
     });
     ro.observe(canvas);
 
-    return () => {
-      clearInterval(interval);
-      ro.disconnect();
-    };
+    return () => { clearInterval(interval); ro.disconnect(); };
   }, []);
 
   const fadeUp = (delay = 0) => ({
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+    initial:    { opacity: 0, y: 26 },
+    animate:    { opacity: 1, y: 0  },
+    transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
   });
 
   return (
     <section id="hero" className="hero-section">
-      {/* Ambient glow */}
+      {/* Ambient glows */}
       <div className="hero-glow hero-glow--left"  aria-hidden />
       <div className="hero-glow hero-glow--right" aria-hidden />
+      <div className="hero-glow hero-glow--top"   aria-hidden />
 
       <div className="container hero-inner">
 
-        {/* ── Text side ── */}
+        {/* ── Left: text ── */}
         <div className="hero-text">
           <motion.p className="hero-eyebrow section-eyebrow" {...fadeUp(0.1)}>
             Desarrollador de Software · Full Stack
@@ -97,17 +95,17 @@ const Hero = () => {
             <a href="https://github.com/edissonpinza98"
                target="_blank" rel="noopener noreferrer"
                className="hero-social" aria-label="GitHub">
-              <Github size={18} />
+              <Github size={17} />
             </a>
             <a href="https://www.linkedin.com/in/edisson-pinza-613160249"
                target="_blank" rel="noopener noreferrer"
                className="hero-social" aria-label="LinkedIn">
-              <Linkedin size={18} />
+              <Linkedin size={17} />
             </a>
             <a href="/CV-sola-edisonpinza.pdf"
                target="_blank" rel="noopener noreferrer"
                className="hero-social" aria-label="Descargar CV">
-              <Download size={18} />
+              <Download size={17} />
             </a>
             <span className="hero-social-divider" />
             <span className="hero-available">
@@ -117,36 +115,66 @@ const Hero = () => {
           </motion.div>
         </div>
 
-        {/* ── Image side ── */}
+        {/* ── Right: image card ── */}
         <motion.div
           className="hero-image-wrap"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, scale: 0.88, y: 20 }}
+          animate={{ opacity: 1, scale: 1,    y: 0  }}
+          transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Matrix canvas behind image */}
+          {/* Subtle grid / canvas bg */}
           <canvas ref={canvasRef} className="hero-canvas" aria-hidden />
 
-          {/* Decorative ring */}
+          {/* Outer decorative ring */}
           <div className="hero-ring" aria-hidden />
 
-          {/* Photo */}
-          <div className="hero-photo-frame">
-            <img src={profileImg} alt="Edisson Pinza — Desarrollador Full Stack" className="hero-photo" />
+          {/* Glow pulse behind photo */}
+          <div className="hero-photo-glow" aria-hidden />
+
+          {/* Photo card */}
+          <div className="hero-photo-card">
+            <img
+              src={profileImg}
+              alt="Edisson Pinza — Desarrollador Full Stack"
+              className="hero-photo"
+              draggable={false}
+            />
+            {/* Inner border shimmer */}
+            <div className="hero-photo-shimmer" aria-hidden />
           </div>
 
-          {/* Floating badge */}
+          {/* Floating badge — experiencia */}
           <motion.div
-            className="hero-badge"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            className="hero-badge hero-badge--br"
+            animate={{ y: [0, -7, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <span className="hero-badge__icon">⚡</span>
+            <span className="hero-badge__ico">
+              <Zap size={15} />
+            </span>
             <div>
               <p className="hero-badge__label">Experiencia</p>
               <p className="hero-badge__value">3+ años</p>
             </div>
           </motion.div>
+
+          {/* Floating badge — stack */}
+          <motion.div
+            className="hero-badge hero-badge--tl"
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+          >
+            <span className="hero-badge__ico hero-badge__ico--purple">
+              <span className="hero-badge__dot-grid">
+                {[...Array(9)].map((_,i) => <span key={i} />)}
+              </span>
+            </span>
+            <div>
+              <p className="hero-badge__label">Stack</p>
+              <p className="hero-badge__value">Full Stack</p>
+            </div>
+          </motion.div>
+
         </motion.div>
       </div>
     </section>
