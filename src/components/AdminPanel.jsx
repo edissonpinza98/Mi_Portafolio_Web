@@ -114,15 +114,28 @@ const ImageUploader = ({ currentUrl, onUploaded, onClear }) => {
 };
 
 /* ─── Project Card (admin view) ───────────────────────── */
-const AdminProjectCard = ({ project, onEdit, onDelete, onToggleVisible, deleting }) => (
+const AdminProjectCard = ({ project, onEdit, onDelete, onToggleVisible, deleting }) => {
+  const [imgError, setImgError] = useState(false);
+
+  return (
   <motion.div className="admin-project-card"
     layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.2 }}>
     {/* Cover */}
     <div className="apc-cover">
-      {project.image_url
-        ? <img src={project.image_url} alt={project.title} loading="lazy" />
-        : <div className="apc-cover__placeholder"><ImageIcon size={28} /></div>
+      {project.image_url && !imgError
+        ? <img
+            src={project.image_url}
+            alt={project.title}
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        : <div className="apc-cover__placeholder">
+            <ImageIcon size={28} />
+            <span className="apc-cover__no-img">
+              {imgError ? 'Error cargando imagen' : 'Sin portada — haz clic en ✏️ para agregar'}
+            </span>
+          </div>
       }
       <div className="apc-cover__overlay" />
       <span className={`apc-status ${project.visible ? 'apc-status--on' : 'apc-status--off'}`}>
@@ -172,7 +185,8 @@ const AdminProjectCard = ({ project, onEdit, onDelete, onToggleVisible, deleting
       </div>
     </div>
   </motion.div>
-);
+  );
+};
 
 /* ─── Category section ────────────────────────────────── */
 const CategorySection = ({ icon, title, type, projects, loading, onAdd, onEdit, onDelete, onToggle, deleteId }) => (
@@ -420,6 +434,10 @@ const AdminPanel = () => {
   const handleSave = async formData => {
     setSaving(true);
     const { id, localImg, ...payload } = formData;
+
+    // Normalizar image_url: string vacío → null
+    if (payload.image_url === '') payload.image_url = null;
+
     let error;
     if (editTarget) {
       ({ error } = await supabase.from('projects').update(payload).eq('id', editTarget.id));

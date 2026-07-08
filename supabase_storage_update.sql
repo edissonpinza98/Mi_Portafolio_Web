@@ -1,17 +1,18 @@
 -- ============================================================
--- PORTAFOLIO WEB — Storage + Category Update
--- Ejecuta este script en el SQL Editor de Supabase
--- https://supabase.com/dashboard/project/_/sql/new
+-- PORTAFOLIO WEB — Update Script (VERSIÓN CORREGIDA)
+-- 
+-- IMPORTANTE: El bucket "project-covers" se crea desde el
+-- dashboard de Supabase (no por SQL). Ver instrucciones abajo.
+--
+-- Ejecuta SOLO este SQL en: Dashboard → SQL Editor → New query
 -- ============================================================
 
--- ── 1. Agregar columnas nuevas ──────────────────────────────
--- Se usa DO $$ para garantizar orden de ejecución dentro
--- de un bloque transaccional.
+-- ══════════════════════════════════════════════════════════
+-- PARTE 1 — Columnas en la tabla projects
+-- ══════════════════════════════════════════════════════════
 
 DO $$
 BEGIN
-
-  -- Columna category
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public'
@@ -22,7 +23,6 @@ BEGIN
       ADD COLUMN category TEXT NOT NULL DEFAULT 'personal';
   END IF;
 
-  -- Columna whatsapp_msg
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public'
@@ -32,17 +32,15 @@ BEGIN
     ALTER TABLE public.projects
       ADD COLUMN whatsapp_msg TEXT DEFAULT NULL;
   END IF;
-
 END $$;
 
--- ── 2. Agregar CHECK constraint si no existe ────────────────
+-- CHECK constraint (idempotente)
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM information_schema.constraint_column_usage
-    WHERE table_name   = 'projects'
-      AND column_name  = 'category'
-      AND constraint_name = 'projects_category_check'
+    SELECT 1 FROM pg_constraint
+    WHERE conname    = 'projects_category_check'
+      AND conrelid   = 'public.projects'::regclass
   ) THEN
     ALTER TABLE public.projects
       ADD CONSTRAINT projects_category_check
@@ -50,8 +48,7 @@ BEGIN
   END IF;
 END $$;
 
--- ── 3. Marcar proyectos de empresa ──────────────────────────
--- Ajusta los títulos si los cambiaste en Supabase
+-- Marcar proyectos de empresa por título
 UPDATE public.projects
 SET category = 'empresa'
 WHERE title IN (
@@ -59,66 +56,11 @@ WHERE title IN (
   'Mocondino Conecta'
 );
 
--- El resto queda con el DEFAULT 'personal'
+-- ══════════════════════════════════════════════════════════
+-- PARTE 2 — Política SELECT mejorada en projects
+-- (admin autenticado ve también los proyectos ocultos)
+-- ══════════════════════════════════════════════════════════
 
--- ── 4. Storage bucket para portadas ────────────────────────
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
-  'project-covers',
-  'project-covers',
-  true,
-  5242880,
-  ARRAY['image/jpeg','image/jpg','image/png','image/webp','image/gif']
-)
-ON CONFLICT (id) DO NOTHING;
-
--- ── 5. Políticas Storage (idempotentes) ─────────────────────
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE tablename  = 'objects'
-      AND policyname = 'Public read project covers'
-  ) THEN
-    CREATE POLICY "Public read project covers"
-      ON storage.objects FOR SELECT
-      USING (bucket_id = 'project-covers');
-  END IF;
-END $$;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE tablename  = 'objects'
-      AND policyname = 'Authenticated upload project covers'
-  ) THEN
-    CREATE POLICY "Authenticated upload project covers"
-      ON storage.objects FOR INSERT
-      WITH CHECK (
-        bucket_id = 'project-covers'
-        AND auth.role() = 'authenticated'
-      );
-  END IF;
-END $$;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE tablename  = 'objects'
-      AND policyname = 'Authenticated delete project covers'
-  ) THEN
-    CREATE POLICY "Authenticated delete project covers"
-      ON storage.objects FOR DELETE
-      USING (
-        bucket_id = 'project-covers'
-        AND auth.role() = 'authenticated'
-      );
-  END IF;
-END $$;
-
--- ── 6. Política SELECT mejorada (admin ve proyectos ocultos) ─
 DROP POLICY IF EXISTS "Public can view visible projects" ON public.projects;
 
 CREATE POLICY "Public can view visible projects"
@@ -128,7 +70,52 @@ CREATE POLICY "Public can view visible projects"
     OR auth.role() = 'authenticated'
   );
 
--- ── Verificación (opcional) ─────────────────────────────────
--- Descomenta para confirmar:
--- SELECT id, title, category, whatsapp_msg FROM public.projects ORDER BY "order";
--- SELECT * FROM storage.buckets WHERE id = 'project-covers';
+-- ══════════════════════════════════════════════════════════
+-- PARTE 3 — Políticas de Storage para el bucket
+--
+-- Ejecuta esto DESPUÉS de crear el bucket desde el dashboard.
+-- Si las políticas ya existen, el DO $$ las omite sin error.
+-- ══════════════════════════════════════════════════════════
+
+-- Limpia políticas anteriores si existen
+DROP POLICY IF EXISTS "Public read project covers"          ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated upload project covers" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated update project covers" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated delete project covers" ON storage.objects;
+
+-- Lectura pública: cualquiera puede ver las imágenes
+CREATE POLICY "Public read project covers"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'project-covers');
+
+-- Solo admins pueden subir
+CREATE POLICY "Authenticated upload project covers"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id  = 'project-covers'
+    AND auth.role() = 'authenticated'
+  );
+
+-- Solo admins pueden actualizar
+CREATE POLICY "Authenticated update project covers"
+  ON storage.objects FOR UPDATE
+  USING (
+    bucket_id  = 'project-covers'
+    AND auth.role() = 'authenticated'
+  );
+
+-- Solo admins pueden eliminar
+CREATE POLICY "Authenticated delete project covers"
+  ON storage.objects FOR DELETE
+  USING (
+    bucket_id  = 'project-covers'
+    AND auth.role() = 'authenticated'
+  );
+
+-- ══════════════════════════════════════════════════════════
+-- VERIFICACIÓN (descomenta y ejecuta por separado)
+-- ══════════════════════════════════════════════════════════
+-- SELECT id, name, public FROM storage.buckets WHERE id = 'project-covers';
+-- SELECT policyname, cmd FROM pg_policies WHERE tablename = 'objects' AND policyname LIKE '%project covers%';
+-- SELECT column_name FROM information_schema.columns WHERE table_name = 'projects' AND column_name IN ('category','whatsapp_msg');
+-- SELECT title, category FROM public.projects ORDER BY "order";
