@@ -122,9 +122,9 @@ const DannaAssistant = () => {
             >
                 <div className="danna-cloud-msg">Hola, soy Danna</div>
                 <div className="holographic-robot">
-                    {isOpen ? <X size={32} className="close-icon-glow" /> : (
+                    {isOpen ? <X size={22} className="close-icon-glow" /> : (
                         <div className="robot-aura">
-                            <Bot size={45} strokeWidth={1.5} className="main-bot-icon" />
+                            <Bot size={26} strokeWidth={1.5} className="main-bot-icon" />
                             <div className="aura-waves"></div>
                             <div className="aura-core"></div>
                         </div>
