@@ -1,465 +1,198 @@
-/* =========================
-   SECCIÓN CONTACTO
-========================= */
-
+/* ── Contact Section ─────────────────────────────────── */
 .contact-section {
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 2rem;
-    /* 🔥 AQUÍ ESTABA EL PROBLEMA */
+  background: var(--bg-secondary);
 }
 
-.contact-container {
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 10;
+.contact-header {
+  margin-bottom: 48px;
 }
 
-.section-header.centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 3rem;
-    gap: 1.2rem;
+.contact-sub {
+  font-size: 0.97rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin-top: 8px;
+  line-height: 1.7;
 }
 
-.section-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin: 0;
+/* ── WhatsApp CTA card ───────────────────────────────── */
+.contact-cta-row {
+  margin-bottom: 64px;
 }
 
-.header-decoration {
-    display: flex;
-    gap: 8px;
+.contact-cta-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  transition: border-color 0.3s;
 }
 
-.header-decoration span {
-    width: 6px;
-    height: 6px;
-    background: rgba(0, 242, 255, 0.2);
-    border-radius: 50%;
+.contact-cta-card:hover {
+  border-color: var(--border-emphasis);
 }
 
-.header-decoration span:nth-child(2) {
-    background: #00f2ff;
-    box-shadow: 0 0 10px #00f2ff;
+.cta-card__left {
+  flex: 1;
+  max-width: 480px;
 }
 
-.contact-text {
-    color: #a0a0a0;
-    font-size: 1.25rem;
-    margin-bottom: 4rem;
-    text-align: center;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.8;
+.cta-card__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
 }
 
-/* =========================
-   FORMULARIO (NO TOCAR)
-========================= */
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    max-width: 600px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.02);
-    padding: 3rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.cta-card__desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 28px;
 }
 
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 1.2rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: white;
-    font-family: inherit;
-    font-size: 1rem;
-    transition: all 0.3s;
+.contact-wa-btn {
+  font-size: 0.92rem !important;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #00f2ff;
-    background: rgba(0, 0, 0, 0.5);
+/* QR */
+.cta-card__qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.form-group textarea {
-    min-height: 150px;
-    resize: vertical;
+.qr-label {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-/* =========================
-   BOTÓN WHATSAPP + QR
-========================= */
-
-.contact-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+.qr-img {
+  width: 130px;
+  height: 130px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  padding: 8px;
+  background: #fff;
 }
 
-/* BOTÓN WHATSAPP */
-.whatsapp-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 26px;
-    border-radius: 16px;
-    font-size: 1rem;
-    font-weight: 500;
-    text-decoration: none;
-    color: #25D366;
-    background: rgba(37, 211, 102, 0.12);
-    border: 1px solid rgba(37, 211, 102, 0.6);
-    transition: all 0.35s ease;
-    animation: whatsappPulse 2.5s infinite;
+/* ── Socials grid ────────────────────────────────────── */
+.contact-socials {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 48px;
 }
 
-.whatsapp-btn:hover {
-    background: #25D366;
-    color: #000;
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.6);
+.socials-label {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 24px;
 }
 
-@keyframes whatsappPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
-    }
-
-    70% {
-        box-shadow: 0 0 0 14px rgba(37, 211, 102, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-    }
+.socials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
 }
 
-/* =========================
-   QR WHATSAPP
-========================= */
-
-.qr-whatsapp {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
+.social-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
 }
 
-.qr-whatsapp span {
-    font-size: 0.9rem;
-    color: #a0a0a0;
+.social-card:hover {
+  border-color: var(--accent, var(--border-emphasis));
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent, var(--accent-blue)) 15%, transparent);
 }
 
-.qr-whatsapp img {
-    width: 150px;
-    height: 150px;
-    border-radius: 12px;
-    background: white;
-    padding: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    animation: qrFloat 4s ease-in-out infinite;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.social-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  color: var(--accent, var(--accent-blue));
+  flex-shrink: 0;
+  transition: background 0.25s;
 }
 
-.qr-whatsapp img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 15px rgba(37, 211, 102, 0.35);
+.social-card:hover .social-card__icon {
+  background: color-mix(in srgb, var(--accent, var(--accent-blue)) 12%, transparent);
 }
 
-@keyframes qrFloat {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
+.social-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-/* =========================
-   ICONOS SOCIALES
-========================= */
-
-/* =========================
-   ICONOS SOCIALES FUTURISTAS
- ========================= */
-
-.social-links {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    margin-top: 4rem;
-    flex-wrap: wrap;
+.social-card__label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
-.social-icon-wrapper {
-    position: relative;
-    width: 70px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.social-card__sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.icon-tooltip {
-    position: absolute;
-    top: -45px;
-    background: rgba(10, 15, 24, 0.95);
-    color: white;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateY(10px) scale(0.8);
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    border: 1px solid rgba(0, 242, 255, 0.3);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 242, 255, 0.1);
-    z-index: 10;
+/* ── Footer ──────────────────────────────────────────── */
+.site-footer {
+  margin-top: 80px;
+  padding: 28px 24px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
 }
 
-.icon-tooltip::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid rgba(0, 242, 255, 0.3);
+.site-footer p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
 }
 
-.social-icon-wrapper:hover .icon-tooltip {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-.icon-main {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    background: rgba(10, 15, 24, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.7);
-    z-index: 2;
-    overflow: hidden;
-    backdrop-filter: blur(5px);
-    transition: all 0.4s ease;
-}
-
-.icon-glow {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    filter: blur(15px);
-    transition: opacity 0.4s ease;
-    z-index: -1;
-}
-
-.tech-ring {
-    position: absolute;
-    inset: -8px;
-    border: 1px solid rgba(0, 242, 255, 0.1);
-    border-radius: 15px;
-    z-index: 1;
-    transition: all 0.4s ease;
-}
-
-.tech-ring::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 20%;
-    width: 60%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #00f2ff, transparent);
-    opacity: 0;
-}
-
-.corner-dots span {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #00f2ff;
-    border-radius: 50%;
-    opacity: 0.3;
-    transition: all 0.4s ease;
-}
-
-.corner-dots span:nth-child(1) {
-    top: 0;
-    left: 0;
-}
-
-.corner-dots span:nth-child(2) {
-    bottom: 0;
-    right: 0;
-}
-
-/* Hover States */
-.social-icon-wrapper:hover .icon-main {
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
-    transform: scale(1.1);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-.social-icon-wrapper:hover .icon-glow {
-    opacity: 0.4;
-}
-
-.social-icon-wrapper:hover .tech-ring {
-    inset: -12px;
-    border-color: rgba(0, 242, 255, 0.4);
-    transform: rotate(45deg);
-}
-
-.social-icon-wrapper:hover .tech-ring::before {
-    opacity: 1;
-    animation: ring-flow 2s linear infinite;
-}
-
-.social-icon-wrapper:hover .corner-dots span {
-    opacity: 1;
-    box-shadow: 0 0 10px #00f2ff;
-}
-
-@keyframes ring-flow {
-    0% {
-        left: -100%;
-    }
-
-    100% {
-        left: 100%;
-    }
-}
-
-/* Red-specific Glows (Optional overrides if needed, but the dynamic style handles it) */
-.social-icon-wrapper[aria-label="GitHub"]:hover .tech-ring {
-    border-color: #00f2ff;
-}
-
-.social-icon-wrapper[aria-label="LinkedIn"]:hover .tech-ring {
-    border-color: #0a66c2;
-}
-
-.social-icon-wrapper[aria-label="Correo electrónico"]:hover .tech-ring {
-    border-color: #ea4335;
-}
-
-.social-icon-wrapper[aria-label="Facebook"]:hover .tech-ring {
-    border-color: #1877f2;
-}
-
-.social-icon-wrapper[aria-label="Telegram"]:hover .tech-ring {
-    border-color: #229ed9;
-}
-
-/* =========================
-   FOOTER (NO TOCADO)
-========================= */
-
-.footer {
-    text-align: center;
-    padding: 1.2rem 0;
-    margin-top: 0;
-    color: #666;
-    font-size: 0.85rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
+/* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
-    .contact-actions {
-        flex-direction: column;
-        gap: 2.5rem;
-    }
+  .contact-cta-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+  }
 
-    .contact-form {
-        padding: 2rem;
-    }
+  .cta-card__qr { align-self: center; }
 
-    .social-links {
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
+  .socials-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 480px) {
-    .contact-section {
-        padding: 40px 0;
-    }
-
-    .contact-text {
-        font-size: 1rem;
-        padding: 0 15px;
-    }
-
-    .contact-form {
-        padding: 1.5rem;
-        border-radius: 15px;
-    }
-
-    .whatsapp-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 14px 20px;
-        font-size: 0.95rem;
-    }
-
-    .qr-whatsapp img {
-        width: 130px;
-        height: 130px;
-    }
-
-    .social-icon-wrapper {
-        width: 55px;
-        height: 55px;
-    }
-
-    .icon-main {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-    }
-
-    .footer {
-        padding: 1.5rem 1rem;
-        line-height: 1.5;
-    }
+  .socials-grid { grid-template-columns: 1fr; }
 }

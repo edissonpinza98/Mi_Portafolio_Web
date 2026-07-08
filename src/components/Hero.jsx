@@ -1,137 +1,156 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-scroll';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Github, Linkedin, Download } from 'lucide-react';
 import profileImg from '../assets/Foto-inicio.jpg';
 import './Hero.css';
 
 const Hero = () => {
-    const canvasRef = useRef(null);
+  const canvasRef = useRef(null);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-        // Configuration
-        canvas.width = 500;
-        canvas.height = 600;
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
 
-        // Initialize drops
-        for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
-        }
+    const fontSize = 13;
+    let columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    const letters = '01';
 
-        const letters = "10";
+    const draw = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.06)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(79, 142, 247, 0.18)';
+      ctx.font = `${fontSize}px var(--font-mono)`;
 
-        const draw = () => {
-            // Semi-transparent black to create trail effect
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    };
 
-            // Matrix green/blue text
-            ctx.fillStyle = '#00f2ff'; // Cyan/Electric Blue for modern look
-            ctx.font = `${fontSize}px monospace`;
+    const interval = setInterval(draw, 40);
+    const ro = new ResizeObserver(() => {
+      resize();
+      columns = Math.floor(canvas.width / fontSize);
+      drops.length = 0;
+      drops.push(...Array(columns).fill(1));
+    });
+    ro.observe(canvas);
 
-            for (let i = 0; i < drops.length; i++) {
-                // Random binary character
-                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    return () => {
+      clearInterval(interval);
+      ro.disconnect();
+    };
+  }, []);
 
-                // Only draw on the "sides" (skip the center where the image is)
-                // Assuming center is roughly between 20% and 80% of width
-                // Actually user said "at the sides", so let's render two strips
-                const x = i * fontSize;
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 24 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+  });
 
-                // Optional: Skip drawing in the very center to avoid overlapping the face too much 
-                // if the z-index doesn't handle it perfectly, but z-index will handle it.
-                // Let's keep it simple: draw everywhere, z-index puts it behind.
+  return (
+    <section id="hero" className="hero-section">
+      {/* Ambient glow */}
+      <div className="hero-glow hero-glow--left"  aria-hidden />
+      <div className="hero-glow hero-glow--right" aria-hidden />
 
-                ctx.fillText(text, x, drops[i] * fontSize);
+      <div className="container hero-inner">
 
-                // Reset drop to top with random delay
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
+        {/* ── Text side ── */}
+        <div className="hero-text">
+          <motion.p className="hero-eyebrow section-eyebrow" {...fadeUp(0.1)}>
+            Desarrollador de Software · Full Stack
+          </motion.p>
 
-                drops[i]++;
-            }
-        };
+          <motion.h1 className="hero-title" {...fadeUp(0.2)}>
+            Hola, soy<br />
+            <span className="gradient-text">Edisson Pinza</span>
+          </motion.h1>
 
-        const interval = setInterval(draw, 33);
-        return () => clearInterval(interval);
-    }, []);
+          <motion.p className="hero-desc" {...fadeUp(0.35)}>
+            Desarrollo soluciones web modernas combinando React, Angular y consumo de APIs,
+            integrando inteligencia artificial junto con diseño UI/UX para crear aplicaciones
+            eficientes, escalables y orientadas a problemas reales.
+          </motion.p>
 
-    return (
-        <section id="hero" className="hero-section">
-            <div className="hero-bg-glow" />
+          <motion.div className="hero-actions" {...fadeUp(0.5)}>
+            <Link to="projects" smooth offset={-80} duration={500} className="btn-primary">
+              Ver Proyectos <ArrowRight size={17} />
+            </Link>
+            <Link to="contact" smooth offset={-80} duration={500} className="btn-outline">
+              Contactar
+            </Link>
+          </motion.div>
 
-            <div className="container hero-content">
-                <motion.div
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8 }}
-                >
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="hero-greeting"
-                    >
-                        Hola, soy Edisson
-                    </motion.div>
+          <motion.div className="hero-socials" {...fadeUp(0.65)}>
+            <a href="https://github.com/edissonpinza98"
+               target="_blank" rel="noopener noreferrer"
+               className="hero-social" aria-label="GitHub">
+              <Github size={18} />
+            </a>
+            <a href="https://www.linkedin.com/in/edisson-pinza-613160249"
+               target="_blank" rel="noopener noreferrer"
+               className="hero-social" aria-label="LinkedIn">
+              <Linkedin size={18} />
+            </a>
+            <a href="/CV-sola-edisonpinza.pdf"
+               target="_blank" rel="noopener noreferrer"
+               className="hero-social" aria-label="Descargar CV">
+              <Download size={18} />
+            </a>
+            <span className="hero-social-divider" />
+            <span className="hero-available">
+              <span className="hero-available__dot" />
+              Disponible para proyectos
+            </span>
+          </motion.div>
+        </div>
 
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                        className="hero-title"
-                    >
-                        Desarrollador Web <br />
-                        <span className="gradient-text">Full Stack</span>
-                    </motion.h1>
+        {/* ── Image side ── */}
+        <motion.div
+          className="hero-image-wrap"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Matrix canvas behind image */}
+          <canvas ref={canvasRef} className="hero-canvas" aria-hidden />
 
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, duration: 0.5 }}
-                        className="hero-sub"
-                    >
-                        Desarrollo soluciones web modernas combinando React, Angular y consumo de APIs, integrando inteligencia artificial junto con diseño UI/UX para crear aplicaciones eficientes, escalables y orientadas a problemas reales.
-                    </motion.p>
+          {/* Decorative ring */}
+          <div className="hero-ring" aria-hidden />
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8, duration: 0.5 }}
-                        className="hero-buttons"
-                    >
-                        <Link to="projects" smooth={true} offset={-80} className="btn-primary flex items-center gap-2 cursor-pointer">
-                            Ver Proyectos <ArrowRight size={20} />
-                        </Link>
-                        <Link to="contact" smooth={true} offset={-80} className="btn-outline cursor-pointer">
-                            Contactar
-                        </Link>
-                    </motion.div>
-                </motion.div>
+          {/* Photo */}
+          <div className="hero-photo-frame">
+            <img src={profileImg} alt="Edisson Pinza — Desarrollador Full Stack" className="hero-photo" />
+          </div>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8 }}
-                    className="hero-img-container"
-                >
-                    {/* Matrix Rain Canvas Background */}
-                    <canvas ref={canvasRef} className="matrix-canvas" />
-
-                    <div className="hero-img-wrapper">
-                        <img src={profileImg} alt="Edisson" className="hero-img" />
-                    </div>
-                </motion.div>
+          {/* Floating badge */}
+          <motion.div
+            className="hero-badge"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <span className="hero-badge__icon">⚡</span>
+            <div>
+              <p className="hero-badge__label">Experiencia</p>
+              <p className="hero-badge__value">3+ años</p>
             </div>
-        </section>
-    );
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
 };
 
 export default Hero;

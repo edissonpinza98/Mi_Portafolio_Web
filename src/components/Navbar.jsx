@@ -1,94 +1,100 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Terminal } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import './Navbar.css';
 
+const navLinks = [
+  { name: 'Inicio',     target: 'hero' },
+  { name: 'Sobre mí',  target: 'about' },
+  { name: 'CV',        target: 'cv' },
+  { name: 'Proyectos', target: 'projects' },
+  { name: 'Contacto',  target: 'contact' },
+];
+
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen,   setIsOpen]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Inicio', target: 'hero' },
-    { name: 'Sobre mí', target: 'about' },
-    { name: 'Proyectos', target: 'projects' },
-    { name: 'Contacto', target: 'contact' },
-  ];
-
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="nav-container">
-        <Link to="hero" smooth={true} className="logo">
-          <div className="logo-wrapper">
-            <Terminal className="logo-icon" size={24} />
-            <div className="logo-text">
-              <span className="name">EDISSON</span>
-              <span className="dot">.</span>
-              <span className="dev-tag gradient-text">DEV</span>
-            </div>
-            <motion.div
-              className="logo-cursor"
-              animate={{ opacity: [1, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-            />
-          </div>
+    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+      <div className="nav-inner">
+
+        {/* Logo */}
+        <Link to="hero" smooth duration={500} className="nav-logo">
+          <span className="nav-logo__bracket">&lt;</span>
+          <span className="nav-logo__name">Edisson</span>
+          <span className="nav-logo__dot gradient-text">.</span>
+          <span className="nav-logo__suffix gradient-text">dev</span>
+          <span className="nav-logo__bracket">/&gt;</span>
         </Link>
 
-        {/* Desktop Menu */}
+        {/* Desktop links */}
         <div className="nav-links">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.target}
-              smooth={true}
-              spy={true}
-              activeClass="active"
+              smooth
+              spy
+              activeClass="nav-link--active"
               offset={-80}
+              duration={500}
               className="nav-link"
             >
-              <span className="link-text">{link.name}</span>
-              <div className="link-indicator"></div>
+              {link.name}
             </Link>
           ))}
+          <a
+            href="/admin"
+            className="nav-cta btn-primary"
+          >
+            Admin
+          </a>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        {/* Mobile toggle */}
+        <button
+          className="nav-toggle"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+        >
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -20, height: 0 }}
-            className="mobile-menu"
+            className="nav-mobile"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
-            <div className="mobile-menu-links">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.target}
-                  smooth={true}
-                  offset={-80}
-                  onClick={() => setIsOpen(false)}
-                  className="nav-link"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.target}
+                smooth
+                offset={-80}
+                duration={500}
+                className="nav-mobile__link"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <a href="/admin" className="nav-mobile__link nav-mobile__admin">
+              Panel Admin
+            </a>
           </motion.div>
         )}
       </AnimatePresence>

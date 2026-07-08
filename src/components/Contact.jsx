@@ -1,119 +1,111 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-    Mail,
-    Github,
-    Linkedin,
-    Send,
-    Facebook,
-    MessageSquare
-} from 'lucide-react';
+import { Mail, Github, Linkedin, Send, Facebook, MessageSquare } from 'lucide-react';
 import './Contact.css';
 
-const Contact = () => {
-    return (
-        <section id="contact" className="section contact-section">
-            <div className="container contact-container">
+const SOCIALS = [
+  { icon: <Mail size={20} />,        label: 'Email',     sublabel: 'edizonpinza@gmail.com',           href: 'mailto:edizonpinza@gmail.com',                          color: '#ea4335' },
+  { icon: <Github size={20} />,      label: 'GitHub',    sublabel: '@edissonpinza98',                  href: 'https://github.com/edissonpinza98',                      color: '#00c8e0' },
+  { icon: <Facebook size={20} />,    label: 'Facebook',  sublabel: 'Dev.Edi98',                        href: 'https://www.facebook.com/Dev.Edi98',                     color: '#1877f2' },
+  { icon: <Linkedin size={20} />,    label: 'LinkedIn',  sublabel: 'Edisson Pinza',                    href: 'https://www.linkedin.com/in/edisson-pinza-613160249',    color: '#0a66c2' },
+  { icon: <Send size={20} />,        label: 'Telegram',  sublabel: '@Dev_Edi',                         href: 'https://t.me/Dev_Edi',                                  color: '#229ed9' },
+];
 
-                <div className="section-header centered">
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="section-title"
-                    >
-                        Contáct<span className="gradient-text">ame</span>
-                    </motion.h2>
-                    <div className="header-decoration">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+});
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="contact-text"
-                >
-                    ¿Tienes un proyecto en mente o simplemente quieres saludar? ¡Estoy disponible para nuevas oportunidades!
-                </motion.p>
+const Contact = () => (
+  <section id="contact" className="section contact-section">
+    <div className="container">
 
-                {/* WhatsApp + QR */}
-                <div className="contact-actions">
+      {/* Header */}
+      <motion.div className="contact-header" {...fadeUp(0)}>
+        <p className="section-eyebrow">Hablemos</p>
+        <h2 className="section-title">Contáct<span className="gradient-text">ame</span></h2>
+        <div className="divider" />
+        <p className="contact-sub">
+          ¿Tienes un proyecto en mente o simplemente quieres saludar?
+          Estoy disponible para nuevas oportunidades.
+        </p>
+      </motion.div>
 
-                    {/* BOTÓN WHATSAPP */}
-                    <motion.a
-                        href="https://wa.link/y26h7a"
-                        className="whatsapp-btn"
-                        whileHover={{ scale: 1.06 }}
-                        whileTap={{ scale: 0.94 }}
-                        animate={{ y: [0, -4, 0] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <MessageSquare size={22} />
-                        Cotizar vía WhatsApp
-                    </motion.a>
+      {/* WhatsApp CTA */}
+      <motion.div className="contact-cta-row" {...fadeUp(0.1)}>
+        <div className="contact-cta-card">
+          <div className="cta-card__left">
+            <p className="cta-card__title">¿Listo para empezar?</p>
+            <p className="cta-card__desc">
+              Escríbeme directamente por WhatsApp y conversamos sobre tu proyecto.
+            </p>
+            <motion.a
+              href="https://wa.link/y26h7a"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary contact-wa-btn"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <MessageSquare size={18} />
+              Cotizar vía WhatsApp
+            </motion.a>
+          </div>
 
-                    {/* QR */}
-                    <motion.div
-                        className="qr-whatsapp"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                    >
-                        <span>O escanea el QR</span>
-                        <img
-                            src={new URL('../assets/Qr-Whatsapp.png', import.meta.url).href}
-                            alt="QR WhatsApp"
-                        />
-                    </motion.div>
+          <motion.div
+            className="cta-card__qr"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <p className="qr-label">O escanea el QR</p>
+            <img
+              src={new URL('../assets/Qr-Whatsapp.png', import.meta.url).href}
+              alt="QR WhatsApp Edisson Pinza"
+              className="qr-img"
+            />
+          </motion.div>
+        </div>
+      </motion.div>
 
-                </div>
+      {/* Social links */}
+      <motion.div className="contact-socials" {...fadeUp(0.2)}>
+        <p className="socials-label">También puedes encontrarme en</p>
+        <div className="socials-grid">
+          {SOCIALS.map((s, idx) => (
+            <motion.a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-card"
+              aria-label={s.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.08, duration: 0.5 }}
+              whileHover={{ y: -4 }}
+              style={{ '--accent': s.color }}
+            >
+              <span className="social-card__icon">{s.icon}</span>
+              <div className="social-card__text">
+                <span className="social-card__label">{s.label}</span>
+                <span className="social-card__sub">{s.sublabel}</span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      </motion.div>
 
-                {/* Redes */}
-                <div className="social-links">
-                    {[
-                        { icon: <Mail size={24} />, label: "Correo electrónico", href: "mailto:edissonpinza.98@gmail.com", color: "#ea4335" },
-                        { icon: <Github size={24} />, label: "GitHub", href: "https://github.com/edissonpinza98", color: "#00f2ff" },
-                        { icon: <Facebook size={24} />, label: "Facebook", href: "https://www.facebook.com/Dev.Edi98", color: "#1877f2" },
-                        { icon: <Linkedin size={24} />, label: "LinkedIn", href: "https://www.linkedin.com/in/edisson-pinza-613160249", color: "#0a66c2" },
-                        { icon: <Send size={24} />, label: "Telegram", href: "https://t.me/Dev_Edi", color: "#229ed9" }
-                    ].map((link, idx) => (
-                        <motion.a
-                            key={link.label}
-                            href={link.href}
-                            className="social-icon-wrapper"
-                            aria-label={link.label}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: idx * 0.1 }}
-                            whileHover={{ y: -10 }}
-                        >
-                            <div className="icon-tooltip">{link.label.split(' ')[0]}</div>
-                            <div className="icon-main">
-                                {link.icon}
-                                <div className="icon-glow" style={{ backgroundColor: link.color }}></div>
-                            </div>
-                            <div className="tech-ring"></div>
-                            <div className="corner-dots">
-                                <span></span><span></span>
-                            </div>
-                        </motion.a>
-                    ))}
-                </div>
+    </div>
 
-            </div>
-
-            <footer className="footer">
-                <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado &amp; Construido con React.</p>
-            </footer>
-        </section>
-    );
-};
+    {/* Footer */}
+    <footer className="site-footer">
+      <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado &amp; construido con React.</p>
+    </footer>
+  </section>
+);
 
 export default Contact;
