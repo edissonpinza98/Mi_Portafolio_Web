@@ -14,14 +14,16 @@ import './AdminPanel.css';
 const BUCKET = 'project-covers';
 
 const EMPTY_FORM = {
-  title:       '',
-  description: '',
-  image_url:   '',
-  tags:        '',
-  demo_url:    '',
-  repo_url:    '',
-  order:       0,
-  visible:     true,
+  title:         '',
+  description:   '',
+  image_url:     '',
+  tags:          '',
+  demo_url:      '',
+  repo_url:      '',
+  category:      'personal',
+  whatsapp_msg:  '',
+  order:         0,
+  visible:       true,
 };
 
 /* ─── Helpers ──────────────────────────────────────────── */
@@ -347,6 +349,32 @@ const ProjectForm = ({ initial, onSave, onClose, saving }) => {
             <input className="form-input" value={form.tags} onChange={set('tags')}
               placeholder="React, Node.js, Firebase" />
           </div>
+
+          {/* Category */}
+          <div className="form-field">
+            <label className="form-label">Categoría</label>
+            <select className="form-input" value={form.category} onChange={set('category')}>
+              <option value="personal">Propio / En venta</option>
+              <option value="empresa">Proyecto para empresa</option>
+            </select>
+          </div>
+
+          {/* WhatsApp message — solo si es personal */}
+          {form.category === 'personal' && (
+            <div className="form-field">
+              <label className="form-label">
+                Mensaje WhatsApp
+                <span className="form-hint">&nbsp;(opcional — para el botón "Adquirir")</span>
+              </label>
+              <textarea
+                className="form-input form-textarea"
+                value={form.whatsapp_msg}
+                onChange={set('whatsapp_msg')}
+                placeholder="Hola Edisson, me interesa adquirir este proyecto. ¿Podemos hablar?"
+                rows={2}
+              />
+            </div>
+          )}
 
           {/* URLs */}
           <div className="form-grid-2">

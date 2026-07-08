@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, Loader2, AlertCircle, RefreshCw, Code2 } from 'lucide-react';
+import {
+  ExternalLink, Github, Loader2, AlertCircle,
+  RefreshCw, Code2, ArrowRight, MessageSquare,
+  Building2, Sparkles
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import project1 from '../assets/project1.png';
@@ -10,217 +14,303 @@ import project4 from '../assets/project4.png';
 import project5 from '../assets/project5.png';
 import './Projects.css';
 
-// Fallback local data (used when Supabase is not configured)
+/* ─── Fallback data ───────────────────────────────────── */
 const LOCAL_PROJECTS = [
   {
-    id: 'local-1',
+    id: 'local-1', category: 'empresa',
     title: 'BBQ Sabor y Presentación',
     description: 'Sistema de gestión y carta digital interactiva para restaurante, con administración de platillos, categorías y pedidos en tiempo real.',
-    image_url: null,
-    localImg: project5,
+    localImg: project5, image_url: null,
     tags: ['Vue.js', 'Vite', 'Firebase'],
-    demo_url: 'https://bbq-saborypresentacion.netlify.app/',
-    repo_url: '/not-found',
+    demo_url: 'https://bbq-saborypresentacion.netlify.app/', repo_url: '/not-found',
+    whatsapp_msg: null,
   },
   {
-    id: 'local-2',
+    id: 'local-2', category: 'empresa',
     title: 'Mocondino Conecta',
-    description: 'Plataforma digital comunitaria integral para la gestión de juntas, promoción de talento local y negocios en Mocondino. Fomentando transparencia y participación ciudadana.',
-    image_url: null,
-    localImg: project4,
+    description: 'Plataforma digital comunitaria integral para la gestión de juntas, promoción de talento local y negocios en Mocondino.',
+    localImg: project4, image_url: null,
     tags: ['Vue.js', 'Vite', 'Firebase'],
-    demo_url: 'https://mocondinoconecta.netlify.app/',
-    repo_url: '/not-found',
+    demo_url: 'https://mocondinoconecta.netlify.app/', repo_url: '/not-found',
+    whatsapp_msg: null,
   },
   {
-    id: 'local-3',
+    id: 'local-3', category: 'personal',
     title: 'AI Business Automation',
     description: 'Sistema de automatización industrial integrando Python y modelos de IA para la optimización de flujos de trabajo operativos.',
-    image_url: null,
-    localImg: project1,
+    localImg: project1, image_url: null,
     tags: ['Python', 'TensorFlow', 'Node.js'],
-    demo_url: '/not-found',
-    repo_url: '/not-found',
+    demo_url: '/not-found', repo_url: '/not-found',
+    whatsapp_msg: 'Hola Edisson, me interesa adquirir el sistema AI Business Automation. ¿Podemos hablar?',
   },
   {
-    id: 'local-4',
+    id: 'local-4', category: 'personal',
     title: 'Financial Data Dashboard',
-    description: 'Panel avanzado desarrollado en Power BI y React para la visualización de métricas contables y análisis predictivo.',
-    image_url: null,
-    localImg: project2,
+    description: 'Panel avanzado en Power BI y React para la visualización de métricas contables y análisis predictivo.',
+    localImg: project2, image_url: null,
     tags: ['Power BI', 'React', 'D3.js'],
-    demo_url: '/not-found',
-    repo_url: '/not-found',
+    demo_url: '/not-found', repo_url: '/not-found',
+    whatsapp_msg: 'Hola Edisson, me interesa el Financial Data Dashboard. ¿Podemos hablar?',
   },
   {
-    id: 'local-5',
+    id: 'local-5', category: 'personal',
     title: 'Inventory Control System',
     description: 'Aplicación Full Stack robusta para el control de inventarios y gestión de recursos empresariales a gran escala.',
-    image_url: null,
-    localImg: project3,
+    localImg: project3, image_url: null,
     tags: ['Java', 'Spring Boot', 'MySQL'],
-    demo_url: '/not-found',
-    repo_url: '/not-found',
+    demo_url: '/not-found', repo_url: '/not-found',
+    whatsapp_msg: 'Hola Edisson, me interesa el sistema de control de inventarios. ¿Podemos hablar?',
   },
 ];
 
-// Map local fallback images to Supabase records by order
 const LOCAL_IMGS = [project5, project4, project1, project2, project3];
+const WA_BASE    = 'https://wa.me/573025366119?text=';
+const PREVIEW    = 4; // cards shown per category on home
 
+/* ─── Helpers ─────────────────────────────────────────── */
 const isExternal = (url) => url && url.startsWith('http');
 
-const ProjectLink = ({ href, icon, label }) => {
-  if (isExternal(href)) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="project-link">
-        {icon} {label}
-      </a>
-    );
-  }
+const waUrl = (msg, title) => {
+  const text = msg || `Hola Edisson, me interesa el proyecto "${title}". ¿Podemos hablar?`;
+  return `${WA_BASE}${encodeURIComponent(text)}`;
+};
+
+/* ─── Single project card ─────────────────────────────── */
+const ProjectCard = ({ project, index, showCategory = false }) => {
+  const imgSrc = project.image_url || project.localImg;
+
   return (
-    <Link to={href || '/not-found'} className="project-link project-link--disabled">
-      {icon} {label}
-    </Link>
+    <motion.article
+      className="project-card"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Image */}
+      <div className="project-img-wrap">
+        {imgSrc
+          ? <img src={imgSrc} alt={project.title} className="project-img" loading="lazy" />
+          : <div className="project-img-placeholder"><Code2 size={28} /></div>
+        }
+        <div className="project-img-overlay" aria-hidden />
+
+        {/* Category badge */}
+        {showCategory && (
+          <span className={`project-cat-badge project-cat-badge--${project.category}`}>
+            {project.category === 'empresa'
+              ? <><Building2 size={10} /> Empresa</>
+              : <><Sparkles size={10} /> Propio</>
+            }
+          </span>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="project-body">
+        <div className="project-tags">
+          {(project.tags || []).map((tag) => (
+            <span key={tag} className="tag-pill">{tag}</span>
+          ))}
+        </div>
+
+        <h3 className="project-title">{project.title}</h3>
+        <p className="project-desc">{project.description}</p>
+
+        <div className="project-actions">
+          {/* Demo */}
+          {isExternal(project.demo_url) ? (
+            <a href={project.demo_url} target="_blank" rel="noopener noreferrer"
+               className="project-link">
+              <ExternalLink size={13} /> Demo
+            </a>
+          ) : (
+            <span className="project-link project-link--disabled">
+              <ExternalLink size={13} /> Demo
+            </span>
+          )}
+
+          {/* Repo */}
+          {isExternal(project.repo_url) ? (
+            <a href={project.repo_url} target="_blank" rel="noopener noreferrer"
+               className="project-link">
+              <Github size={13} /> Código
+            </a>
+          ) : (
+            <span className="project-link project-link--disabled">
+              <Github size={13} /> Código
+            </span>
+          )}
+
+          {/* WhatsApp buy — only for personal/sale projects */}
+          {project.category === 'personal' && (
+            <a
+              href={waUrl(project.whatsapp_msg, project.title)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-link project-link--wa"
+              title="Adquirir este proyecto"
+            >
+              <MessageSquare size={13} /> Adquirir
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.article>
   );
 };
 
-const Projects = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
+/* ─── Category section ────────────────────────────────── */
+const CategorySection = ({ title, eyebrow, desc, projects, viewMoreTab, loading }) => {
+  const visible = projects.slice(0, PREVIEW);
+  const hasMore = projects.length > PREVIEW;
 
-  const fetchProjects = async () => {
+  return (
+    <div className="projects-category">
+      <div className="projects-cat-header">
+        <div className="projects-cat-header__left">
+          <p className={`projects-cat-eyebrow ${viewMoreTab === 'personal' ? 'projects-cat-eyebrow--sale' : ''}`}>
+            {viewMoreTab === 'empresa'
+              ? <><Building2 size={11} /> {eyebrow}</>
+              : <><Sparkles size={11} /> {eyebrow}</>
+            }
+          </p>
+          <h2 className="projects-cat-title">{title}</h2>
+          <p className="projects-cat-desc">{desc}</p>
+        </div>
+
+        {hasMore && (
+          <Link
+            to={`/proyectos?tab=${viewMoreTab}`}
+            className={`btn-see-more ${viewMoreTab === 'personal' ? 'btn-see-more--purple' : ''}`}
+          >
+            Ver todos ({projects.length}) <ArrowRight size={13} />
+          </Link>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="projects-state">
+          <Loader2 size={24} className="spin-icon" />
+          <p>Cargando proyectos...</p>
+        </div>
+      ) : visible.length === 0 ? (
+        <div className="projects-state">
+          <Code2 size={28} strokeWidth={1.2} />
+          <p>Próximamente...</p>
+        </div>
+      ) : (
+        <div className="projects-grid">
+          {visible.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ─── Main component ──────────────────────────────────── */
+const Projects = () => {
+  const [allProjects, setAllProjects] = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(null);
+
+  const fetchProjects = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    // If env vars not set, fall back to local data
     const url = import.meta.env.VITE_SUPABASE_URL;
     if (!url || url === 'https://your-project-id.supabase.co') {
-      setProjects(LOCAL_PROJECTS);
+      setAllProjects(LOCAL_PROJECTS);
       setLoading(false);
       return;
     }
 
     try {
-      const { data, error: sbError } = await supabase
+      const { data, error: sbErr } = await supabase
         .from('projects')
         .select('*')
         .eq('visible', true)
         .order('order', { ascending: true });
 
-      if (sbError) throw sbError;
+      if (sbErr) throw sbErr;
 
-      // Attach local fallback images if image_url is missing
       const enriched = (data || []).map((p, i) => ({
         ...p,
-        localImg: LOCAL_IMGS[i] || LOCAL_IMGS[0],
+        localImg: LOCAL_IMGS[i % LOCAL_IMGS.length],
       }));
 
-      setProjects(enriched.length > 0 ? enriched : LOCAL_PROJECTS);
+      setAllProjects(enriched.length > 0 ? enriched : LOCAL_PROJECTS);
     } catch (err) {
-      console.error('Projects fetch error:', err);
-      setError('No se pudieron cargar los proyectos. Mostrando datos locales.');
-      setProjects(LOCAL_PROJECTS);
+      setError('No se pudieron cargar los proyectos.');
+      setAllProjects(LOCAL_PROJECTS);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchProjects(); }, []);
+  useEffect(() => { fetchProjects(); }, [fetchProjects]);
+
+  const empresaProjects  = allProjects.filter(p => p.category === 'empresa');
+  const personalProjects = allProjects.filter(p => p.category === 'personal');
 
   return (
     <section id="projects" className="section projects-section">
       <div className="container">
 
-        {/* Header */}
+        {/* Section header */}
         <motion.div
-          className="projects-header"
+          className="projects-main-header"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="section-eyebrow">Portafolio</p>
-          <h2 className="section-title">Mis <span className="gradient-text">Proyectos</span></h2>
+          <h2 className="section-title">
+            Mis <span className="gradient-text">Proyectos</span>
+          </h2>
           <div className="divider" />
-          <p className="projects-sub">
-            Soluciones reales construidas con tecnologías modernas.
-          </p>
         </motion.div>
 
-        {/* States */}
-        {loading && (
-          <div className="projects-state">
-            <Loader2 size={28} className="spin-icon" />
-            <p>Cargando proyectos...</p>
-          </div>
-        )}
-
+        {/* Error banner */}
         {error && !loading && (
           <div className="projects-error">
-            <AlertCircle size={20} />
+            <AlertCircle size={18} />
             <span>{error}</span>
             <button onClick={fetchProjects} className="btn-retry">
-              <RefreshCw size={14} /> Reintentar
+              <RefreshCw size={13} /> Reintentar
             </button>
           </div>
         )}
 
-        {/* Grid */}
-        {!loading && (
-          <div className="projects-grid">
-            {projects.map((project, index) => {
-              const imgSrc = project.image_url || project.localImg;
-              return (
-                <motion.article
-                  key={project.id}
-                  className="project-card"
-                  initial={{ opacity: 0, y: 32 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {/* Image */}
-                  <div className="project-img-wrap">
-                    {imgSrc
-                      ? <img src={imgSrc} alt={project.title} className="project-img" loading="lazy" />
-                      : <div className="project-img-placeholder"><Code2 size={32} /></div>
-                    }
-                    <div className="project-img-overlay" aria-hidden />
-                  </div>
+        {/* ── Category: Empresas ── */}
+        <CategorySection
+          eyebrow="Trabajo para empresas"
+          title={<>Proyectos <span className="gradient-text">Empresariales</span></>}
+          desc="Soluciones reales desarrolladas para clientes. Tengo el derecho de mostrarlos en mi portafolio."
+          projects={empresaProjects}
+          viewMoreTab="empresa"
+          loading={loading}
+        />
 
-                  {/* Content */}
-                  <div className="project-body">
-                    <div className="project-tags">
-                      {(project.tags || []).map((tag) => (
-                        <span key={tag} className="tag-pill">{tag}</span>
-                      ))}
-                    </div>
+        <hr className="projects-separator" />
 
-                    <h3 className="project-title">{project.title}</h3>
-                    <p className="project-desc">{project.description}</p>
+        {/* ── Category: Propios / en venta ── */}
+        <CategorySection
+          eyebrow="Proyectos propios · en venta"
+          title={<>Software <span className="gradient-text">Disponible</span></>}
+          desc="Proyectos desarrollados por mí. Si te interesa el diseño o funcionalidad, puedes adquirirlo."
+          projects={personalProjects}
+          viewMoreTab="personal"
+          loading={loading}
+        />
 
-                    <div className="project-links">
-                      <ProjectLink
-                        href={project.demo_url}
-                        icon={<ExternalLink size={15} />}
-                        label="Demo"
-                      />
-                      <ProjectLink
-                        href={project.repo_url}
-                        icon={<Github size={15} />}
-                        label="Código"
-                      />
-                    </div>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
-        )}
       </div>
     </section>
   );
 };
 
+export { ProjectCard, LOCAL_PROJECTS, LOCAL_IMGS, WA_BASE, waUrl };
 export default Projects;

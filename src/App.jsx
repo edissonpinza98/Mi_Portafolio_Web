@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Navbar       from './components/Navbar';
-import Hero         from './components/Hero';
-import About        from './components/About';
-import CVSection    from './components/CVSection';
-import Projects     from './components/Projects';
-import Contact      from './components/Contact';
-import Preloader    from './components/Preloader';
-import NotFound     from './components/NotFound';
+import Navbar         from './components/Navbar';
+import Hero           from './components/Hero';
+import About          from './components/About';
+import CVSection      from './components/CVSection';
+import Projects       from './components/Projects';
+import Contact        from './components/Contact';
+import Preloader      from './components/Preloader';
+import NotFound       from './components/NotFound';
 import DannaAssistant from './components/VirtualAssistant';
-import AdminPanel   from './components/AdminPanel';
-import { supabase } from './lib/supabaseClient';
+import AdminPanel     from './components/AdminPanel';
+import AllProjects    from './pages/AllProjects';
+import { supabase }   from './lib/supabaseClient';
 
-/* ── Public portfolio page ── */
+/* ── Public home page ── */
 const HomePage = () => (
   <>
     <Navbar />
@@ -27,16 +28,12 @@ const HomePage = () => (
   </>
 );
 
-/* ── Protected route: redirects to /admin if not logged in ── */
+/* ── Protected route (AdminPanel has its own login) ── */
 const ProtectedRoute = ({ children }) => {
   const [checking, setChecking] = useState(true);
-  const [allowed,  setAllowed]  = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setAllowed(!!data.session);
-      setChecking(false);
-    });
+    supabase.auth.getSession().then(() => setChecking(false));
   }, []);
 
   if (checking) {
@@ -56,7 +53,6 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // If not authenticated, render AdminPanel anyway (it has its own login form)
   return children;
 };
 
@@ -65,23 +61,24 @@ function App() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  // Skip preloader on /admin route
-  const isAdmin = location.pathname.startsWith('/admin');
+  const isAdmin    = location.pathname.startsWith('/admin');
+  const isProjects = location.pathname.startsWith('/proyectos');
 
   return (
     <div className="App">
       <AnimatePresence mode="wait">
-        {loading && !isAdmin ? (
+        {loading && !isAdmin && !isProjects ? (
           <Preloader key="loader" onLoadingComplete={() => setLoading(false)} />
         ) : (
           <motion.div
             key="content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           >
             <Routes location={location} key={location.pathname}>
-              <Route path="/"       element={<HomePage />} />
+              <Route path="/"           element={<HomePage />} />
+              <Route path="/proyectos"  element={<AllProjects />} />
               <Route
                 path="/admin"
                 element={
@@ -93,7 +90,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
 
-            {/* Danna assistant — only on public pages */}
+            {/* Danna — solo en páginas públicas */}
             {!isAdmin && <DannaAssistant />}
           </motion.div>
         )}
