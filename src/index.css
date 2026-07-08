@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
   /* Core palette */
@@ -22,6 +22,7 @@
   --accent-cyan:   #00d4ee;
   --accent-purple: #9b6bff;
   --accent-green:  #12d88a;
+  --accent-matrix: #00ff9d;
 
   /* Gradients */
   --gradient-brand:  linear-gradient(135deg, #5b9bff 0%, #9b6bff 100%);
@@ -50,17 +51,12 @@
   --shadow-md:   0 4px 20px rgba(0,0,0,0.55);
   --shadow-lg:   0 10px 40px rgba(0,0,0,0.65);
   --shadow-glow: 0 0 48px rgba(91,155,255,0.18);
-  --shadow-btn:  0 4px 24px rgba(91,155,255,0.38);
+  --shadow-btn:  0 4px 24px rgba(91,155,255,0.32);
 }
 
 /* ─── Reset ──────────────────────────────────────────── */
-*, *::before, *::after {
-  margin: 0; padding: 0;
-  box-sizing: border-box;
-}
-
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html  { scroll-behavior: smooth; font-size: 16px; }
-
 body  {
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -70,40 +66,22 @@ body  {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-h1,h2,h3,h4,h5,h6 {
-  color: var(--text-primary);
-  line-height: 1.2;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-a    { text-decoration: none; color: inherit; transition: color 0.2s; }
-img  { max-width: 100%; display: block; }
-
-button {
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
+h1,h2,h3,h4,h5,h6 { color: var(--text-primary); line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
+a   { text-decoration: none; color: inherit; transition: color 0.2s; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; font-family: inherit; -webkit-tap-highlight-color: transparent; }
 
 /* ─── Scrollbar ──────────────────────────────────────── */
-::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: #252540; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
 
 /* ─── Layout ─────────────────────────────────────────── */
-.container {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 0 28px;
-}
+.container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+.section   { padding: 100px 0; }
 
-.section { padding: 100px 0; }
-
-/* ─── Typography utilities ───────────────────────────── */
+/* ─── Typography ─────────────────────────────────────── */
 .gradient-text {
   background: var(--gradient-brand);
   -webkit-background-clip: text;
@@ -111,15 +89,11 @@ button {
   background-clip: text;
   display: inline-block;
 }
-
-.mono     { font-family: var(--font-mono); }
-
+.mono      { font-family: var(--font-mono); }
 .label-tag {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--accent-blue);
 }
 
@@ -134,104 +108,144 @@ button {
 .glass-card:hover { border-color: var(--border-emphasis); }
 
 /* ═══════════════════════════════════════════════════════
-   BUTTON SYSTEM — polished, accessible, mobile-friendly
+   BUTTON SYSTEM — dev / matrix aesthetic
 ═══════════════════════════════════════════════════════ */
 
-/* Primary — gradient fill */
+/* ── Primary — solid dark + cyan/blue glow ── */
 .btn-primary {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 30px;
-  border-radius: 100px;
-  font-family: var(--font-main);
-  font-weight: 600;
-  font-size: 0.92rem;
-  letter-spacing: 0.01em;
+
+  padding: 0 28px;
+  height: 46px;
+  border-radius: 6px;                  /* angular — not pill */
+
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: #fff;
-  background: var(--gradient-brand);
-  box-shadow: var(--shadow-btn);
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
   white-space: nowrap;
+  text-decoration: none;
+
+  /* Dark bg with gradient border trick */
+  background: #0d0d1e;
+  border: 1px solid rgba(91, 155, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(91,155,255,0.1),
+    0 0 18px rgba(91,155,255,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+
+  cursor: pointer;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: border-color 0.22s, box-shadow 0.22s, transform 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Shimmer layer */
+/* Scan-line sweep on hover */
 .btn-primary::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg,
-    transparent 30%,
-    rgba(255,255,255,0.14) 50%,
-    transparent 70%
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(91,155,255,0.12) 40%,
+    rgba(91,155,255,0.22) 50%,
+    rgba(91,155,255,0.12) 60%,
+    transparent 100%
   );
-  background-size: 200% 100%;
-  background-position: -100% 0;
-  transition: background-position 0.5s ease;
-  border-radius: inherit;
+  transition: left 0.45s ease;
+  pointer-events: none;
 }
 
-.btn-primary:hover::before {
-  background-position: 200% 0;
+.btn-primary:hover::before { left: 160%; }
+
+/* Cyan top edge glow bar */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.22s;
 }
+.btn-primary:hover::after { opacity: 1; }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(91,155,255,0.50);
+  border-color: var(--accent-cyan);
+  box-shadow:
+    0 0 0 1px rgba(0,212,238,0.18),
+    0 0 28px rgba(0,212,238,0.28),
+    0 0 60px rgba(91,155,255,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+  color: var(--accent-cyan);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-btn);
-  opacity: 0.92;
+  box-shadow: 0 0 12px rgba(91,155,255,0.2);
 }
+.btn-primary:disabled { opacity: 0.4; pointer-events: none; }
 
-.btn-primary:disabled {
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-/* Outline — glass border */
+/* ── Outline — ghost terminal style ── */
 .btn-outline {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 28px;
-  border-radius: 100px;
-  font-family: var(--font-main);
+
+  padding: 0 26px;
+  height: 46px;
+  border-radius: 6px;
+
+  font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.92rem;
-  color: var(--text-primary);
-  background: rgba(255,255,255,0.03);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-decoration: none;
+
+  background: transparent;
   border: 1px solid var(--border-emphasis);
   cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.22s ease;
+  overflow: hidden;
+  transition: color 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.18s;
   -webkit-tap-highlight-color: transparent;
-  backdrop-filter: blur(8px);
 }
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(91,155,255,0.04) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.btn-outline:hover::before { opacity: 1; }
 
 .btn-outline:hover {
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
-  background: rgba(91,155,255,0.07);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(91,155,255,0.12);
+  color: var(--text-primary);
+  border-color: rgba(91,155,255,0.4);
+  box-shadow: 0 0 16px rgba(91,155,255,0.1),
+              inset 0 0 20px rgba(91,155,255,0.04);
+  transform: translateY(-1px);
 }
-
-.btn-outline:active {
-  transform: translateY(0);
-}
+.btn-outline:active { transform: translateY(0); }
 
 /* ─── Section headers ────────────────────────────────── */
 .section-eyebrow {
@@ -246,12 +260,10 @@ button {
   color: var(--accent-blue);
   margin-bottom: 16px;
 }
-
 .section-eyebrow::before {
   content: '';
   display: block;
-  width: 18px;
-  height: 1.5px;
+  width: 18px; height: 1.5px;
   background: var(--accent-blue);
   border-radius: 1px;
 }
@@ -264,54 +276,39 @@ button {
   line-height: 1.15;
 }
 
-/* ─── Divider ────────────────────────────────────────── */
 .divider {
-  width: 36px;
-  height: 3px;
+  width: 36px; height: 3px;
   background: var(--gradient-brand);
   border-radius: 2px;
   margin: 14px 0 30px;
 }
 
-/* ─── Tech highlight ─────────────────────────────────── */
-.tech-highlight {
-  color: var(--accent-cyan);
-  font-weight: 500;
-}
+.tech-highlight { color: var(--accent-cyan); font-weight: 500; }
 
 /* ─── Tag pill ───────────────────────────────────────── */
 .tag-pill {
   display: inline-flex;
   align-items: center;
-  padding: 4px 11px;
-  border-radius: 100px;
-  font-size: 0.73rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.71rem;
   font-weight: 500;
   font-family: var(--font-mono);
-  background: rgba(91,155,255,0.09);
+  background: rgba(91,155,255,0.07);
   color: var(--accent-blue);
-  border: 1px solid rgba(91,155,255,0.2);
-  letter-spacing: 0.01em;
+  border: 1px solid rgba(91,155,255,0.18);
+  letter-spacing: 0.03em;
 }
 
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 768px) {
   .section   { padding: 72px 0; }
   .container { padding: 0 20px; }
-
   .btn-primary,
-  .btn-outline {
-    padding: 13px 26px;
-    font-size: 0.9rem;
-    /* Full touch target on small screens */
-    min-height: 48px;
-  }
+  .btn-outline { height: 48px; font-size: 0.78rem; }
 }
 
 @media (max-width: 400px) {
   .btn-primary,
-  .btn-outline {
-    width: 100%;
-    justify-content: center;
-  }
+  .btn-outline { width: 100%; justify-content: center; }
 }

@@ -4,11 +4,11 @@ import { Mail, Github, Linkedin, Send, Facebook, MessageSquare } from 'lucide-re
 import './Contact.css';
 
 const SOCIALS = [
-  { icon: <Mail size={20} />,        label: 'Email',     sublabel: 'edizonpinza@gmail.com',           href: 'mailto:edizonpinza@gmail.com',                          color: '#ea4335' },
-  { icon: <Github size={20} />,      label: 'GitHub',    sublabel: '@edissonpinza98',                  href: 'https://github.com/edissonpinza98',                      color: '#00c8e0' },
-  { icon: <Facebook size={20} />,    label: 'Facebook',  sublabel: 'Dev.Edi98',                        href: 'https://www.facebook.com/Dev.Edi98',                     color: '#1877f2' },
-  { icon: <Linkedin size={20} />,    label: 'LinkedIn',  sublabel: 'Edisson Pinza',                    href: 'https://www.linkedin.com/in/edisson-pinza-613160249',    color: '#0a66c2' },
-  { icon: <Send size={20} />,        label: 'Telegram',  sublabel: '@Dev_Edi',                         href: 'https://t.me/Dev_Edi',                                  color: '#229ed9' },
+  { icon: <Mail size={20} />,     label: 'Email',    sublabel: 'edizonpinza@gmail.com',         href: 'mailto:edizonpinza@gmail.com',                       color: '#ea4335' },
+  { icon: <Github size={20} />,   label: 'GitHub',   sublabel: '@edissonpinza98',                href: 'https://github.com/edissonpinza98',                  color: '#00c8e0' },
+  { icon: <Facebook size={20} />, label: 'Facebook', sublabel: 'Dev.Edi98',                      href: 'https://www.facebook.com/Dev.Edi98',                 color: '#1877f2' },
+  { icon: <Linkedin size={20} />, label: 'LinkedIn', sublabel: 'Edisson Pinza',                  href: 'https://www.linkedin.com/in/edisson-pinza-613160249',color: '#0a66c2' },
+  { icon: <Send size={20} />,     label: 'Telegram', sublabel: '@Dev_Edi',                       href: 'https://t.me/Dev_Edi',                               color: '#229ed9' },
 ];
 
 const fadeUp = (delay = 0) => ({
@@ -43,13 +43,12 @@ const Contact = () => (
             </p>
             <motion.a
               href="https://wa.link/y26h7a"
-              target="_blank"
-              rel="noopener noreferrer"
+              target="_blank" rel="noopener noreferrer"
               className="btn-primary contact-wa-btn"
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >
-              <MessageSquare size={18} />
+              <MessageSquare size={16} />
               Cotizar vía WhatsApp
             </motion.a>
           </div>
@@ -78,8 +77,7 @@ const Contact = () => (
             <motion.a
               key={s.label}
               href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              target="_blank" rel="noopener noreferrer"
               className="social-card"
               aria-label={s.label}
               initial={{ opacity: 0, y: 20 }}
@@ -101,9 +99,25 @@ const Contact = () => (
 
     </div>
 
-    {/* Footer */}
+    {/* ── Footer ── */}
     <footer className="site-footer">
-      <p>© 2026 Edisson Pinza. Todos los derechos reservados. Diseñado &amp; construido con React.</p>
+      <div className="site-footer__inner">
+        <p className="site-footer__copy">
+          © 2026 Edisson Pinza. Todos los derechos reservados.
+          Diseñado &amp; construido con React.
+        </p>
+
+        {/* Admin link — discreto, solo texto mono pequeño */}
+        <a
+          href="/admin"
+          className="footer-admin-link"
+          title="Acceso interno"
+          aria-label="Panel de administración"
+        >
+          <span className="footer-admin-link__cursor">_</span>
+          sys
+        </a>
+      </div>
     </footer>
   </section>
 );

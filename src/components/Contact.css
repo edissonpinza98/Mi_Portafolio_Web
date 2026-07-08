@@ -167,15 +167,58 @@
 /* ── Footer ──────────────────────────────────────────── */
 .site-footer {
   margin-top: 80px;
-  padding: 28px 24px;
+  padding: 24px 28px;
   border-top: 1px solid var(--border-subtle);
-  text-align: center;
 }
 
-.site-footer p {
-  font-size: 0.82rem;
+.site-footer__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.site-footer__copy {
+  font-size: 0.78rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
+  line-height: 1.6;
+}
+
+/* Admin link — ultra-discreto, solo visible si sabes que existe */
+.footer-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(82, 82, 106, 0.35);   /* casi invisible */
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  transition: color 0.3s;
+  user-select: none;
+}
+
+.footer-admin-link:hover {
+  color: rgba(91, 155, 255, 0.55);
+}
+
+.footer-admin-link__cursor {
+  display: inline-block;
+  animation: blink-cur 1.1s step-end infinite;
+  color: inherit;
+}
+
+@keyframes blink-cur {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@media (max-width: 480px) {
+  .site-footer__inner { flex-direction: column; align-items: center; text-align: center; }
 }
 
 /* ── Responsive ──────────────────────────────────────── */

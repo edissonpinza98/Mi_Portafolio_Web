@@ -35,14 +35,13 @@ const Navbar = () => {
           <span className="nav-logo__bracket">/&gt;</span>
         </Link>
 
-        {/* Desktop links */}
+        {/* Desktop links — sin botón Admin */}
         <div className="nav-links">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.target}
-              smooth
-              spy
+              smooth spy
               activeClass="nav-link--active"
               offset={-80}
               duration={500}
@@ -51,12 +50,6 @@ const Navbar = () => {
               {link.name}
             </Link>
           ))}
-          <a
-            href="/admin"
-            className="nav-cta btn-primary"
-          >
-            Admin
-          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -69,7 +62,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — sin link Admin */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -83,18 +76,13 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.target}
-                smooth
-                offset={-80}
-                duration={500}
+                smooth offset={-80} duration={500}
                 className="nav-mobile__link"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <a href="/admin" className="nav-mobile__link nav-mobile__admin">
-              Panel Admin
-            </a>
           </motion.div>
         )}
       </AnimatePresence>
