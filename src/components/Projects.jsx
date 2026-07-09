@@ -292,9 +292,9 @@ const Projects = () => {
 
         {/* ── Category: Empresas ── */}
         <CategorySection
-          eyebrow="Trabajo para empresas"
-          title={<>Proyectos <span className="gradient-text">Empresariales</span></>}
-          desc="Soluciones reales desarrolladas para clientes. Tengo el derecho de mostrarlos en mi portafolio."
+          eyebrow="Desarrollado para clientes"
+          title={<>Trabajo <span className="gradient-text">para Empresas</span></>}
+          desc="Proyectos reales que empresas me contrataron para construir. Cada uno fue entregado en producción y resuelve una necesidad real de negocio."
           projects={empresaProjects}
           viewMoreTab="empresa"
           loading={loading}
@@ -304,9 +304,9 @@ const Projects = () => {
 
         {/* ── Category: Propios / en venta ── */}
         <CategorySection
-          eyebrow="Proyectos propios · en venta"
-          title={<>Software <span className="gradient-text">Disponible</span></>}
-          desc="Proyectos desarrollados por mí. Si te interesa el diseño o funcionalidad, puedes adquirirlo."
+          eyebrow="Software propio · disponible para adquirir"
+          title={<>Proyectos <span className="gradient-text">Propios</span></>}
+          desc="Software que desarrollé por iniciativa propia. Si eres reclutador, aquí ves mi nivel técnico. Si eres empresario, puedes adquirir alguno y adaptarlo a tu negocio."
           projects={personalProjects}
           viewMoreTab="personal"
           loading={loading}

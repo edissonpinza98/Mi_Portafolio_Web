@@ -5,6 +5,16 @@
 
 .about-header {
   margin-bottom: 48px;
+  text-align: center;
+}
+
+.about-header .divider {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-header .section-eyebrow {
+  justify-content: center;
 }
 
 /* ── Bio ─────────────────────────────────────────────── */
@@ -12,17 +22,18 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 800px;
-  margin-bottom: 64px;
+  max-width: 780px;
+  margin: 0 auto 64px;
 }
 
 .about-bio p {
   font-size: 0.98rem;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.85;
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 /* ── Skills ──────────────────────────────────────────── */

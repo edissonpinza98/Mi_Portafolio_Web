@@ -152,7 +152,7 @@ const Hero = () => {
           </motion.h1>
 
           <motion.p className="hero-desc" {...fadeUp(0.35)}>
-            Desarrollo soluciones web modernas combinando React, Angular y consumo de APIs,
+            Desarrollo soluciones web modernas combinando React, Angular y Vue, consumo de APIs,
             integrando inteligencia artificial junto con diseño UI/UX para crear aplicaciones
             eficientes, escalables y orientadas a problemas reales.
           </motion.p>
