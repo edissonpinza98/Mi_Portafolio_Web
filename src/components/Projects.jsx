@@ -91,7 +91,12 @@ const ProjectCard = ({ project, index, showCategory = false }) => {
       <div className="project-img-wrap">
         {imgSrc
           ? <img src={imgSrc} alt={project.title} className="project-img" loading="lazy" />
-          : <div className="project-img-placeholder"><Code2 size={28} /></div>
+          : (
+            <div className="project-img-placeholder">
+              <div className="project-img-placeholder__icon"><Code2 size={20} /></div>
+              <span className="project-img-placeholder__label">Sin portada</span>
+            </div>
+          )
         }
         <div className="project-img-overlay" aria-hidden />
 

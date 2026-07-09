@@ -190,6 +190,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
   padding-bottom: 80px;
+  /* Cards de igual altura en cada fila */
+  align-items: start;
 }
 
 /* ── Empty state ─────────────────────────────────────── */
