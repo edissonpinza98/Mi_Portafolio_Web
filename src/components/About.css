@@ -20,6 +20,9 @@
   font-size: 0.98rem;
   color: var(--text-secondary);
   line-height: 1.8;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 }
 
 /* ── Skills ──────────────────────────────────────────── */

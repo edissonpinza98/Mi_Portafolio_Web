@@ -1,6 +1,7 @@
 /* ── Contact Section ─────────────────────────────────── */
 .contact-section {
   background: var(--bg-secondary);
+  padding-bottom: 0; /* el footer lleva su propio espacio inferior */
 }
 
 .contact-header {
@@ -166,8 +167,8 @@
 
 /* ── Footer ──────────────────────────────────────────── */
 .site-footer {
-  margin-top: 80px;
-  padding: 24px 28px;
+  margin-top: 48px;
+  padding: 20px 28px;
   border-top: 1px solid var(--border-subtle);
 }
 
