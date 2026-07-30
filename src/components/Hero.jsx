@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-scroll';
 import { ArrowRight, Github, Linkedin, Download, Zap, Code2 } from 'lucide-react';
 import profileImg from '../assets/Foto-inicio.jpg';
+import { supabase } from '../lib/supabaseClient';
 import './Hero.css';
 
 /* ─────────────────────────────────────────────────────
@@ -132,6 +133,39 @@ const Hero = () => {
     transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
   });
 
+  /* ── Foto de perfil dinámica desde Supabase ── */
+  const [heroPhoto, setHeroPhoto] = useState(profileImg);
+
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('key', 'hero_photo')
+          .single();
+        if (!error && data?.value) setHeroPhoto(data.value);
+      } catch (_) {
+        // fallback: usa imagen local
+      }
+    };
+    fetchPhoto();
+
+    // Suscripción en tiempo real — la foto cambia en vivo al actualizarla desde el admin
+    const channel = supabase
+      .channel('hero_photo_watch')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'site_settings', filter: 'key=eq.hero_photo' },
+        (payload) => {
+          if (payload.new?.value) setHeroPhoto(payload.new.value);
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   return (
     <section id="hero" className="hero-section">
       <div className="hero-glow hero-glow--left"  aria-hidden />
@@ -210,10 +244,11 @@ const Hero = () => {
           <div className="hero-photo-card">
             {/* Real photo */}
             <img
-              src={profileImg}
+              src={heroPhoto}
               alt="Edisson Pinza — Desarrollador Full Stack"
               className="hero-photo"
               draggable={false}
+              onError={() => setHeroPhoto(profileImg)}
             />
 
             {/* Matrix overlay ON TOP of photo */}

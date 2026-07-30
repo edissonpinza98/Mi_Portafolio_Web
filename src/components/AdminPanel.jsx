@@ -6,12 +6,13 @@ import {
   ExternalLink, Github, Image as ImageIcon, RefreshCw,
   FolderOpen, Globe, LayoutDashboard, ChevronRight,
   Hash, Upload, XCircle, Building2, Sparkles,
-  ChevronLeft, MessageSquare, Menu
+  ChevronLeft, MessageSquare, Menu, UserCircle, Camera
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './AdminPanel.css';
 
-const BUCKET = 'project-covers';
+const BUCKET         = 'project-covers';
+const PROFILE_BUCKET = 'profile-assets';
 
 const EMPTY_FORM = {
   title: '', description: '', image_url: '', tags: '',
@@ -36,6 +37,18 @@ const deleteStorageImage = async (url) => {
   } catch (_) {}
 };
 
+/* Upload for profile photo (profile-assets bucket) */
+const uploadProfileImage = async (file) => {
+  const ext      = file.name.split('.').pop();
+  const filename = `hero-photo.${ext}`;
+  const { error } = await supabase.storage
+    .from(PROFILE_BUCKET)
+    .upload(filename, file, { cacheControl: '0', upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PROFILE_BUCKET).getPublicUrl(filename);
+  // Append bust to force refresh since upsert reuses the same filename
+  return `${data.publicUrl}?t=${Date.now()}`;
+};
 /* ─── Toast ───────────────────────────────────────────── */
 const Toast = ({ toast, onClose }) => {
   useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t); }, [onClose]);
@@ -337,6 +350,163 @@ const ProjectForm = ({ initial, defaultCategory, onSave, onClose, saving }) => {
   );
 };
 
+/* ─── Profile Section ─────────────────────────────────── */
+const ProfileSection = ({ addToast }) => {
+  const inputRef              = useRef(null);
+  const [currentUrl, setCurrentUrl] = useState(null);
+  const [preview,    setPreview]    = useState(null);
+  const [uploading,  setUploading]  = useState(false);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState('');
+
+  /* Load current photo */
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'hero_photo')
+        .single();
+      if (data?.value) { setCurrentUrl(data.value); setPreview(data.value); }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const handleFile = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { setError('Solo se permiten imágenes.'); return; }
+    if (file.size > 8 * 1024 * 1024)    { setError('Máximo 8 MB.'); return; }
+    setError('');
+    setPreview(URL.createObjectURL(file));
+    setUploading(true);
+    try {
+      const url = await uploadProfileImage(file);
+      /* Save to site_settings */
+      const { error: dbErr } = await supabase
+        .from('site_settings')
+        .upsert({ key: 'hero_photo', value: url, updated_at: new Date().toISOString() });
+      if (dbErr) throw dbErr;
+      setCurrentUrl(url);
+      setPreview(url);
+      addToast('¡Foto de perfil actualizada!', 'success');
+    } catch (e) {
+      setError('Error al subir: ' + e.message);
+      setPreview(currentUrl);
+      addToast('Error al subir la foto', 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    if (!window.confirm('¿Quitar la foto personalizada? Se usará la imagen por defecto.')) return;
+    await supabase
+      .from('site_settings')
+      .upsert({ key: 'hero_photo', value: null, updated_at: new Date().toISOString() });
+    setCurrentUrl(null);
+    setPreview(null);
+    addToast('Foto eliminada. Se usará la imagen por defecto.', 'success');
+  };
+
+  return (
+    <div className="profile-section">
+      <div className="profile-section__header">
+        <div className="profile-section__icon"><UserCircle size={18} /></div>
+        <div>
+          <p className="profile-section__title">Foto de Perfil</p>
+          <p className="profile-section__sub">Se muestra en la sección Hero del portafolio</p>
+        </div>
+      </div>
+
+      <div className="profile-upload-area">
+        {/* Preview */}
+        <div className="profile-img-wrap">
+          {loading ? (
+            <div className="profile-img-loading"><Loader2 size={22} className="spin" /></div>
+          ) : preview ? (
+            <>
+              <img
+                src={preview}
+                alt="Foto de perfil actual"
+                className="profile-img-preview"
+                onError={() => setPreview(null)}
+              />
+              <div className="profile-img-overlay">
+                <button
+                  className="profile-img-change"
+                  onClick={() => inputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading
+                    ? <><Loader2 size={14} className="spin" /> Subiendo...</>
+                    : <><Camera size={14} /> Cambiar foto</>
+                  }
+                </button>
+              </div>
+            </>
+          ) : (
+            <div
+              className="profile-img-empty"
+              onClick={() => inputRef.current?.click()}
+            >
+              <Camera size={28} />
+              <span>Subir foto</span>
+            </div>
+          )}
+        </div>
+
+        {/* Info + actions */}
+        <div className="profile-upload-info">
+          <p className="profile-upload-title">Foto del Hero</p>
+          <p className="profile-upload-hint">
+            Recomendado: imagen vertical (3:4 o 4:5), mínimo 600×800 px.<br />
+            Formatos: JPG, PNG, WEBP · Máx. 8 MB.
+          </p>
+
+          {error && (
+            <p className="profile-upload-error">
+              <AlertCircle size={13} /> {error}
+            </p>
+          )}
+
+          <div className="profile-upload-actions">
+            <button
+              className="btn-primary btn--sm"
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading
+                ? <><Loader2 size={14} className="spin" /> Subiendo...</>
+                : <><Upload size={14} /> {preview ? 'Cambiar foto' : 'Subir foto'}</>
+              }
+            </button>
+
+            {preview && !uploading && (
+              <button className="btn-ghost btn--sm" onClick={handleRemove}>
+                <XCircle size={14} /> Quitar
+              </button>
+            )}
+          </div>
+
+          <p className="profile-upload-note">
+            El cambio se refleja en el portafolio en tiempo real.
+          </p>
+        </div>
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={e => handleFile(e.target.files[0])}
+      />
+    </div>
+  );
+};
+
 /* ─── Login ───────────────────────────────────────────── */
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -408,7 +578,6 @@ const AdminPanel = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [collapsed,  setCollapsed]  = useState(false);
   const [activeSection, setActiveSection] = useState('empresa');
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -511,6 +680,14 @@ const AdminPanel = () => {
 
           <div className="sidebar-divider" />
           {!collapsed && <span className="sidebar-section-label">General</span>}
+          <a
+            className={`sidebar-link sidebar-link--perfil ${activeSection === 'perfil' ? 'sidebar-link--active' : ''}`}
+            data-tip="Perfil"
+            onClick={() => { setActiveSection('perfil'); setMobileMenu(false); }}
+          >
+            <span className="sidebar-link__icon"><UserCircle size={16} /></span>
+            <span className="sidebar-link__text">Foto de Perfil</span>
+          </a>
           <a href="/" target="_blank" rel="noopener noreferrer" className="sidebar-link" data-tip="Portafolio">
             <span className="sidebar-link__icon"><Globe size={16} /></span>
             <span className="sidebar-link__text">Ver portafolio</span>
@@ -540,24 +717,36 @@ const AdminPanel = () => {
         <div className="admin-mobile-bar">
           <button className="icon-btn icon-btn--ghost" onClick={() => setMobileMenu(true)}><Menu size={18} /></button>
           <span className="admin-mobile-bar__title">Admin Panel</span>
-          <button className="btn-primary btn--xs" onClick={() => openCreate(activeSection)}><Plus size={14} /> Nuevo</button>
+          {activeSection !== 'perfil' && (
+            <button className="btn-primary btn--xs" onClick={() => openCreate(activeSection)}><Plus size={14} /> Nuevo</button>
+          )}
         </div>
 
         {/* Desktop topbar */}
         <div className="admin-topbar">
           <div>
             <h1 className="admin-topbar__title">
-              {activeSection === 'empresa' ? 'Proyectos Empresariales' : 'Software En Venta'}
+              {activeSection === 'empresa'
+                ? 'Proyectos Empresariales'
+                : activeSection === 'personal'
+                ? 'Software En Venta'
+                : 'Foto de Perfil'}
             </h1>
-            <p className="admin-topbar__sub">{projects.length} total · {visibleCount} publicados</p>
+            <p className="admin-topbar__sub">
+              {activeSection === 'perfil'
+                ? 'Actualiza la imagen que aparece en el Hero'
+                : `${projects.length} total · ${visibleCount} publicados`}
+            </p>
           </div>
           <div className="admin-topbar__actions">
             <button className="btn-ghost btn--sm" onClick={fetchProjects} disabled={loading}>
               <RefreshCw size={14} className={loading ? 'spin' : ''} /> Actualizar
             </button>
-            <button className="btn-primary btn--sm" onClick={() => openCreate(activeSection)}>
-              <Plus size={15} /> Nuevo proyecto
-            </button>
+            {activeSection !== 'perfil' && (
+              <button className="btn-primary btn--sm" onClick={() => openCreate(activeSection)}>
+                <Plus size={15} /> Nuevo proyecto
+              </button>
+            )}
           </div>
         </div>
 
@@ -577,11 +766,17 @@ const AdminPanel = () => {
                 projects={empresaProjects} loading={loading}
                 onAdd={openCreate} onEdit={openEdit} onDelete={handleDelete} onToggle={handleToggle} deleteId={deleteId} />
             </motion.div>
-          ) : (
+          ) : activeSection === 'personal' ? (
             <motion.div key="personal" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
               <CategorySection icon={<Sparkles size={17} />} title="Software En Venta" type="venta"
                 projects={personalProjects} loading={loading}
                 onAdd={openCreate} onEdit={openEdit} onDelete={handleDelete} onToggle={handleToggle} deleteId={deleteId} />
+            </motion.div>
+          ) : (
+            <motion.div key="perfil" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
+              <div className="admin-section">
+                <ProfileSection addToast={addToast} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
