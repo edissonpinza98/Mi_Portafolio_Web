@@ -6,8 +6,9 @@
   right: 0;
   z-index: 1000;
   height: var(--nav-height);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
   border-bottom: 1px solid transparent;
+  animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
 }
 
 .navbar--scrolled {
@@ -15,7 +16,7 @@
   border-bottom-color: var(--border-subtle);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
 }
 
 .nav-inner {
@@ -71,13 +72,24 @@
   color: var(--text-secondary);
   cursor: pointer;
   border-radius: var(--radius-sm);
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: color 0.22s ease, background 0.22s ease;
+  overflow: hidden;
 }
 
-.nav-link:hover {
-  color: var(--text-primary);
-  background: var(--glass-bg);
+/* Underline slide-in animation */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 0; height: 1px;
+  background: var(--gradient-brand);
+  border-radius: 1px;
+  transform: translateX(-50%);
+  transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
 }
+
+.nav-link:hover { color: var(--text-primary); background: var(--glass-bg); }
+.nav-link:hover::before { width: 60%; }
 
 .nav-link--active {
   color: var(--text-primary) !important;
@@ -93,6 +105,7 @@
   height: 2px;
   background: var(--gradient-brand);
   border-radius: 2px;
+  animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1) both;
 }
 
 /* ── Responsive ────────────────────────────────────── */

@@ -92,13 +92,16 @@
   background: var(--bg-card);
   border: 1px solid var(--border-default);
   color: var(--text-secondary);
-  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
+  transition: color 0.22s, border-color 0.22s, background 0.22s,
+              transform 0.3s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.22s;
 }
 .hero-social:hover {
   color: var(--accent-cyan);
   border-color: rgba(0,212,238,0.4);
   background: rgba(0,212,238,0.06);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,212,238,0.15);
 }
 
 .hero-social-divider {
@@ -163,6 +166,7 @@
   border: 1px solid rgba(91,155,255,0.09);
   z-index: 1;
   pointer-events: none;
+  animation: spinSlow 28s linear infinite;
 }
 .hero-ring::before {
   content: '';
@@ -170,26 +174,39 @@
   inset: 22px;
   border-radius: 50%;
   border: 1px dashed rgba(91,155,255,0.06);
+  animation: spinSlow 18s linear infinite reverse;
+}
+.hero-ring::after {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px 3px rgba(0,212,238,0.6);
+  top: -4px; left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Glow breathe behind photo */
 .hero-photo-glow {
   position: absolute;
   z-index: 1;
-  width: 280px; height: 280px;
+  width: 320px; height: 320px;
   border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(91,155,255,0.16) 0%,
-    rgba(155,107,255,0.09) 50%,
+    rgba(91,155,255,0.22) 0%,
+    rgba(155,107,255,0.13) 50%,
     transparent 70%
   );
-  filter: blur(28px);
+  filter: blur(32px);
   pointer-events: none;
-  animation: glow-breathe 4s ease-in-out infinite;
+  animation: glowPulse 4s ease-in-out infinite;
 }
+
+/* Remove old local keyframe — uses global glowPulse now */
 @keyframes glow-breathe {
   0%,100% { opacity: 0.7; transform: scale(1); }
-  50%      { opacity: 1;   transform: scale(1.1); }
+  50%      { opacity: 1;   transform: scale(1.12); }
 }
 
 /* ── Photo card ──────────────────────────────────────── */
@@ -342,6 +359,32 @@
     0 8px 32px rgba(0,0,0,0.55),
     0 0 0 1px rgba(255,255,255,0.04) inset;
   white-space: nowrap;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Shimmer sweep on hover */
+.hero-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 50%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.07),
+    transparent
+  );
+  transform: skewX(-15deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.hero-badge:hover::after { left: 160%; }
+
+.hero-badge:hover {
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(91,155,255,0.15) inset;
 }
 
 .hero-badge--br { bottom: 18px; right: -14px; }

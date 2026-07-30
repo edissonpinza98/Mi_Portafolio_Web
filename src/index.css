@@ -77,6 +77,89 @@ button { cursor: pointer; border: none; font-family: inherit; -webkit-tap-highli
 ::-webkit-scrollbar-thumb { background: #252540; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
 
+/* ═══════════════════════════════════════════════════════
+   GLOBAL ANIMATIONS
+═══════════════════════════════════════════════════════ */
+
+/* ── Reveal on scroll — used via Framer Motion ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Ambient float ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ── Glow pulse ── */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.55; filter: blur(28px); }
+  50%       { opacity: 0.95; filter: blur(22px); }
+}
+
+/* ── Spin ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Slow spin — for decorative rings ── */
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Shimmer sweep — for cards and buttons ── */
+@keyframes shimmerSweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(300%)  skewX(-15deg); }
+}
+
+/* ── Dot blink — status indicators ── */
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Border gradient rotate ── */
+@keyframes borderRotate {
+  to { --border-angle: 360deg; }
+}
+
+/* ── Scale in ── */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Text flicker — subtle life on headings ── */
+@keyframes textFlicker {
+  0%, 93%, 100% { opacity: 1; }
+  94%            { opacity: 0.88; }
+  96%            { opacity: 1; }
+  98%            { opacity: 0.92; }
+}
+
+/* ─── Utility classes ─────────────────────────────────── */
+.anim-float   { animation: float 5s ease-in-out infinite; }
+.anim-spin    { animation: spin 1s linear infinite; }
+.anim-fade-up { animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+
 /* ─── Layout ─────────────────────────────────────────── */
 .container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
 .section   { padding: 100px 0; }
@@ -274,6 +357,7 @@ button { cursor: pointer; border: none; font-family: inherit; -webkit-tap-highli
   color: var(--text-primary);
   letter-spacing: -0.03em;
   line-height: 1.15;
+  animation: textFlicker 8s ease-in-out infinite;
 }
 
 .divider {

@@ -74,12 +74,35 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 20px;
-  transition: border-color 0.25s ease, transform 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.28s ease, transform 0.28s cubic-bezier(0.22,1,0.36,1), box-shadow 0.28s;
 }
 
+/* Shimmer on hover */
+.skill-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 35%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(91,155,255,0.06),
+    transparent
+  );
+  transform: skewX(-12deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.skill-card:hover::after { left: 160%; }
+
 .skill-card:hover {
-  border-color: var(--border-emphasis);
-  transform: translateY(-3px);
+  border-color: rgba(91,155,255,0.28);
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 36px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(91,155,255,0.08) inset;
 }
 
 .skill-card__header {
@@ -120,14 +143,16 @@
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
-  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  transition: color 0.22s, background 0.22s, border-color 0.22s, transform 0.22s cubic-bezier(0.22,1,0.36,1);
   font-family: var(--font-mono);
+  cursor: default;
 }
 
 .skill-pill:hover {
   color: var(--accent-cyan);
-  border-color: rgba(0, 200, 224, 0.25);
-  background: rgba(0, 200, 224, 0.06);
+  border-color: rgba(0, 200, 224, 0.3);
+  background: rgba(0, 200, 224, 0.07);
+  transform: translateY(-2px) scale(1.04);
 }
 
 /* ── Responsive ──────────────────────────────────────── */

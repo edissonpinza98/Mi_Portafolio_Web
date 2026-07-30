@@ -77,19 +77,27 @@
   white-space: nowrap;
   flex-shrink: 0;
   align-self: flex-end;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  transition: color 0.22s, border-color 0.22s, background 0.22s, transform 0.22s;
   text-decoration: none;
+  overflow: hidden;
+  position: relative;
+}
+.btn-see-more svg {
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
 }
 .btn-see-more:hover {
   color: var(--accent-blue);
   border-color: rgba(91,155,255,0.4);
   background: rgba(91,155,255,0.05);
+  transform: translateY(-1px);
 }
+.btn-see-more:hover svg { transform: translateX(4px); }
 .btn-see-more--purple:hover {
   color: var(--accent-purple);
   border-color: rgba(155,107,255,0.4);
   background: rgba(155,107,255,0.05);
 }
+.btn-see-more--purple:hover svg { transform: translateX(4px); }
 
 /* Separator between categories */
 .projects-separator {
@@ -158,12 +166,35 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  position: relative;
+  transition: border-color 0.3s, transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s;
 }
+
+/* Shimmer sweep on hover */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.035),
+    transparent
+  );
+  transform: skewX(-15deg);
+  transition: left 0.65s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+.project-card:hover::before { left: 160%; }
+
 .project-card:hover {
   border-color: var(--border-emphasis);
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 56px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 
 /* Image */
@@ -184,9 +215,9 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
 }
-.project-card:hover .project-img { transform: scale(1.04); }
+.project-card:hover .project-img { transform: scale(1.06); }
 
 .project-img-overlay {
   position: absolute;
