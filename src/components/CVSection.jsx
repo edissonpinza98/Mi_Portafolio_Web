@@ -1,38 +1,31 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
-  FileText, ExternalLink, RefreshCw, X, Maximize2,
-  ArrowLeft, MapPin, Briefcase, GraduationCap, Minimize2,
+  FileText, ExternalLink, RefreshCw, X,
+  Maximize2, Minimize2, ArrowLeft, MapPin, Briefcase, GraduationCap,
 } from 'lucide-react';
 import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
 
-/* ── Stat card data ─────────────────────────────────── */
 const STATS = [
-  {
-    icon: <Briefcase size={16} />,
-    value: '3+ años',
-    label: 'Experiencia',
-  },
-  {
-    icon: <GraduationCap size={16} />,
-    value: 'Ing. Software',
-    label: 'Homologación',
-  },
-  {
-    icon: <MapPin size={16} />,
-    value: 'Colombia',
-    label: 'Remoto / Híbrido',
-  },
+  { icon: <Briefcase size={16} />,    value: '3+ años',      label: 'Experiencia' },
+  { icon: <GraduationCap size={16} />, value: 'Ing. Software', label: 'Homologación' },
+  { icon: <MapPin size={16} />,        value: 'Colombia',      label: 'Remoto / Híbrido' },
 ];
 
-/* ── Info rows on the ID card ───────────────────────── */
-const CARD_INFO = [
-  { label: 'ID',     value: '1233191088' },
-  { label: 'EXP',    value: 'Mid-Level' },
-  { label: 'GITHUB', value: '@edissonpinza98', href: 'https://github.com/edissonpinza98' },
-  { label: 'STATUS', value: 'AUTHENTICATED', accent: true },
+const SKILLS = [
+  { label: 'React',    color: 'default' },
+  { label: 'Angular',  color: 'purple'  },
+  { label: 'Vue',      color: 'cyan'    },
+  { label: 'Node.js',  color: 'green'   },
+  { label: 'Python',   color: 'default' },
+  { label: 'Firebase', color: 'purple'  },
+  { label: 'MySQL',    color: 'cyan'    },
+  { label: 'Docker',   color: 'default' },
 ];
+
+/* ── Barcode bars definition ───────────────────────── */
+const BARS = [1,4,2,5,0,3,1,5,2,4,0,3,5,1,4,2,3,0,5,1,3,4,2,0,5];
 
 const CVSection = () => {
   const [carnetKey,    setCarnetKey]    = useState(0);
@@ -42,7 +35,6 @@ const CVSection = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [modalConfig,  setModalConfig]  = useState({ url: '', title: '' });
 
-  /* ── Open PDF modal ── */
   const openCVModal = (url, title) => {
     setModalConfig({ url, title });
     setIsLoading(true);
@@ -57,37 +49,35 @@ const CVSection = () => {
     }
   }, [showCV]);
 
-  /* ── 3-D tilt ── */
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rotateX = useTransform(my, [-100, 100], [12, -12]);
-  const rotateY = useTransform(mx, [-100, 100], [-12, 12]);
+  const rotateX = useTransform(my, [-100, 100], [10, -10]);
+  const rotateY = useTransform(mx, [-100, 100], [-10, 10]);
 
-  const handleMouseMove  = (e) => {
+  const handleMouseMove  = e => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set(e.clientX - (r.left + r.width  / 2));
     my.set(e.clientY - (r.top  + r.height / 2));
   };
   const handleMouseLeave = () => { mx.set(0); my.set(0); };
 
-  /* ── Reload carnet animation ── */
   const reloadCarnet = () => {
     setIsRetracted(true);
-    setTimeout(() => { setCarnetKey(k => k + 1); setIsRetracted(false); }, 800);
+    setTimeout(() => { setCarnetKey(k => k + 1); setIsRetracted(false); }, 750);
   };
 
   const fadeUp = (delay = 0) => ({
-    initial:    { opacity: 0, y: 24 },
-    whileInView:{ opacity: 1, y: 0  },
-    viewport:   { once: true },
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+    initial:     { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0  },
+    viewport:    { once: true },
+    transition:  { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
   });
 
   return (
     <section className="section cv-section" id="cv">
       <div className="container cv-container">
 
-        {/* ════════════ LEFT — Text content ════════════ */}
+        {/* ── LEFT: text ── */}
         <motion.div className="cv-content" {...fadeUp(0)}>
           <p className="section-eyebrow">Documentos</p>
           <h2 className="section-title">Mi <span className="gradient-text">Hoja de Vida</span></h2>
@@ -97,17 +87,12 @@ const CVSection = () => {
             Aquí puedes ver mi trayectoria profesional. Dispongo de dos versiones: una{' '}
             <span className="tech-highlight">versión completa</span> con todas mis certificaciones,
             y una <span className="tech-highlight">versión ejecutiva</span> de acceso rápido para
-            revisión inicial.
+            una revisión inicial ágil.
           </p>
 
-          {/* Stats */}
           <div className="cv-stats">
             {STATS.map((s, i) => (
-              <motion.div
-                key={s.label}
-                className="cv-stat"
-                {...fadeUp(0.1 + i * 0.08)}
-              >
+              <motion.div key={s.label} className="cv-stat" {...fadeUp(0.1 + i * 0.08)}>
                 <div className="cv-stat__icon-wrap">{s.icon}</div>
                 <div>
                   <p className="cv-stat__value">{s.value}</p>
@@ -117,131 +102,167 @@ const CVSection = () => {
             ))}
           </div>
 
-          {/* Buttons */}
           <div className="cv-actions">
             <motion.a
-              href="https://wa.link/y26h7a"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="https://wa.link/y26h7a" target="_blank" rel="noopener noreferrer"
               className="btn-primary cv-btn"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             >
-              <FileText size={16} />
-              Solicitar CV Completo
+              <FileText size={16} /> Solicitar CV Completo
             </motion.a>
 
             <motion.button
               onClick={() => openCVModal('/CV-sola-edisonpinza.pdf', 'CV Ejecutivo — Edisson Pinza')}
               className="btn-outline cv-btn"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             >
-              <ExternalLink size={16} />
-              Ver CV Ejecutivo
+              <ExternalLink size={16} /> Ver CV Ejecutivo
             </motion.button>
 
             <motion.button
               onClick={reloadCarnet}
               className="cv-reload-btn"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             >
-              <RefreshCw size={15} />
-              Recargar ID
+              <RefreshCw size={15} /> Recargar ID
             </motion.button>
           </div>
         </motion.div>
 
-        {/* ════════════ RIGHT — ID Card ════════════ */}
-        <motion.div
-          className="carnet-wrapper"
-          style={{ perspective: '1100px' }}
-          {...fadeUp(0.2)}
-        >
+        {/* ── RIGHT: ID card ── */}
+        <motion.div className="carnet-wrapper" style={{ perspective: '1100px' }} {...fadeUp(0.2)}>
           <motion.div
             key={carnetKey}
             className="carnet-fall-container"
-            initial={{ y: -950, rotate: 5, opacity: 0 }}
-            animate={{ y: isRetracted ? -1200 : 0, rotate: 0, opacity: isRetracted ? 0 : 1 }}
-            transition={{ type: 'spring', stiffness: 48, damping: 14, mass: 2.2 }}
+            initial={{ y: -980, rotate: 6, opacity: 0 }}
+            animate={{ y: isRetracted ? -1300 : 0, rotate: 0, opacity: isRetracted ? 0 : 1 }}
+            transition={{ type: 'spring', stiffness: 46, damping: 15, mass: 2.3 }}
             style={{ transformStyle: 'preserve-3d' }}
           >
+            {/* Lanyard */}
+            <div className="carnet-lanyard-wrap">
+              <div className="carnet-clip-bar" />
+              <div className="carnet-lanyard" />
+            </div>
+
+            {/* Card */}
             <motion.div
               className="carnet"
               onClick={reloadCarnet}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
               style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-              animate={{ y: [0, 6, 0] }}
-              transition={{ y: { repeat: Infinity, duration: 3.8, ease: 'easeInOut' } }}
+              animate={{ y: [0, 7, 0] }}
+              transition={{ y: { repeat: Infinity, duration: 4, ease: 'easeInOut' } }}
             >
-              {/* Glare */}
+              {/* Layers */}
+              <div className="carnet-bg" aria-hidden />
+              <div className="carnet-border-ring" aria-hidden />
               <div className="carnet-glare" aria-hidden />
+              <div className="carnet-scanline" aria-hidden />
+              <div className="carnet-holo" aria-hidden />
 
-              {/* Badge clip + strap */}
-              <div className="badge-clip" aria-hidden>
-                <div className="clip-front" />
-                <div className="clip-back" />
-                <div className="carnet-hole" />
+              {/* ── Top stripe ── */}
+              <div className="carnet-stripe">
+                <div className="carnet-org">
+                  <span className="carnet-org__name">Edisson · Dev</span>
+                  <span className="carnet-org__sub">Software Engineer</span>
+                </div>
+                <div className="carnet-nfc">
+                  <div className="carnet-chip" />
+                  <span className="carnet-id-num">ID · 2026</span>
+                </div>
               </div>
-              <div className="carnet-strap" aria-hidden />
 
-              {/* Header */}
-              <div className="carnet-header">
-                <span className="carnet-company">Developer ID</span>
-                <div className="carnet-chip" aria-hidden />
-              </div>
-
-              {/* Body */}
+              {/* ── Body ── */}
               <div className="carnet-body">
-                <div className="carnet-photo-frame">
-                  <img src={carnetImg} alt="Edisson Pinza" className="carnet-photo" />
+                {/* Photo + status */}
+                <div className="carnet-photo-col">
+                  <div className="carnet-photo-frame">
+                    <img src={carnetImg} alt="Edisson Pinza" className="carnet-photo" />
+                  </div>
+                  <div className="carnet-online">
+                    <span className="carnet-online__dot" />
+                    ACTIVO
+                  </div>
                 </div>
 
-                <h3 className="carnet-name">Edisson Hernando Pinza Jojoa</h3>
-                <p className="carnet-role">
-                  Técnico en Sistemas &amp;<br />Desarrollador Full Stack
-                </p>
+                {/* Info */}
+                <div className="carnet-info-col">
+                  <h3 className="carnet-name">Edisson H.<br />Pinza Jojoa</h3>
+                  <p className="carnet-role">
+                    Técnico en Sistemas<br />Full Stack Developer
+                  </p>
 
-                <div className="carnet-info">
-                  {CARD_INFO.map(({ label, value, href, accent }) => (
-                    <div key={label} className="info-row">
-                      <span className="label">{label}:</span>
-                      {href
-                        ? <a href={href} target="_blank" rel="noopener noreferrer" className="value link">{value}</a>
-                        : <span className={`value ${accent ? 'status-active' : ''}`}>{value}</span>
-                      }
+                  <div className="carnet-fields">
+                    <div className="carnet-field">
+                      <span className="carnet-field__label">Cédula</span>
+                      <span className="carnet-field__val">1.233.191.088</span>
                     </div>
-                  ))}
+                    <div className="carnet-field">
+                      <span className="carnet-field__label">Nivel</span>
+                      <span className="carnet-field__val">Mid-Level · Full Stack</span>
+                    </div>
+                    <div className="carnet-field">
+                      <span className="carnet-field__label">GitHub</span>
+                      <a
+                        href="https://github.com/edissonpinza98"
+                        target="_blank" rel="noopener noreferrer"
+                        className="carnet-field__val is-link"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        @edissonpinza98
+                      </a>
+                    </div>
+                    <div className="carnet-field">
+                      <span className="carnet-field__label">Disponibilidad</span>
+                      <span className="carnet-field__val">Remoto · Híbrido</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Footer barcode */}
+              {/* ── Divider ── */}
+              <div className="carnet-divider" aria-hidden />
+
+              {/* ── Skills ── */}
+              <div className="carnet-skills">
+                {SKILLS.map(s => (
+                  <span key={s.label} className={`carnet-skill-tag ${s.color !== 'default' ? s.color : ''}`}>
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+
+              {/* ── Footer barcode ── */}
               <div className="carnet-footer">
-                <div className="barcode-container">
+                <div className="barcode-wrap">
                   <div className="barcode-bars" aria-hidden>
-                    {[...Array(22)].map((_, i) => (
-                      <div key={i} className={`bar bar-${i % 4}`} />
+                    {BARS.map((b, i) => (
+                      <div key={i} className={`bar bar-${b}`} />
                     ))}
                   </div>
-                  <span className="barcode-label">SN-1233191088-2026</span>
+                  <span className="barcode-label">EP-1233191088-2026</span>
+                </div>
+
+                <div className="carnet-footer-badge">
+                  <span className="carnet-access-level">✦ FULL ACCESS</span>
+                  <span className="carnet-issued">EMI: 01/2024 · EXP: 12/2026</span>
                 </div>
               </div>
+
             </motion.div>
           </motion.div>
         </motion.div>
 
       </div>
 
-      {/* ════════════ PDF Modal ════════════ */}
+      {/* ── PDF Modal ── */}
       <AnimatePresence>
         {showCV && (
           <motion.div
             className="cv-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
             onClick={() => setShowCV(false)}
           >
@@ -249,26 +270,22 @@ const CVSection = () => {
               className={`cv-modal-content ${isFullscreen ? 'is-fullscreen' : ''}`}
               initial={{ scale: 0.93, opacity: 0, y: 36 }}
               animate={{ scale: 1,    opacity: 1, y: 0  }}
-              exit={{ scale: 0.93,    opacity: 0, y: 36 }}
+              exit={{    scale: 0.93, opacity: 0, y: 36 }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              onClick={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
+              onClick={e => e.stopPropagation()}
+              onContextMenu={e => e.preventDefault()}
             >
-              {/* Modal header */}
               <div className="cv-modal-header">
                 <div className="modal-title-group">
-                  <button className="modal-back-btn" onClick={() => setShowCV(false)} title="Cerrar">
+                  <button className="modal-back-btn" onClick={() => setShowCV(false)}>
                     <ArrowLeft size={16} />
                   </button>
                   <span className="modal-dot" aria-hidden />
                   <span className="modal-title">{modalConfig.title}</span>
                 </div>
                 <div className="modal-actions">
-                  <button
-                    className="modal-icon-btn"
-                    onClick={() => setIsFullscreen(f => !f)}
-                    title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-                  >
+                  <button className="modal-icon-btn" onClick={() => setIsFullscreen(f => !f)}
+                    title={isFullscreen ? 'Salir pantalla completa' : 'Pantalla completa'}>
                     {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                   </button>
                   <button className="modal-icon-btn modal-close" onClick={() => setShowCV(false)} title="Cerrar">
@@ -277,7 +294,6 @@ const CVSection = () => {
                 </div>
               </div>
 
-              {/* Modal body */}
               <div className="cv-modal-body">
                 {isLoading && (
                   <div className="cv-loader">
