@@ -213,24 +213,46 @@
 .hero-photo-card {
   position: relative;
   z-index: 2;
-  width: 300px;
-  height: 368px;
-  border-radius: 28px;
+  width: 320px;
+  height: 420px;
+  border-radius: 32px;
   overflow: hidden;
 
-  /* Gradient border */
-  background: linear-gradient(155deg,
-    rgba(91,155,255,0.6) 0%,
-    rgba(155,107,255,0.4) 50%,
-    rgba(0,212,238,0.3) 100%
-  );
-  padding: 1.5px;
-
+  /* Multi-layer premium border */
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 28px 72px rgba(0,0,0,0.75),
-    0 0 60px rgba(91,155,255,0.1),
-    0 0 120px rgba(155,107,255,0.06);
+    0 0 0 1px rgba(91,155,255,0.35),
+    0 0 0 3px rgba(155,107,255,0.18),
+    0 0 0 4px rgba(0,212,238,0.08),
+    0 32px 80px rgba(0,0,0,0.8),
+    0 0 80px rgba(91,155,255,0.12),
+    0 0 140px rgba(155,107,255,0.08);
+
+  /* Animated gradient border via ::before */
+  isolation: isolate;
+}
+
+/* Animated gradient border ring */
+.hero-photo-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 33px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(91,155,255,0.8) 60deg,
+    rgba(155,107,255,0.6) 120deg,
+    rgba(0,212,238,0.7) 180deg,
+    transparent 240deg,
+    transparent 360deg
+  );
+  z-index: -1;
+  animation: borderSpin 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes borderSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* Actual photo */
@@ -238,11 +260,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
-  border-radius: 26.5px;
+  object-position: center 15%;
   display: block;
   position: relative;
   z-index: 1;
+  border-radius: 32px;
+  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+
+.hero-photo-card:hover .hero-photo {
+  transform: scale(1.03);
 }
 
 /* ── Matrix overlay (ON TOP of photo) ───────────────── */
@@ -251,12 +278,10 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 26.5px;
+  border-radius: 32px;
   z-index: 2;
-
-  /* Screen blend: matrix glows over photo without hiding it */
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -264,13 +289,13 @@
 .hero-photo-vignette {
   position: absolute;
   inset: 0;
-  border-radius: 26.5px;
+  border-radius: 32px;
   z-index: 3;
   background: radial-gradient(
-    ellipse 60% 70% at 50% 35%,
+    ellipse 65% 60% at 50% 30%,
     transparent 0%,
-    transparent 40%,
-    rgba(7,7,15,0.45) 100%
+    transparent 45%,
+    rgba(7,7,15,0.5) 100%
   );
   pointer-events: none;
 }
@@ -279,14 +304,14 @@
 .hero-photo-shimmer {
   position: absolute;
   inset: 0;
-  border-radius: 26.5px;
+  border-radius: 32px;
   z-index: 4;
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,0.05) 0%,
-    transparent 38%,
-    transparent 62%,
-    rgba(91,155,255,0.04) 100%
+    rgba(255,255,255,0.06) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(91,155,255,0.05) 100%
   );
   pointer-events: none;
 }
@@ -295,49 +320,56 @@
 .hero-corner {
   position: absolute;
   z-index: 5;
-  width: 18px; height: 18px;
+  width: 22px; height: 22px;
   pointer-events: none;
 }
 
 .hero-corner--tr {
-  top: 8px; right: 8px;
+  top: 10px; right: 10px;
   border-top: 2px solid var(--accent-cyan);
   border-right: 2px solid var(--accent-cyan);
-  border-top-right-radius: 4px;
-  opacity: 0.7;
+  border-top-right-radius: 5px;
+  opacity: 0.85;
+  animation: cornerPulse 3s ease-in-out infinite;
 }
 
 .hero-corner--bl {
-  bottom: 8px; left: 8px;
+  bottom: 10px; left: 10px;
   border-bottom: 2px solid var(--accent-cyan);
   border-left: 2px solid var(--accent-cyan);
-  border-bottom-left-radius: 4px;
-  opacity: 0.7;
+  border-bottom-left-radius: 5px;
+  opacity: 0.85;
+  animation: cornerPulse 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes cornerPulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.35; }
 }
 
 /* Scan line — horizontal sweep */
 .hero-scanline {
   position: absolute;
   left: 0; right: 0;
-  height: 2px;
+  height: 1.5px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(0,212,238,0.0) 5%,
-    rgba(0,212,238,0.45) 50%,
-    rgba(0,212,238,0.0) 95%,
+    rgba(0,212,238,0.0) 10%,
+    rgba(0,212,238,0.6) 50%,
+    rgba(0,212,238,0.0) 90%,
     transparent 100%
   );
   z-index: 5;
   pointer-events: none;
-  animation: scanline-sweep 5s ease-in-out infinite;
+  animation: scanline-sweep 4s ease-in-out infinite;
   opacity: 0;
 }
 
 @keyframes scanline-sweep {
-  0%   { top: 0%;   opacity: 0; }
+  0%   { top: 2%;   opacity: 0; }
   5%   { opacity: 1; }
-  95%  { opacity: 0.6; }
-  100% { top: 100%; opacity: 0; }
+  92%  { opacity: 0.7; }
+  100% { top: 98%; opacity: 0; }
 }
 
 /* ── Floating badges ─────────────────────────────────── */
@@ -443,39 +475,44 @@
   .hero-desc    { margin-left: auto; margin-right: auto; }
   .hero-actions { justify-content: center; }
   .hero-socials { justify-content: center; }
-  .hero-image-wrap { min-height: 380px; }
-  .hero-photo-card { width: 260px; height: 318px; }
-  .hero-ring       { width: 340px; height: 340px; }
+  .hero-image-wrap { min-height: 420px; }
+  .hero-photo-card { width: 280px; height: 360px; border-radius: 26px; }
+  .hero-photo      { border-radius: 26px; }
+  .hero-matrix-overlay,
+  .hero-photo-vignette,
+  .hero-photo-shimmer { border-radius: 26px; }
+  .hero-ring       { width: 360px; height: 360px; }
 
   .hero-badge--br {
     bottom: 0; right: 50%;
-    transform: translateX(148px);
+    transform: translateX(158px);
   }
   .hero-badge--tl {
     top: 0; left: 50%;
-    transform: translateX(-168px);
+    transform: translateX(-178px);
   }
 }
 
 @media (max-width: 600px) {
   .hero-title { font-size: 2.4rem; }
-  .hero-photo-card {
-    width: 220px; height: 270px;
-    border-radius: 22px;
-  }
-  .hero-photo         { border-radius: 20.5px; }
+  .hero-photo-card { width: 230px; height: 295px; border-radius: 22px; }
+  .hero-photo         { border-radius: 22px; }
   .hero-matrix-overlay,
   .hero-photo-vignette,
-  .hero-photo-shimmer { border-radius: 20.5px; }
-  .hero-ring { width: 280px; height: 280px; }
+  .hero-photo-shimmer { border-radius: 22px; }
+  .hero-ring { width: 290px; height: 290px; }
 
-  .hero-badge--br { transform: translateX(108px); padding: 8px 11px; gap: 8px; }
-  .hero-badge--tl { transform: translateX(-124px); padding: 8px 11px; gap: 8px; }
+  .hero-badge--br { transform: translateX(114px); padding: 8px 11px; gap: 8px; }
+  .hero-badge--tl { transform: translateX(-130px); padding: 8px 11px; gap: 8px; }
 }
 
 @media (max-width: 400px) {
   .hero-title { font-size: 2rem; }
-  .hero-photo-card { width: 190px; height: 232px; }
+  .hero-photo-card { width: 200px; height: 256px; border-radius: 18px; }
+  .hero-photo         { border-radius: 18px; }
+  .hero-matrix-overlay,
+  .hero-photo-vignette,
+  .hero-photo-shimmer { border-radius: 18px; }
   .hero-ring { display: none; }
   .hero-badge--tl,
   .hero-badge--br { display: none; }
