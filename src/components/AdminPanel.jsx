@@ -6,7 +6,8 @@ import {
   ExternalLink, Github, Image as ImageIcon, RefreshCw,
   FolderOpen, Globe, LayoutDashboard, ChevronRight,
   Hash, Upload, XCircle, Building2, Sparkles,
-  ChevronLeft, MessageSquare, Menu, UserCircle, Camera
+  ChevronLeft, MessageSquare, Menu, UserCircle, Camera,
+  Phone, AtSign, Link as LinkIcon, Mail, Facebook, Send
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './AdminPanel.css';
@@ -507,6 +508,159 @@ const ProfileSection = ({ addToast }) => {
   );
 };
 
+/* ─── Contact Section ─────────────────────────────────── */
+const CONTACT_FIELDS = [
+  { key: 'whatsapp_number',   label: 'Número WhatsApp',    icon: <Phone size={14} />,       placeholder: '573025366119',                        hint: 'Solo dígitos, sin + ni espacios. Ej: 573025366119' },
+  { key: 'whatsapp_link',     label: 'Link WhatsApp',      icon: <LinkIcon size={14} />,    placeholder: 'https://wa.link/xxxxx',               hint: 'Link corto de wa.link o wa.me con tu número' },
+  { key: 'email',             label: 'Email',               icon: <Mail size={14} />,        placeholder: 'tu@email.com',                        hint: 'Aparece en la tarjeta de email del portafolio' },
+  { key: 'github_url',        label: 'GitHub URL',         icon: <Github size={14} />,      placeholder: 'https://github.com/usuario',          hint: '' },
+  { key: 'github_username',   label: 'GitHub usuario',     icon: <AtSign size={14} />,      placeholder: '@usuario',                            hint: 'Se muestra como texto en la tarjeta' },
+  { key: 'linkedin_url',      label: 'LinkedIn URL',       icon: <LinkIcon size={14} />,    placeholder: 'https://linkedin.com/in/...',         hint: '' },
+  { key: 'facebook_url',      label: 'Facebook URL',       icon: <Facebook size={14} />,    placeholder: 'https://facebook.com/...',            hint: '' },
+  { key: 'facebook_page',     label: 'Facebook página',    icon: <AtSign size={14} />,      placeholder: 'Dev.Edi98',                           hint: 'Texto visible en la tarjeta de Facebook' },
+  { key: 'telegram_url',      label: 'Telegram URL',       icon: <Send size={14} />,        placeholder: 'https://t.me/usuario',                hint: '' },
+  { key: 'telegram_username', label: 'Telegram usuario',   icon: <AtSign size={14} />,      placeholder: '@Dev_Edi',                            hint: 'Texto visible en la tarjeta de Telegram' },
+];
+
+const ContactSection = ({ addToast }) => {
+  const [values,  setValues]  = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+  const [dirty,   setDirty]   = useState(false);
+
+  /* Load all contact settings */
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const keys = CONTACT_FIELDS.map(f => f.key);
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('key, value')
+        .in('key', keys);
+      if (!error && data) {
+        const map = {};
+        data.forEach(r => { map[r.key] = r.value || ''; });
+        setValues(map);
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const handleChange = (key, val) => {
+    setValues(v => ({ ...v, [key]: val }));
+    setDirty(true);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const upserts = CONTACT_FIELDS.map(f => ({
+      key: f.key,
+      value: values[f.key] || null,
+      updated_at: new Date().toISOString(),
+    }));
+    const { error } = await supabase.from('site_settings').upsert(upserts);
+    if (error) {
+      addToast('Error al guardar: ' + error.message, 'error');
+    } else {
+      addToast('Información de contacto actualizada', 'success');
+      setDirty(false);
+    }
+    setSaving(false);
+  };
+
+  /* Group fields visually */
+  const groups = [
+    { title: 'WhatsApp',   color: 'green',  keys: ['whatsapp_number', 'whatsapp_link'] },
+    { title: 'Email',      color: 'blue',   keys: ['email'] },
+    { title: 'GitHub',     color: 'cyan',   keys: ['github_url', 'github_username'] },
+    { title: 'LinkedIn',   color: 'blue',   keys: ['linkedin_url'] },
+    { title: 'Facebook',   color: 'purple', keys: ['facebook_url', 'facebook_page'] },
+    { title: 'Telegram',   color: 'cyan',   keys: ['telegram_url', 'telegram_username'] },
+  ];
+
+  return (
+    <div className="contact-settings-wrap">
+      {/* Header */}
+      <div className="cs-header">
+        <div className="cs-header__icon"><MessageSquare size={18} /></div>
+        <div>
+          <p className="cs-header__title">Información de Contacto</p>
+          <p className="cs-header__sub">Edita los datos que aparecen en la sección de contacto del portafolio</p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="cs-loading"><Loader2 size={24} className="spin" /><p>Cargando...</p></div>
+      ) : (
+        <>
+          <div className="cs-groups">
+            {groups.map(g => (
+              <div key={g.title} className={`cs-group cs-group--${g.color}`}>
+                <p className="cs-group__title">{g.title}</p>
+                <div className="cs-group__fields">
+                  {g.keys.map(key => {
+                    const field = CONTACT_FIELDS.find(f => f.key === key);
+                    if (!field) return null;
+                    return (
+                      <div key={key} className="cs-field">
+                        <label className="cs-field__label">
+                          {field.icon} {field.label}
+                        </label>
+                        <input
+                          className="form-input cs-input"
+                          type="text"
+                          value={values[key] || ''}
+                          onChange={e => handleChange(key, e.target.value)}
+                          placeholder={field.placeholder}
+                        />
+                        {field.hint && <p className="cs-field__hint">{field.hint}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Preview card */}
+          <div className="cs-preview">
+            <p className="cs-preview__title">Vista previa del botón WhatsApp</p>
+            <div className="cs-preview__card">
+              <MessageSquare size={16} style={{ color: '#25d366' }} />
+              <div>
+                <p className="cs-preview__wa-title">Cotizar vía WhatsApp</p>
+                <p className="cs-preview__wa-link">
+                  {values.whatsapp_link || 'https://wa.link/...'} &nbsp;·&nbsp; +{values.whatsapp_number || '57...'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Save button */}
+          <div className="cs-footer">
+            {dirty && (
+              <p className="cs-dirty-hint">
+                <AlertCircle size={13} /> Tienes cambios sin guardar
+              </p>
+            )}
+            <button
+              className="btn-primary"
+              onClick={handleSave}
+              disabled={saving || !dirty}
+            >
+              {saving
+                ? <><Loader2 size={15} className="spin" /> Guardando...</>
+                : <><Save size={15} /> Guardar cambios</>
+              }
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 /* ─── Login ───────────────────────────────────────────── */
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -688,6 +842,14 @@ const AdminPanel = () => {
             <span className="sidebar-link__icon"><UserCircle size={16} /></span>
             <span className="sidebar-link__text">Foto de Perfil</span>
           </a>
+          <a
+            className={`sidebar-link sidebar-link--contacto ${activeSection === 'contacto' ? 'sidebar-link--active' : ''}`}
+            data-tip="Contacto"
+            onClick={() => { setActiveSection('contacto'); setMobileMenu(false); }}
+          >
+            <span className="sidebar-link__icon"><MessageSquare size={16} /></span>
+            <span className="sidebar-link__text">Contacto</span>
+          </a>
           <a href="/" target="_blank" rel="noopener noreferrer" className="sidebar-link" data-tip="Portafolio">
             <span className="sidebar-link__icon"><Globe size={16} /></span>
             <span className="sidebar-link__text">Ver portafolio</span>
@@ -717,7 +879,7 @@ const AdminPanel = () => {
         <div className="admin-mobile-bar">
           <button className="icon-btn icon-btn--ghost" onClick={() => setMobileMenu(true)}><Menu size={18} /></button>
           <span className="admin-mobile-bar__title">Admin Panel</span>
-          {activeSection !== 'perfil' && (
+          {activeSection !== 'perfil' && activeSection !== 'contacto' && (
             <button className="btn-primary btn--xs" onClick={() => openCreate(activeSection)}><Plus size={14} /> Nuevo</button>
           )}
         </div>
@@ -730,11 +892,15 @@ const AdminPanel = () => {
                 ? 'Proyectos Empresariales'
                 : activeSection === 'personal'
                 ? 'Software En Venta'
-                : 'Foto de Perfil'}
+                : activeSection === 'perfil'
+                ? 'Foto de Perfil'
+                : 'Contacto'}
             </h1>
             <p className="admin-topbar__sub">
               {activeSection === 'perfil'
                 ? 'Actualiza la imagen que aparece en el Hero'
+                : activeSection === 'contacto'
+                ? 'Edita tu WhatsApp, email y redes sociales'
                 : `${projects.length} total · ${visibleCount} publicados`}
             </p>
           </div>
@@ -742,7 +908,7 @@ const AdminPanel = () => {
             <button className="btn-ghost btn--sm" onClick={fetchProjects} disabled={loading}>
               <RefreshCw size={14} className={loading ? 'spin' : ''} /> Actualizar
             </button>
-            {activeSection !== 'perfil' && (
+            {activeSection !== 'perfil' && activeSection !== 'contacto' && (
               <button className="btn-primary btn--sm" onClick={() => openCreate(activeSection)}>
                 <Plus size={15} /> Nuevo proyecto
               </button>
@@ -776,6 +942,13 @@ const AdminPanel = () => {
             <motion.div key="perfil" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
               <div className="admin-section">
                 <ProfileSection addToast={addToast} />
+              </div>
+            </motion.div>
+          )}
+          {activeSection === 'contacto' && (
+            <motion.div key="contacto" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
+              <div className="admin-section">
+                <ContactSection addToast={addToast} />
               </div>
             </motion.div>
           )}

@@ -695,3 +695,163 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   .profile-img-wrap { width: 160px; height: 200px; }
   .profile-upload-info { width: 100%; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   CONTACT SETTINGS SECTION
+══════════════════════════════════════════════════════════ */
+
+/* Sidebar link */
+.sidebar-link--contacto.sidebar-link--active {
+  background: rgba(18, 216, 138, 0.08);
+  border-color: rgba(18, 216, 138, 0.2);
+  color: var(--accent-green);
+}
+
+/* Wrapper */
+.contact-settings-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px 32px;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Header */
+.cs-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cs-header__icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  background: rgba(18, 216, 138, 0.08);
+  border: 1px solid rgba(18, 216, 138, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+.cs-header__title {
+  font-size: 1rem; font-weight: 700;
+  color: var(--text-primary); letter-spacing: -0.01em;
+}
+.cs-header__sub {
+  font-size: 0.78rem; color: var(--text-muted);
+  font-family: var(--font-mono); margin-top: 3px;
+}
+
+/* Loading */
+.cs-loading {
+  display: flex; align-items: center; gap: 12px;
+  padding: 32px; color: var(--text-muted);
+  font-family: var(--font-mono); font-size: 0.84rem;
+}
+
+/* Groups grid */
+.cs-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.cs-group {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.22s;
+}
+.cs-group:hover { border-color: var(--border-emphasis); }
+
+/* Top accent line per color */
+.cs-group::before {
+  content: '';
+  display: block; height: 2px;
+}
+.cs-group--green::before  { background: linear-gradient(90deg, #25d366, #12d88a); }
+.cs-group--blue::before   { background: linear-gradient(90deg, #4f8ef7, #00c8e0); }
+.cs-group--cyan::before   { background: linear-gradient(90deg, #00c8e0, #4f8ef7); }
+.cs-group--purple::before { background: linear-gradient(90deg, #9b6bff, #c084fc); }
+
+.cs-group__title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--text-muted);
+  padding: 12px 16px 8px;
+}
+
+.cs-group__fields {
+  padding: 0 16px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+/* Field */
+.cs-field { display: flex; flex-direction: column; gap: 5px; }
+.cs-field__label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.72rem; font-weight: 600;
+  font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text-secondary);
+}
+.cs-input {
+  font-size: 0.85rem !important;
+  padding: 9px 12px !important;
+}
+.cs-field__hint {
+  font-size: 0.68rem; color: var(--text-muted);
+  font-family: var(--font-mono); line-height: 1.5;
+}
+
+/* Preview */
+.cs-preview {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+}
+.cs-preview__title {
+  font-size: 0.72rem; font-weight: 600;
+  font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.cs-preview__card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px;
+  background: rgba(37, 211, 102, 0.05);
+  border: 1px solid rgba(37, 211, 102, 0.2);
+  border-radius: var(--radius-md);
+}
+.cs-preview__wa-title {
+  font-size: 0.88rem; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 3px;
+}
+.cs-preview__wa-link {
+  font-size: 0.72rem; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Footer */
+.cs-footer {
+  display: flex; align-items: center;
+  justify-content: flex-end; gap: 14px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle);
+}
+.cs-dirty-hint {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; color: #fbbf24;
+  font-family: var(--font-mono); margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .contact-settings-wrap { padding: 20px; }
+  .cs-groups { grid-template-columns: 1fr; }
+}

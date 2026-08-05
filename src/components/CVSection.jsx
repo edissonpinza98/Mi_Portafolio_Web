@@ -1,37 +1,26 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
-  FileText, ExternalLink, RefreshCw,
-  X, Maximize2, Minimize2, ArrowLeft,
+  FileText, ExternalLink, RefreshCw, X,
+  Maximize2, Minimize2, ArrowLeft,
   MapPin, Briefcase, GraduationCap,
 } from 'lucide-react';
 import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
 
-/* ── Static data ────────────────────────────────────── */
 const STATS = [
   { icon: <Briefcase size={16} />,     value: '3+ años',      label: 'Experiencia'      },
   { icon: <GraduationCap size={16} />, value: 'Ing. Software', label: 'Homologación'     },
   { icon: <MapPin size={16} />,        value: 'Colombia',      label: 'Remoto · Híbrido' },
 ];
 
-/* Barcode sequence: a=thin, b=medium, c=hairline, d=thick, e=tallest, f=short */
-const BARCODE = 'badcfebadcfebadcfebadc'.split('');
-
-const TAGS = [
-  { t: 'React',    c: 'blue'   },
-  { t: 'Angular',  c: 'purple' },
-  { t: 'Vue',      c: 'cyan'   },
-  { t: 'Node.js',  c: 'green'  },
-  { t: 'Python',   c: 'blue'   },
-  { t: 'Firebase', c: 'purple' },
-  { t: 'MySQL',    c: 'cyan'   },
-  { t: 'Power BI', c: 'green'  },
+const CARD_INFO = [
+  { label: 'ID',     value: '1233191088',    href: null,                                      accent: false },
+  { label: 'EXP',    value: 'Mid-Level',     href: null,                                      accent: false },
+  { label: 'GITHUB', value: '@edissonpinza98', href: 'https://github.com/edissonpinza98',     accent: false },
+  { label: 'STATUS', value: 'AUTHENTICATED', href: null,                                      accent: true  },
 ];
 
-/* ════════════════════════════════════════════════════
-   COMPONENT
-════════════════════════════════════════════════════ */
 const CVSection = () => {
   const [carnetKey,    setCarnetKey]    = useState(0);
   const [isRetracted,  setIsRetracted]  = useState(false);
@@ -40,7 +29,7 @@ const CVSection = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [modalConfig,  setModalConfig]  = useState({ url: '', title: '' });
 
-  const openModal = (url, title) => {
+  const openCVModal = (url, title) => {
     setModalConfig({ url, title });
     setIsLoading(true);
     setIsFullscreen(false);
@@ -56,8 +45,8 @@ const CVSection = () => {
   /* 3-D tilt */
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rotateX = useTransform(my, [-80, 80], [8, -8]);
-  const rotateY = useTransform(mx, [-80, 80], [-8, 8]);
+  const rotateX = useTransform(my, [-100, 100], [12, -12]);
+  const rotateY = useTransform(mx, [-100, 100], [-12, 12]);
   const onMove  = e => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set(e.clientX - (r.left + r.width  / 2));
@@ -65,14 +54,14 @@ const CVSection = () => {
   };
   const onLeave = () => { mx.set(0); my.set(0); };
 
-  const reload = () => {
+  const reloadCarnet = () => {
     setIsRetracted(true);
-    setTimeout(() => { setCarnetKey(k => k + 1); setIsRetracted(false); }, 700);
+    setTimeout(() => { setCarnetKey(k => k + 1); setIsRetracted(false); }, 800);
   };
 
-  const fadeUp = (d = 0) => ({
-    initial: { opacity: 0, y: 22 }, whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true }, transition: { duration: 0.6, delay: d, ease: [0.22,1,0.36,1] },
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true }, transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
   });
 
   return (
@@ -84,12 +73,10 @@ const CVSection = () => {
           <p className="section-eyebrow">Documentos</p>
           <h2 className="section-title">Mi <span className="gradient-text">Hoja de Vida</span></h2>
           <div className="divider" />
-
           <p className="cv-description">
             Aquí puedes ver mi trayectoria profesional. Dispongo de dos versiones: una{' '}
             <span className="tech-highlight">versión completa</span> con todas mis certificaciones,
-            y una <span className="tech-highlight">versión ejecutiva</span> de acceso rápido para
-            una revisión inicial ágil.
+            y una <span className="tech-highlight">versión ejecutiva</span> de acceso rápido.
           </p>
 
           <div className="cv-stats">
@@ -110,11 +97,11 @@ const CVSection = () => {
               <FileText size={16} /> Solicitar CV Completo
             </motion.a>
             <motion.button
-              onClick={() => openModal('/CV-sola-edisonpinza.pdf', 'CV Ejecutivo — Edisson Pinza')}
+              onClick={() => openCVModal('/CV-sola-edisonpinza.pdf', 'CV Ejecutivo — Edisson Pinza')}
               className="btn-outline cv-btn" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <ExternalLink size={16} /> Ver CV Ejecutivo
             </motion.button>
-            <motion.button onClick={reload} className="cv-reload-btn"
+            <motion.button onClick={reloadCarnet} className="cv-reload-btn"
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <RefreshCw size={15} /> Recargar ID
             </motion.button>
@@ -122,104 +109,73 @@ const CVSection = () => {
         </motion.div>
 
         {/* ── RIGHT: ID Card ── */}
-        <motion.div className="carnet-wrapper" style={{ perspective: '1000px' }} {...fadeUp(0.2)}>
+        <motion.div className="carnet-wrapper" style={{ perspective: '1100px' }} {...fadeUp(0.2)}>
           <motion.div
             key={carnetKey}
             className="carnet-fall-container"
-            initial={{ y: -900, rotate: 5, opacity: 0 }}
+            initial={{ y: -950, rotate: 5, opacity: 0 }}
             animate={{ y: isRetracted ? -1200 : 0, rotate: 0, opacity: isRetracted ? 0 : 1 }}
-            transition={{ type: 'spring', stiffness: 44, damping: 14, mass: 2.2 }}
+            transition={{ type: 'spring', stiffness: 48, damping: 14, mass: 2.2 }}
+            style={{ transformStyle: 'preserve-3d' }}
           >
-            {/* Lanyard */}
-            <div className="lanyard-rope">
-              <div className="lanyard-hook" />
-              <div className="lanyard-string" />
-            </div>
-
-            {/* Card */}
             <motion.div
               className="carnet"
+              onClick={reloadCarnet}
               onMouseMove={onMove}
               onMouseLeave={onLeave}
-              onClick={reload}
               style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
               animate={{ y: [0, 6, 0] }}
-              transition={{ y: { repeat: Infinity, duration: 4, ease: 'easeInOut' } }}
+              transition={{ y: { repeat: Infinity, duration: 3.8, ease: 'easeInOut' } }}
             >
               <div className="carnet-glare"    aria-hidden />
               <div className="carnet-scanline" aria-hidden />
 
-              {/* ── Band ── */}
-              <div className="carnet-band">
-                <div className="carnet-band-content">
-                  <div className="carnet-brand">
-                    <span className="carnet-brand__main">Edisson.dev</span>
-                    <span className="carnet-brand__sub">Developer Portfolio</span>
+              {/* Badge clip + strap */}
+              <div className="badge-clip" aria-hidden>
+                <div className="clip-front" />
+                <div className="clip-back" />
+                <div className="carnet-hole" />
+              </div>
+              <div className="carnet-strap" aria-hidden />
+
+              {/* Header */}
+              <div className="carnet-header">
+                <span className="carnet-company">Developer ID</span>
+                <div className="carnet-chip" aria-hidden />
+              </div>
+
+              {/* Body */}
+              <div className="carnet-body">
+                <div className="carnet-photo-frame">
+                  <img src={carnetImg} alt="Edisson Pinza" className="carnet-photo" />
+                </div>
+                <h3 className="carnet-name">Edisson Hernando Pinza Jojoa</h3>
+                <p className="carnet-role">Técnico en Sistemas &amp;<br />Desarrollador Full Stack</p>
+                <div className="carnet-info">
+                  {CARD_INFO.map(({ label, value, href, accent }) => (
+                    <div key={label} className="info-row">
+                      <span className="label">{label}:</span>
+                      {href
+                        ? <a href={href} target="_blank" rel="noopener noreferrer"
+                            className="value link" onClick={e => e.stopPropagation()}>{value}</a>
+                        : <span className={`value ${accent ? 'status-active' : ''}`}>{value}</span>
+                      }
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer barcode */}
+              <div className="carnet-footer">
+                <div className="barcode-container">
+                  <div className="barcode-bars" aria-hidden>
+                    {[...Array(22)].map((_, i) => (
+                      <div key={i} className={`bar bar-${i % 4}`} />
+                    ))}
                   </div>
-                  <div className="carnet-chip" aria-hidden />
+                  <span className="barcode-label">SN-1233191088-2026</span>
                 </div>
               </div>
-
-              {/* ── Photo area ── */}
-              <div className="carnet-photo-area">
-                <div className="carnet-avatar">
-                  <img src={carnetImg} alt="Edisson Pinza" />
-                </div>
-                <div className="carnet-status-dot" aria-hidden />
-                <h3 className="carnet-fullname">Edisson Hernando Pinza Jojoa</h3>
-                <p className="carnet-title-role">Full Stack Developer · Técnico en Sistemas</p>
-              </div>
-
-              {/* ── Info table ── */}
-              <div className="carnet-info-table">
-                <div className="carnet-row">
-                  <span className="carnet-row__label">Cédula</span>
-                  <span className="carnet-row__val">1.233.191.088</span>
-                </div>
-                <div className="carnet-row">
-                  <span className="carnet-row__label">Nivel</span>
-                  <span className="carnet-row__val accent">Mid-Level · Full Stack</span>
-                </div>
-                <div className="carnet-row">
-                  <span className="carnet-row__label">GitHub</span>
-                  <span className="carnet-row__val">
-                    <a href="https://github.com/edissonpinza98" target="_blank"
-                      rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                      @edissonpinza98
-                    </a>
-                  </span>
-                </div>
-                <div className="carnet-row">
-                  <span className="carnet-row__label">Trabajo</span>
-                  <span className="carnet-row__val">Remoto · Híbrido</span>
-                </div>
-                <div className="carnet-row">
-                  <span className="carnet-row__label">Estado</span>
-                  <span className="carnet-row__val green">DISPONIBLE</span>
-                </div>
-              </div>
-
-              {/* ── Tags ── */}
-              <div className="carnet-tags-row">
-                {TAGS.map(({ t, c }) => (
-                  <span key={t} className={`ctag ctag--${c}`}>{t}</span>
-                ))}
-              </div>
-
-              {/* ── Footer barcode ── */}
-              <div className="carnet-foot">
-                <div>
-                  <div className="bc-bars">
-                    {BARCODE.map((b, i) => <div key={i} className={`bc bc-${b}`} />)}
-                  </div>
-                  <p className="bc-code">EP-1233191088-2026</p>
-                </div>
-                <div className="carnet-foot-right">
-                  <span className="carnet-access">FULL ACCESS</span>
-                  <span className="carnet-exp">EMI: 01/2024 · EXP: 12/2026</span>
-                </div>
-              </div>
-
             </motion.div>
           </motion.div>
         </motion.div>
@@ -235,8 +191,8 @@ const CVSection = () => {
             <motion.div
               className={`cv-modal-content ${isFullscreen ? 'is-fullscreen' : ''}`}
               initial={{ scale: 0.93, opacity: 0, y: 36 }}
-              animate={{ scale: 1,    opacity: 1, y: 0  }}
-              exit={{    scale: 0.93, opacity: 0, y: 36 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.93, opacity: 0, y: 36 }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
               onClick={e => e.stopPropagation()}
               onContextMenu={e => e.preventDefault()}>
@@ -249,8 +205,7 @@ const CVSection = () => {
                   <span className="modal-title">{modalConfig.title}</span>
                 </div>
                 <div className="modal-actions">
-                  <button className="modal-icon-btn" onClick={() => setIsFullscreen(f => !f)}
-                    title={isFullscreen ? 'Salir' : 'Pantalla completa'}>
+                  <button className="modal-icon-btn" onClick={() => setIsFullscreen(f => !f)}>
                     {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                   </button>
                   <button className="modal-icon-btn modal-close" onClick={() => setShowCV(false)}>
@@ -265,9 +220,8 @@ const CVSection = () => {
                     <p>Cargando documento...</p>
                   </div>
                 )}
-                <iframe src={modalConfig.url} title={modalConfig.title}
-                  className="cv-iframe" onLoad={() => setIsLoading(false)}
-                  style={{ opacity: isLoading ? 0 : 1 }} />
+                <iframe src={modalConfig.url} title={modalConfig.title} className="cv-iframe"
+                  onLoad={() => setIsLoading(false)} style={{ opacity: isLoading ? 0 : 1 }} />
               </div>
             </motion.div>
           </motion.div>
