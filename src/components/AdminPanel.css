@@ -77,6 +77,29 @@
 .login-hint a { color: var(--accent-blue); transition: opacity 0.2s; }
 .login-hint a:hover { opacity: 0.75; }
 
+/* Back to portfolio link */
+.login-back-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.login-back-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-default);
+  background: var(--glass-bg);
+}
+
 /* ── Layout ─────────────────────────────────────────────── */
 .admin-layout {
   display: flex; min-height: 100vh; background: var(--bg-primary);

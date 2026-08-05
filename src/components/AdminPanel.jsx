@@ -7,7 +7,7 @@ import {
   FolderOpen, Globe, LayoutDashboard, ChevronRight,
   Hash, Upload, XCircle, Building2, Sparkles,
   ChevronLeft, MessageSquare, Menu, UserCircle, Camera,
-  Phone, AtSign, Link as LinkIcon, Mail, Facebook, Send
+  Phone, AtSign, Link as LinkIcon, Mail, Facebook, Send, ArrowLeft
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './AdminPanel.css';
@@ -713,6 +713,11 @@ const LoginForm = () => {
           Crea tu cuenta en{' '}
           <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer">Supabase Authentication</a>
         </p>
+
+        <a href="/" className="login-back-link">
+          <ArrowLeft size={14} />
+          Volver al portafolio
+        </a>
       </motion.div>
     </div>
   );
