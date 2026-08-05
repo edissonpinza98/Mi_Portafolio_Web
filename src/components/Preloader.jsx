@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Preloader.css';
 
-/* ── Hex grid canvas ─────────────────────────────────── */
-const HexGrid = () => {
+/* ══════════════════════════════════════════════════════
+   MATRIX RAIN CANVAS
+══════════════════════════════════════════════════════ */
+const MatrixCanvas = () => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -12,286 +14,324 @@ const HexGrid = () => {
     const ctx = canvas.getContext('2d');
 
     const resize = () => {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
     resize();
-    window.addEventListener('resize', resize);
 
-    const SIZE  = 36;
-    const W     = SIZE * 2;
-    const H     = Math.sqrt(3) * SIZE;
-    const hexes = [];
+    const FS   = 13;
+    const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01アカサタナハマ</>{}[];()=>const let import export function async await class';
+    let cols   = Math.floor(canvas.width / FS);
+    const drops = Array.from({ length: cols }, () => Math.random() * -50);
 
-    // Build hex grid
-    const buildGrid = () => {
-      hexes.length = 0;
-      const cols = Math.ceil(canvas.width  / W) + 2;
-      const rows = Math.ceil(canvas.height / H) + 2;
-      for (let r = -1; r < rows; r++) {
-        for (let c = -1; c < cols; c++) {
-          const x = c * W + (r % 2 === 0 ? 0 : SIZE);
-          const y = r * H * 0.75;
-          hexes.push({ x, y, alpha: Math.random() * 0.08, pulse: Math.random() * Math.PI * 2 });
-        }
-      }
-    };
-    buildGrid();
-
-    const drawHex = (x, y, size, alpha) => {
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 3) * i - Math.PI / 6;
-        const px = x + size * Math.cos(angle);
-        const py = y + size * Math.sin(angle);
-        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = `rgba(79, 142, 247, ${alpha})`;
-      ctx.lineWidth   = 0.6;
-      ctx.stroke();
-    };
-
-    let frame;
-    let t = 0;
     const tick = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      t += 0.012;
-      hexes.forEach(h => {
-        h.pulse += 0.018;
-        const a = 0.04 + Math.abs(Math.sin(h.pulse)) * 0.12;
-        drawHex(h.x, h.y, SIZE - 2, a);
-      });
-      frame = requestAnimationFrame(tick);
-    };
-    tick();
+      ctx.fillStyle = 'rgba(4, 4, 13, 0.06)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', resize);
+      for (let i = 0; i < drops.length; i++) {
+        const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+        const y  = drops[i] * FS;
+
+        /* Head — bright */
+        if (Math.random() > 0.92) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${FS}px 'JetBrains Mono', monospace`;
+        } else if (drops[i] > 2) {
+          /* Use alternating green/blue/purple tones */
+          const tone = i % 3;
+          if (tone === 0)      ctx.fillStyle = `rgba(0, 255, 140, ${0.25 + Math.random() * 0.45})`;
+          else if (tone === 1) ctx.fillStyle = `rgba(91, 155, 255, ${0.2 + Math.random() * 0.4})`;
+          else                 ctx.fillStyle = `rgba(155, 107, 255, ${0.15 + Math.random() * 0.3})`;
+          ctx.font = `${FS}px 'JetBrains Mono', monospace`;
+        } else {
+          ctx.fillStyle = 'rgba(0, 255, 140, 0.08)';
+          ctx.font = `${FS}px 'JetBrains Mono', monospace`;
+        }
+
+        if (y > 0 && y < canvas.height) {
+          ctx.fillText(ch, i * FS, y);
+        }
+
+        if (y > canvas.height && Math.random() > 0.97) {
+          drops[i] = Math.random() * -30;
+        }
+        drops[i] += 0.55;
+      }
     };
+
+    const id = setInterval(tick, 40);
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      cols = Math.floor(canvas.width / FS);
+      drops.length = 0;
+      drops.push(...Array.from({ length: cols }, () => Math.random() * -50));
+    });
+    ro.observe(canvas);
+
+    return () => { clearInterval(id); ro.disconnect(); };
   }, []);
 
-  return <canvas ref={ref} className="pl-hex-canvas" aria-hidden />;
+  return <canvas ref={ref} className="pl-matrix-canvas" aria-hidden />;
 };
 
-/* ── Orbital ring ────────────────────────────────────── */
-const OrbitalRing = ({ progress }) => {
-  const DOTS   = 8;
-  const RADIUS = 90;
-
-  return (
-    <div className="pl-orbital" aria-hidden>
-      {/* Static ring */}
-      <svg className="pl-orbital__svg" viewBox="0 0 220 220" fill="none">
-        {/* Outer ring */}
-        <circle cx="110" cy="110" r="100" stroke="rgba(79,142,247,0.12)" strokeWidth="1" />
-        {/* Progress arc */}
-        <circle
-          cx="110" cy="110" r="100"
-          stroke="url(#arcGrad)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeDasharray={`${2 * Math.PI * 100}`}
-          strokeDashoffset={`${2 * Math.PI * 100 * (1 - progress / 100)}`}
-          transform="rotate(-90 110 110)"
-          style={{ transition: 'stroke-dashoffset 0.2s ease-out' }}
-        />
-        {/* Inner ring */}
-        <circle cx="110" cy="110" r="76" stroke="rgba(157,78,221,0.1)" strokeWidth="1" strokeDasharray="4 6" />
-        <defs>
-          <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4f8ef7" />
-            <stop offset="100%" stopColor="#9d4edd" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      {/* Orbiting dots */}
-      {Array.from({ length: DOTS }).map((_, i) => {
-        const angle = (360 / DOTS) * i;
-        return (
-          <div
-            key={i}
-            className="pl-orbital__dot"
-            style={{ '--angle': `${angle}deg`, '--r': `${RADIUS}px`, '--delay': `${i * 0.15}s` }}
-          />
-        );
-      })}
-
-      {/* Center pulse ring */}
-      <div className="pl-orbital__pulse" />
-      <div className="pl-orbital__pulse pl-orbital__pulse--2" />
-    </div>
-  );
-};
-
-/* ── Glitch text ─────────────────────────────────────── */
-const GlitchText = ({ text }) => (
-  <div className="pl-glitch" data-text={text} aria-label={text}>
-    {text}
-  </div>
-);
-
-/* ── Status messages ─────────────────────────────────── */
-const PHASES = [
-  { at: 0,  msg: 'Iniciando entorno...',       color: '#4f8ef7' },
-  { at: 20, msg: 'Cargando módulos...',         color: '#00c8e0' },
-  { at: 45, msg: 'Compilando recursos...',      color: '#9d4edd' },
-  { at: 70, msg: 'Optimizando interfaz...',     color: '#4f8ef7' },
-  { at: 88, msg: 'Sistema listo.',              color: '#00ff9d' },
+/* ══════════════════════════════════════════════════════
+   BOOT LOG LINES
+══════════════════════════════════════════════════════ */
+const LOG_SEQUENCE = [
+  { tag: 'INFO', type: 'info', msg: <>Iniciando <b>runtime</b> v2.0.26…</> },
+  { tag: 'RUN',  type: 'run',  msg: <>Cargando módulos <b>React · Vite</b></> },
+  { tag: 'OK',   type: 'ok',   msg: <>Assets <b>compilados</b> correctamente</> },
+  { tag: 'RUN',  type: 'run',  msg: <>Conectando a <b>Supabase</b> API…</> },
+  { tag: 'OK',   type: 'ok',   msg: <>Base de datos <b>online</b></> },
+  { tag: 'INFO', type: 'info', msg: <>Optimizando <b>interfaz</b> UI/UX</> },
+  { tag: 'WARN', type: 'warn', msg: <>Precargando <b>proyectos</b> del portafolio</> },
+  { tag: 'OK',   type: 'ok',   msg: <>Sistema <b>listo</b> — bienvenido</> },
 ];
 
-const getPhase = (p) => {
-  let phase = PHASES[0];
-  PHASES.forEach(ph => { if (p >= ph.at) phase = ph; });
-  return phase;
-};
+/* ══════════════════════════════════════════════════════
+   PHASE COLORS
+══════════════════════════════════════════════════════ */
+const PHASES = [
+  { at: 0,  color: '#5b9bff', shadow: 'rgba(91,155,255,0.8)'  },
+  { at: 25, color: '#00d4ee', shadow: 'rgba(0,212,238,0.8)'   },
+  { at: 50, color: '#9b6bff', shadow: 'rgba(155,107,255,0.8)' },
+  { at: 75, color: '#5b9bff', shadow: 'rgba(91,155,255,0.8)'  },
+  { at: 92, color: '#00ff8c', shadow: 'rgba(0,255,140,0.8)'   },
+];
 
-/* ── Main preloader ──────────────────────────────────── */
-const Preloader = ({ onLoadingComplete }) => {
-  const [progress, setProgress] = useState(0);
-  const [done,     setDone]     = useState(false);
+const getPhase = p => [...PHASES].reverse().find(ph => p >= ph.at) || PHASES[0];
+
+/* ══════════════════════════════════════════════════════
+   TYPING NAME HOOK
+══════════════════════════════════════════════════════ */
+const useTyping = (text, startDelay = 600, speed = 80) => {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone]           = useState(false);
 
   useEffect(() => {
+    let i = 0;
+    const t0 = setTimeout(() => {
+      const id = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) { clearInterval(id); setDone(true); }
+      }, speed);
+      return () => clearInterval(id);
+    }, startDelay);
+    return () => clearTimeout(t0);
+  }, [text, startDelay, speed]);
+
+  return { displayed, done };
+};
+
+/* ══════════════════════════════════════════════════════
+   MAIN PRELOADER
+══════════════════════════════════════════════════════ */
+const Preloader = ({ onLoadingComplete }) => {
+  const [progress,   setProgress]   = useState(0);
+  const [logLines,   setLogLines]   = useState([]);
+  const [exiting,    setExiting]    = useState(false);
+  const doneRef = useRef(false);
+
+  /* Typing effect for name */
+  const { displayed: firstName, done: firstDone } = useTyping('Edisson', 400,  85);
+  const { displayed: lastName }                    = useTyping('Pinza',  firstDone ? 100 : 99999, 90);
+
+  /* Boot log: add a line every ~progress threshold */
+  const addLog = useCallback((line) => {
+    setLogLines(prev => prev.length >= 8 ? [...prev.slice(1), line] : [...prev, line]);
+  }, []);
+
+  /* Progress ticker */
+  useEffect(() => {
+    let logIdx = 0;
+    const logThresholds = [5, 15, 30, 45, 60, 72, 85, 96];
+
     const timer = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(() => {
-            setDone(true);
-            setTimeout(onLoadingComplete, 900);
-          }, 600);
+          if (!doneRef.current) {
+            doneRef.current = true;
+            setTimeout(() => {
+              setExiting(true);
+              setTimeout(onLoadingComplete, 750);
+            }, 400);
+          }
           return 100;
         }
-        // Realistic acceleration curve
-        const speed = prev < 30 ? 3.5
-                    : prev < 60 ? 2.5
-                    : prev < 85 ? 1.8
-                    : 1.2;
-        return Math.min(prev + Math.random() * speed + 0.8, 100);
+
+        const next = Math.min(
+          prev + (Math.random() * (prev < 30 ? 3.5 : prev < 65 ? 2.5 : prev < 88 ? 1.6 : 0.8) + 0.4),
+          100
+        );
+
+        /* Emit log lines at thresholds */
+        while (logIdx < logThresholds.length && next >= logThresholds[logIdx]) {
+          const entry = LOG_SEQUENCE[logIdx];
+          if (entry) addLog({ ...entry, id: logIdx, time: new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) });
+          logIdx++;
+        }
+
+        return next;
       });
-    }, 60);
+    }, 55);
+
     return () => clearInterval(timer);
-  }, [onLoadingComplete]);
+  }, [onLoadingComplete, addLog]);
 
   const phase   = getPhase(progress);
   const rounded = Math.round(progress);
+  const fillBg  = `linear-gradient(90deg, #5b9bff, ${phase.color})`;
+  const fillGlow = `0 0 12px ${phase.shadow}, 0 0 28px ${phase.shadow}`;
+  const headGlow = `0 0 8px 4px ${phase.shadow}, 0 0 20px 8px ${phase.shadow}`;
 
   return (
-    <motion.div
-      className={`preloader ${done ? 'preloader--exit' : ''}`}
-      exit={{
-        clipPath: ['inset(0% 0% 0% 0%)', 'inset(50% 0% 50% 0%)', 'inset(50% 0% 50% 0%)'],
-        transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
-      }}
-    >
-      {/* Hex grid bg */}
-      <HexGrid />
-
-      {/* Ambient glows */}
-      <div className="pl-glow pl-glow--a" aria-hidden />
-      <div className="pl-glow pl-glow--b" aria-hidden />
-      <div className="pl-glow pl-glow--c" aria-hidden />
-
-      {/* Scan line */}
-      <div className="pl-scanline" aria-hidden />
-
-      {/* Main content */}
-      <div className="pl-content">
-
-        {/* Orbital ring wrapping the logo */}
+    <AnimatePresence>
+      {!exiting ? (
         <motion.div
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="pl-orbit-wrap"
+          key="preloader"
+          className="preloader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
         >
-          <OrbitalRing progress={progress} />
+          {/* Scanlines */}
+          <div className="pl-scanlines" aria-hidden />
 
-          {/* Center logo */}
-          <div className="pl-center-logo">
+          {/* HUD corners */}
+          {['tl','tr','bl','br'].map(p => (
+            <div key={p} className={`pl-hud pl-hud--${p}`} aria-hidden />
+          ))}
+
+          {/* ── LEFT: matrix rain ── */}
+          <div className="pl-left">
+            <MatrixCanvas />
+            <div className="pl-left-glow" aria-hidden />
+          </div>
+
+          {/* Divider glow */}
+          <div className="pl-divider-glow" aria-hidden />
+
+          {/* ── RIGHT: terminal UI ── */}
+          <div className="pl-right">
+            <div className="pl-right-glow" aria-hidden />
+
+            {/* System label */}
             <motion.div
-              className="pl-logo"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              className="pl-sys-label"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
             >
-              <span className="pl-logo__bracket">&lt;</span>
-              <GlitchText text="Edisson" />
-              <span className="pl-logo__suffix">.dev</span>
-              <span className="pl-logo__bracket">/&gt;</span>
+              PORTFOLIO · BOOT SEQUENCE
             </motion.div>
 
-            {/* Big percent counter */}
+            {/* Name */}
+            <div className="pl-name-block">
+              <motion.p
+                className="pl-name-prefix"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                &gt; whoami
+              </motion.p>
+              <div className="pl-name">
+                <span className="pl-name__first">{firstName}</span>
+                {firstDone && <>&nbsp;</>}
+                <span className="pl-name__last">{firstDone ? lastName : ''}</span>
+                <span className="pl-name__cursor" aria-hidden />
+              </div>
+            </div>
+
+            {/* Role */}
             <motion.div
-              className="pl-counter"
+              className="pl-role"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.6, duration: 0.5 }}
+            >
+              Full Stack Developer · AI · UI/UX
+            </motion.div>
+
+            {/* Boot log */}
+            <motion.div
+              className="pl-log"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              style={{ '--phase-color': phase.color }}
+              transition={{ delay: 0.5 }}
             >
-              {rounded}
-              <span className="pl-counter__sym">%</span>
+              <AnimatePresence initial={false}>
+                {logLines.map((line, i) => (
+                  <motion.div
+                    key={line.id}
+                    className={`pl-log-line ${i === logLines.length - 1 ? 'pl-log-line--active' : ''}`}
+                    initial={{ opacity: 0, x: -10, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, x: 0,   filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.28 }}
+                  >
+                    <span className="pl-log-line__time">{line.time}</span>
+                    <span className={`pl-log-line__tag pl-log-line__tag--${line.type}`}>{line.tag}</span>
+                    <span className="pl-log-line__msg">{line.msg}</span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Progress */}
+            <motion.div
+              className="pl-progress-block"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <div className="pl-progress-header">
+                <span className="pl-progress-label">Cargando sistema</span>
+                <span
+                  className="pl-pct"
+                  style={{ color: phase.color, textShadow: `0 0 18px ${phase.shadow}` }}
+                >
+                  {rounded}%
+                </span>
+              </div>
+
+              <div className="pl-track">
+                {/* Segment ticks */}
+                <div className="pl-track-ticks" aria-hidden>
+                  {[...Array(19)].map((_, i) => <div key={i} className="pl-tick" />)}
+                </div>
+
+                {/* Fill */}
+                <motion.div
+                  className="pl-fill"
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  style={{ background: fillBg, boxShadow: fillGlow }}
+                >
+                  {/* Head particle */}
+                  <div
+                    className="pl-fill-head"
+                    style={{ boxShadow: headGlow }}
+                  />
+                </motion.div>
+              </div>
+
+              <div className="pl-progress-footer">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
             </motion.div>
           </div>
+
         </motion.div>
-
-        {/* Progress bar */}
-        <motion.div
-          className="pl-bar-wrap"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="pl-bar-track">
-            <motion.div
-              className="pl-bar-fill"
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              style={{ '--phase-color': phase.color }}
-            />
-            {/* Particle head */}
-            <motion.div
-              className="pl-bar-head"
-              animate={{ left: `${progress}%` }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              style={{ '--phase-color': phase.color }}
-            />
-          </div>
-        </motion.div>
-
-        {/* Status text */}
-        <motion.div
-          className="pl-status-wrap"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={phase.msg}
-              className="pl-status"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.3 }}
-              style={{ color: phase.color }}
-            >
-              <span className="pl-status__cursor">▋</span>
-              {phase.msg}
-            </motion.p>
-          </AnimatePresence>
-        </motion.div>
-
-      </div>
-
-      {/* Corner decorations */}
-      <div className="pl-corner pl-corner--tl" aria-hidden />
-      <div className="pl-corner pl-corner--tr" aria-hidden />
-      <div className="pl-corner pl-corner--bl" aria-hidden />
-      <div className="pl-corner pl-corner--br" aria-hidden />
-    </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 };
 

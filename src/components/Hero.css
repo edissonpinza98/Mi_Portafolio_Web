@@ -217,8 +217,8 @@
   height: 420px;
   border-radius: 32px;
   overflow: hidden;
+  background: #0d0d1a; /* fondo oscuro limpio mientras carga la foto */
 
-  /* Multi-layer premium border */
   box-shadow:
     0 0 0 1px rgba(91,155,255,0.35),
     0 0 0 3px rgba(155,107,255,0.18),
@@ -226,27 +226,31 @@
     0 32px 80px rgba(0,0,0,0.8),
     0 0 80px rgba(91,155,255,0.12),
     0 0 140px rgba(155,107,255,0.08);
-
-  /* Animated gradient border via ::before */
   isolation: isolate;
 }
 
-/* Animated gradient border ring */
+/* Animated gradient border ring — detrás de la foto */
 .hero-photo-card::before {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: 33px;
+  inset: 0;
+  border-radius: 32px;
+  padding: 1.5px;
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    rgba(91,155,255,0.8) 60deg,
-    rgba(155,107,255,0.6) 120deg,
-    rgba(0,212,238,0.7) 180deg,
+    rgba(91,155,255,0.9) 60deg,
+    rgba(155,107,255,0.7) 120deg,
+    rgba(0,212,238,0.8) 180deg,
     transparent 240deg,
     transparent 360deg
   );
-  z-index: -1;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 0;
   animation: borderSpin 6s linear infinite;
   pointer-events: none;
 }
