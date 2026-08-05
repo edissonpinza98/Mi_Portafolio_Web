@@ -177,7 +177,7 @@ const Hero = () => {
         {/* ── Left ── */}
         <div className="hero-text">
           <motion.p className="hero-eyebrow section-eyebrow" {...fadeUp(0.1)}>
-            Desarrollador de Software · Full Stack
+            Tecnólogo en Análisis y Desarrollo de Software · Técnico en Sistemas · Full Stack
           </motion.p>
 
           <motion.h1 className="hero-title" {...fadeUp(0.2)}>

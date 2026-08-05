@@ -53,7 +53,7 @@ const DannaAssistant = () => {
         {
             id: 'who',
             triggers: ['quien eres', 'quien es', 'edisson', 'perfil', 'biografia', 'nombre'],
-            response: `Edisson Pinza es un **Desarrollador de Software** y **Ex-Docente de Sistemas**. Combina la pedagogía con el desarrollo técnico de alto nivel.`
+            response: `Edisson Pinza es **Tecnólogo en Análisis y Desarrollo de Software** y **Técnico en Sistemas**, actualmente cursando **Ingeniería de Software**. Combina su formación académica con el desarrollo técnico de alto nivel.`
         }
     ], [edissonData]);
 

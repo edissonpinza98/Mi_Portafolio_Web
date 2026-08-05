@@ -57,8 +57,8 @@ const About = () => (
       {/* Bio */}
       <motion.div className="about-bio" {...fadeUp(0.1)}>
         <p>
-          Soy <span className="tech-highlight">Desarrollador de Software</span> y{' '}
-          <span className="tech-highlight">Técnico en Sistemas</span>, con homologación activa en{' '}
+          Soy <span className="tech-highlight">Tecnólogo en Análisis y Desarrollo de Software</span> y{' '}
+          <span className="tech-highlight">Técnico en Sistemas</span>, cursando actualmente{' '}
           <span className="tech-highlight">Ingeniería de Software</span> y una formación técnica en
           constante evolución.
         </p>
