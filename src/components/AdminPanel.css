@@ -878,3 +878,88 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   .contact-settings-wrap { padding: 20px; }
   .cs-groups { grid-template-columns: 1fr; }
 }
+
+/* ── QR WhatsApp uploader ── */
+.cs-qr-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px 20px;
+  transition: border-color 0.22s;
+}
+.cs-qr-section::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, #25d366, #12d88a);
+  border-radius: 2px 2px 0 0;
+  margin: -16px -20px 14px;
+}
+.cs-qr-body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* QR frame */
+.cs-qr-frame {
+  width: 120px; height: 120px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.cs-qr-frame:hover { border-color: rgba(37,211,102,0.4); }
+
+.cs-qr-loading {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted);
+}
+.cs-qr-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  padding: 6px;
+  background: #fff;
+}
+.cs-qr-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  color: #fff; font-size: 0.75rem; font-weight: 600;
+  opacity: 0; transition: opacity 0.2s;
+  backdrop-filter: blur(2px);
+}
+.cs-qr-frame:hover .cs-qr-overlay { opacity: 1; }
+
+.cs-qr-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; color: var(--text-muted);
+  font-size: 0.72rem; font-family: var(--font-mono);
+}
+.cs-qr-frame:hover .cs-qr-empty { color: var(--text-secondary); }
+
+/* Info col */
+.cs-qr-info { flex: 1; min-width: 200px; }
+.cs-qr-info__title {
+  font-size: 0.88rem; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 6px;
+}
+.cs-qr-info__hint {
+  font-size: 0.74rem; color: var(--text-muted);
+  font-family: var(--font-mono); line-height: 1.65;
+}
+
+@media (max-width: 500px) {
+  .cs-qr-body { flex-direction: column; align-items: center; }
+  .cs-qr-info { width: 100%; }
+}

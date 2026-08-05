@@ -509,6 +509,20 @@ const ProfileSection = ({ addToast }) => {
 };
 
 /* ─── Contact Section ─────────────────────────────────── */
+/* ─── QR bucket helper ────────────────────────────────── */
+const QR_BUCKET = 'profile-assets';
+
+const uploadQRImage = async (file) => {
+  const ext      = file.name.split('.').pop();
+  const filename = `whatsapp-qr.${ext}`;
+  const { error } = await supabase.storage
+    .from(QR_BUCKET)
+    .upload(filename, file, { cacheControl: '0', upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from(QR_BUCKET).getPublicUrl(filename);
+  return `${data.publicUrl}?t=${Date.now()}`;
+};
+
 const CONTACT_FIELDS = [
   { key: 'whatsapp_number',   label: 'Número WhatsApp',    icon: <Phone size={14} />,       placeholder: '573025366119',                        hint: 'Solo dígitos, sin + ni espacios. Ej: 573025366119' },
   { key: 'whatsapp_link',     label: 'Link WhatsApp',      icon: <LinkIcon size={14} />,    placeholder: 'https://wa.link/xxxxx',               hint: 'Link corto de wa.link o wa.me con tu número' },
@@ -523,16 +537,19 @@ const CONTACT_FIELDS = [
 ];
 
 const ContactSection = ({ addToast }) => {
-  const [values,  setValues]  = useState({});
-  const [loading, setLoading] = useState(true);
-  const [saving,  setSaving]  = useState(false);
-  const [dirty,   setDirty]   = useState(false);
+  const qrInputRef             = useRef(null);
+  const [values,    setValues]  = useState({});
+  const [qrPreview, setQrPreview] = useState(null);
+  const [qrUploading, setQrUploading] = useState(false);
+  const [loading,   setLoading] = useState(true);
+  const [saving,    setSaving]  = useState(false);
+  const [dirty,     setDirty]   = useState(false);
 
-  /* Load all contact settings */
+  /* Load all contact settings including QR */
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const keys = CONTACT_FIELDS.map(f => f.key);
+      const keys = [...CONTACT_FIELDS.map(f => f.key), 'whatsapp_qr_url'];
       const { data, error } = await supabase
         .from('site_settings')
         .select('key, value')
@@ -541,6 +558,7 @@ const ContactSection = ({ addToast }) => {
         const map = {};
         data.forEach(r => { map[r.key] = r.value || ''; });
         setValues(map);
+        if (map.whatsapp_qr_url) setQrPreview(map.whatsapp_qr_url);
       }
       setLoading(false);
     };
@@ -550,6 +568,26 @@ const ContactSection = ({ addToast }) => {
   const handleChange = (key, val) => {
     setValues(v => ({ ...v, [key]: val }));
     setDirty(true);
+  };
+
+  /* Upload QR image */
+  const handleQRFile = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { addToast('Solo se permiten imágenes.', 'error'); return; }
+    if (file.size > 4 * 1024 * 1024)    { addToast('Máximo 4 MB.', 'error'); return; }
+    setQrPreview(URL.createObjectURL(file));
+    setQrUploading(true);
+    try {
+      const url = await uploadQRImage(file);
+      await supabase.from('site_settings').upsert({ key: 'whatsapp_qr_url', value: url, updated_at: new Date().toISOString() });
+      setQrPreview(url);
+      setValues(v => ({ ...v, whatsapp_qr_url: url }));
+      addToast('QR de WhatsApp actualizado', 'success');
+    } catch (e) {
+      addToast('Error al subir QR: ' + e.message, 'error');
+    } finally {
+      setQrUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -621,6 +659,65 @@ const ContactSection = ({ addToast }) => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* QR WhatsApp uploader */}
+          <div className="cs-qr-section">
+            <p className="cs-group__title" style={{ padding: '0 0 10px' }}>
+              <ImageIcon size={13} style={{ display:'inline', marginRight:6, verticalAlign:'middle' }} />
+              Código QR de WhatsApp
+            </p>
+            <div className="cs-qr-body">
+              {/* Preview */}
+              <div className="cs-qr-frame" onClick={() => qrInputRef.current?.click()}>
+                {qrUploading ? (
+                  <div className="cs-qr-loading"><Loader2 size={20} className="spin" /></div>
+                ) : qrPreview ? (
+                  <>
+                    <img src={qrPreview} alt="QR WhatsApp" className="cs-qr-img" onError={() => setQrPreview(null)} />
+                    <div className="cs-qr-overlay">
+                      <Camera size={16} /> Cambiar QR
+                    </div>
+                  </>
+                ) : (
+                  <div className="cs-qr-empty">
+                    <ImageIcon size={24} />
+                    <span>Subir QR</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="cs-qr-info">
+                <p className="cs-qr-info__title">QR de WhatsApp</p>
+                <p className="cs-qr-info__hint">
+                  Este código QR aparece en la sección de contacto.<br />
+                  Recomendado: imagen cuadrada (400×400 px o más).<br />
+                  Formatos: PNG, JPG, WEBP · Máx. 4 MB.
+                </p>
+                <button
+                  className="btn-primary btn--sm"
+                  onClick={() => qrInputRef.current?.click()}
+                  disabled={qrUploading}
+                  style={{ marginTop: 8 }}
+                >
+                  {qrUploading
+                    ? <><Loader2 size={14} className="spin" /> Subiendo...</>
+                    : <><Upload size={14} /> {qrPreview ? 'Cambiar QR' : 'Subir QR'}</>
+                  }
+                </button>
+                <p className="profile-upload-note" style={{ marginTop: 8 }}>
+                  El cambio se refleja en el portafolio en tiempo real.
+                </p>
+              </div>
+            </div>
+            <input
+              ref={qrInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={e => handleQRFile(e.target.files[0])}
+            />
           </div>
 
           {/* Preview card */}

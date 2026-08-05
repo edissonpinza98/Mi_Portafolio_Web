@@ -9,6 +9,7 @@
 INSERT INTO site_settings (key, value) VALUES
   ('whatsapp_number',  '573025366119'),
   ('whatsapp_link',    'https://wa.link/y26h7a'),
+  ('whatsapp_qr_url',  null),
   ('email',            'edizonpinza@gmail.com'),
   ('github_url',       'https://github.com/edissonpinza98'),
   ('linkedin_url',     'https://www.linkedin.com/in/edisson-pinza-613160249'),

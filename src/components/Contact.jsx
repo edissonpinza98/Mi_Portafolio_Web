@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, Send, Facebook, MessageSquare } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import qrFallback from '../assets/Qr-Whatsapp.png';
 import './Contact.css';
 
 /* ── Default fallback values ─────────────────────────── */
 const DEFAULTS = {
   whatsapp_link:      'https://wa.link/y26h7a',
   whatsapp_number:    '573025366119',
+  whatsapp_qr_url:    '',
   email:              'edizonpinza@gmail.com',
   github_url:         'https://github.com/edissonpinza98',
   github_username:    '@edissonpinza98',
@@ -148,9 +150,10 @@ const Contact = () => {
             >
               <p className="qr-label">O escanea el QR</p>
               <img
-                src={new URL('../assets/Qr-Whatsapp.png', import.meta.url).href}
+                src={info.whatsapp_qr_url || qrFallback}
                 alt="QR WhatsApp Edisson Pinza"
                 className="qr-img"
+                onError={e => { e.currentTarget.src = qrFallback; }}
               />
             </motion.div>
           </div>
