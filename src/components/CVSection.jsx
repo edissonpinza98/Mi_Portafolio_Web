@@ -68,8 +68,15 @@ const CVSection = () => {
     <section className="section cv-section" id="cv">
       <div className="container cv-container">
 
-        {/* ── LEFT ── */}
-        <motion.div className="cv-content" {...fadeUp(0)}>
+        {/* ── LEFT — 3D Slide in from LEFT ── */}
+        <motion.div
+          className="cv-content"
+          initial={{ opacity: 0, x: -70, rotateY: -8 }}
+          whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           <p className="section-eyebrow">Documentos</p>
           <h2 className="section-title">Mi <span className="gradient-text">Hoja de Vida</span></h2>
           <div className="divider" />
@@ -81,7 +88,14 @@ const CVSection = () => {
 
           <div className="cv-stats">
             {STATS.map((s, i) => (
-              <motion.div key={s.label} className="cv-stat" {...fadeUp(0.1 + i * 0.08)}>
+              <motion.div
+                key={s.label}
+                className="cv-stat"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
+              >
                 <div className="cv-stat__icon-wrap">{s.icon}</div>
                 <div>
                   <p className="cv-stat__value">{s.value}</p>
@@ -108,8 +122,15 @@ const CVSection = () => {
           </div>
         </motion.div>
 
-        {/* ── RIGHT: ID Card ── */}
-        <motion.div className="carnet-wrapper" style={{ perspective: '1100px' }} {...fadeUp(0.2)}>
+        {/* ── RIGHT: ID Card — 3D Slide in from RIGHT ── */}
+        <motion.div
+          className="carnet-wrapper"
+          style={{ perspective: '1200px' }}
+          initial={{ opacity: 0, x: 70, rotateY: 8 }}
+          whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        >
           <motion.div
             key={carnetKey}
             className="carnet-fall-container"

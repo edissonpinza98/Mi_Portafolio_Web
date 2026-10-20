@@ -13,6 +13,7 @@ import DannaAssistant from './components/VirtualAssistant';
 import AdminPanel     from './components/AdminPanel';
 import AllProjects    from './pages/AllProjects';
 import { supabase }   from './lib/supabaseClient';
+import { initGlobalSound } from './lib/soundManager';
 
 /* ── Public home page ── */
 const HomePage = () => (
@@ -60,6 +61,11 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+
+  useEffect(() => {
+    const cleanup = initGlobalSound();
+    return cleanup;
+  }, []);
 
   const isAdmin    = location.pathname.startsWith('/admin');
   const isProjects = location.pathname.startsWith('/proyectos');

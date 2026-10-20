@@ -75,17 +75,29 @@ const waUrl = (msg, title) => {
   return `${WA_BASE}${encodeURIComponent(text)}`;
 };
 
-/* ─── Single project card ─────────────────────────────── */
-const ProjectCard = ({ project, index, showCategory = false }) => {
+/* ─── Single project card with 3D tilt ─────────────────── */
+const ProjectCard = ({ project, index, showCategory = false, align = 'left' }) => {
   const imgSrc = project.image_url || project.localImg;
+  const isLeft = align === 'left';
 
   return (
     <motion.article
       className="project-card"
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      initial={{
+        opacity: 0,
+        x: isLeft ? -40 : 40,
+        rotateY: isLeft ? -6 : 6,
+        scale: 0.95,
+      }}
+      whileInView={{
+        opacity: 1,
+        x: 0,
+        rotateY: 0,
+        scale: 1,
+      }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ delay: index * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      style={{ transformStyle: 'preserve-3d' }}
     >
       {/* Image */}
       <div className="project-img-wrap">
@@ -165,14 +177,30 @@ const ProjectCard = ({ project, index, showCategory = false }) => {
   );
 };
 
-/* ─── Category section ────────────────────────────────── */
-const CategorySection = ({ title, eyebrow, desc, projects, viewMoreTab, loading }) => {
+/* ─── Category section with 3D alternating alignment ─── */
+const CategorySection = ({ title, eyebrow, desc, projects, viewMoreTab, loading, align = 'left' }) => {
   const visible = projects.slice(0, PREVIEW);
   const hasMore = projects.length > PREVIEW;
+  const isLeft = align === 'left';
 
   return (
-    <div className="projects-category">
-      <div className="projects-cat-header">
+    <div className="projects-category" style={{ perspective: '1200px' }}>
+      <motion.div
+        className="projects-cat-header"
+        initial={{
+          opacity: 0,
+          x: isLeft ? -60 : 60,
+          rotateY: isLeft ? -8 : 8,
+        }}
+        whileInView={{
+          opacity: 1,
+          x: 0,
+          rotateY: 0,
+        }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
         <div className="projects-cat-header__left">
           <p className={`projects-cat-eyebrow ${viewMoreTab === 'personal' ? 'projects-cat-eyebrow--sale' : ''}`}>
             {viewMoreTab === 'empresa'
@@ -192,7 +220,7 @@ const CategorySection = ({ title, eyebrow, desc, projects, viewMoreTab, loading 
             Ver todos ({projects.length}) <ArrowRight size={13} />
           </Link>
         )}
-      </div>
+      </motion.div>
 
       {loading ? (
         <div className="projects-state">
@@ -205,9 +233,9 @@ const CategorySection = ({ title, eyebrow, desc, projects, viewMoreTab, loading 
           <p>Próximamente...</p>
         </div>
       ) : (
-        <div className="projects-grid">
+        <div className="projects-grid" style={{ perspective: '1200px' }}>
           {visible.map((p, i) => (
-            <ProjectCard key={p.id} project={p} index={i} />
+            <ProjectCard key={p.id} project={p} index={i} align={align} />
           ))}
         </div>
       )}
@@ -261,16 +289,16 @@ const Projects = () => {
   const personalProjects = allProjects.filter(p => p.category === 'personal');
 
   return (
-    <section id="projects" className="section projects-section">
+    <section id="projects" className="section projects-section" style={{ perspective: '1200px' }}>
       <div className="container">
 
-        {/* Section header */}
+        {/* Section header — 3D slide down */}
         <motion.div
           className="projects-main-header"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: -30, rotateX: 10 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="section-eyebrow">Portafolio</p>
           <h2 className="section-title">
@@ -290,7 +318,7 @@ const Projects = () => {
           </div>
         )}
 
-        {/* ── Category: Empresas ── */}
+        {/* ── Category: Empresas — Enters from LEFT ── */}
         <CategorySection
           eyebrow="Desarrollado para clientes"
           title={<>Trabajo <span className="gradient-text">para Empresas</span></>}
@@ -298,11 +326,12 @@ const Projects = () => {
           projects={empresaProjects}
           viewMoreTab="empresa"
           loading={loading}
+          align="left"
         />
 
         <hr className="projects-separator" />
 
-        {/* ── Category: Propios / en venta ── */}
+        {/* ── Category: Propios / en venta — Enters from RIGHT ── */}
         <CategorySection
           eyebrow="Software propio · disponible para adquirir"
           title={<>Proyectos <span className="gradient-text">Propios</span></>}
@@ -310,6 +339,7 @@ const Projects = () => {
           projects={personalProjects}
           viewMoreTab="personal"
           loading={loading}
+          align="right"
         />
 
       </div>

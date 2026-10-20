@@ -22,13 +22,6 @@ const DEFAULTS = {
 
 const CONTACT_KEYS = Object.keys(DEFAULTS);
 
-const fadeUp = (delay = 0) => ({
-  initial:     { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport:    { once: true },
-  transition:  { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
-});
-
 const Contact = () => {
   const [info, setInfo] = useState(DEFAULTS);
 
@@ -108,11 +101,17 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="section contact-section">
+    <section id="contact" className="section contact-section" style={{ perspective: '1200px' }}>
       <div className="container">
 
-        {/* Header */}
-        <motion.div className="contact-header" {...fadeUp(0)}>
+        {/* Header — 3D slide down */}
+        <motion.div
+          className="contact-header"
+          initial={{ opacity: 0, y: -30, rotateX: 10 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <p className="section-eyebrow">Hablemos</p>
           <h2 className="section-title">Contáct<span className="gradient-text">ame</span></h2>
           <div className="divider" />
@@ -122,8 +121,15 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        {/* WhatsApp CTA */}
-        <motion.div className="contact-cta-row" {...fadeUp(0.1)}>
+        {/* WhatsApp CTA — 3D slide in from LEFT */}
+        <motion.div
+          className="contact-cta-row"
+          initial={{ opacity: 0, x: -70, rotateY: -7, scale: 0.96 }}
+          whileInView={{ opacity: 1, x: 0, rotateY: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           <div className="contact-cta-card">
             <div className="cta-card__left">
               <p className="cta-card__title">¿Listo para empezar?</p>
@@ -159,10 +165,17 @@ const Contact = () => {
           </div>
         </motion.div>
 
-        {/* Social links */}
-        <motion.div className="contact-socials" {...fadeUp(0.2)}>
+        {/* Social links — 3D slide in from RIGHT */}
+        <motion.div
+          className="contact-socials"
+          initial={{ opacity: 0, x: 70, rotateY: 7 }}
+          whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           <p className="socials-label">También puedes encontrarme en</p>
-          <div className="socials-grid">
+          <div className="socials-grid" style={{ perspective: '1200px' }}>
             {SOCIALS.map((s, idx) => (
               <motion.a
                 key={s.label}
@@ -170,12 +183,12 @@ const Contact = () => {
                 target="_blank" rel="noopener noreferrer"
                 className="social-card"
                 aria-label={s.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: (idx % 2 === 0 ? -30 : 30), rotateY: (idx % 2 === 0 ? -6 : 6) }}
+                whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.08, duration: 0.5 }}
-                whileHover={{ y: -4 }}
-                style={{ '--accent': s.color }}
+                transition={{ delay: idx * 0.08, duration: 0.55 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{ '--accent': s.color, transformStyle: 'preserve-3d' }}
               >
                 <span className="social-card__icon">{s.icon}</span>
                 <div className="social-card__text">

@@ -35,7 +35,7 @@ const Navbar = () => {
           <span className="nav-logo__bracket">/&gt;</span>
         </Link>
 
-        {/* Desktop links — sin botón Admin */}
+        {/* Desktop links */}
         <div className="nav-links">
           {navLinks.map((link) => (
             <Link
@@ -58,11 +58,11 @@ const Navbar = () => {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Mobile menu — sin link Admin */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

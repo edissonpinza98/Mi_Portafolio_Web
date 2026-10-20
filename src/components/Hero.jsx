@@ -172,10 +172,16 @@ const Hero = () => {
       <div className="hero-glow hero-glow--right" aria-hidden />
       <div className="hero-glow hero-glow--top"   aria-hidden />
 
-      <div className="container hero-inner">
+      <div className="container hero-inner" style={{ perspective: '1200px' }}>
 
-        {/* ── Left ── */}
-        <div className="hero-text">
+        {/* ── Left — Enters with 3D tilt from Left ── */}
+        <motion.div
+          className="hero-text"
+          initial={{ opacity: 0, x: -60, rotateY: -10 }}
+          animate={{ opacity: 1, x: 0, rotateY: 0 }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformStyle: 'preserve-3d' }}
+        >
           <motion.p className="hero-eyebrow section-eyebrow" {...fadeUp(0.1)}>
             Tecnólogo en Análisis y Desarrollo de Software · Técnico en Sistemas · Full Stack
           </motion.p>
@@ -222,14 +228,15 @@ const Hero = () => {
               Disponible para proyectos
             </span>
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* ── Right — photo card ── */}
+        {/* ── Right — photo card enters from Right with 3D tilt ── */}
         <motion.div
           className="hero-image-wrap"
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1,   y: 0  }}
-          transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, x: 60, rotateY: 10, scale: 0.94 }}
+          animate={{ opacity: 1, x: 0, rotateY: 0, scale: 1 }}
+          transition={{ duration: 0.95, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformStyle: 'preserve-3d' }}
         >
           {/* Ambient binary bg (behind card) */}
           <AmbientCanvas />
