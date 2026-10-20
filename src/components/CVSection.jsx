@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
   FileText, ExternalLink, RefreshCw, X,
   Maximize2, Minimize2, ArrowLeft,
   MapPin, Briefcase, GraduationCap,
 } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 import carnetImg from '../assets/Foto_carnet.jpeg';
 import './CVSection.css';
+
+const DEFAULT_CV_URL = '/CV-sola-edisonpinza.pdf';
+const DEFAULT_CV_REQUEST = 'https://wa.link/y26h7a';
 
 const STATS = [
   { icon: <Briefcase size={16} />,     value: '3+ años',      label: 'Experiencia'      },
@@ -29,6 +33,46 @@ const CVSection = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [modalConfig,  setModalConfig]  = useState({ url: '', title: '' });
 
+  /* ── Dynamic CV settings from Supabase ── */
+  const [cvUrl,        setCvUrl]        = useState(DEFAULT_CV_URL);
+  const [cvRequestUrl, setCvRequestUrl] = useState(DEFAULT_CV_REQUEST);
+
+  useEffect(() => {
+    const fetchCv = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('key, value')
+          .in('key', ['cv_pdf_url', 'cv_full_request_url']);
+        if (!error && data?.length) {
+          data.forEach(r => {
+            if (r.key === 'cv_pdf_url' && r.value) setCvUrl(r.value);
+            if (r.key === 'cv_full_request_url' && r.value) setCvRequestUrl(r.value);
+          });
+        }
+      } catch (_) {}
+    };
+    fetchCv();
+
+    const channel = supabase
+      .channel('cv_settings_live')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'site_settings' },
+        (payload) => {
+          if (payload.new?.key === 'cv_pdf_url') {
+            setCvUrl(payload.new.value || DEFAULT_CV_URL);
+          }
+          if (payload.new?.key === 'cv_full_request_url') {
+            setCvRequestUrl(payload.new.value || DEFAULT_CV_REQUEST);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const openCVModal = (url, title) => {
     setModalConfig({ url, title });
     setIsLoading(true);
@@ -36,7 +80,7 @@ const CVSection = () => {
     setShowCV(true);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!showCV) return;
     const t = setTimeout(() => setIsLoading(false), 3200);
     return () => clearTimeout(t);
@@ -106,12 +150,12 @@ const CVSection = () => {
           </div>
 
           <div className="cv-actions">
-            <motion.a href="https://wa.link/y26h7a" target="_blank" rel="noopener noreferrer"
+            <motion.a href={cvRequestUrl} target="_blank" rel="noopener noreferrer"
               className="btn-primary cv-btn" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <FileText size={16} /> Solicitar CV Completo
             </motion.a>
             <motion.button
-              onClick={() => openCVModal('/CV-sola-edisonpinza.pdf', 'CV Ejecutivo — Edisson Pinza')}
+              onClick={() => openCVModal(cvUrl, 'CV Ejecutivo — Edisson Pinza')}
               className="btn-outline cv-btn" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <ExternalLink size={16} /> Ver CV Ejecutivo
             </motion.button>

@@ -7,7 +7,8 @@ import {
   FolderOpen, Globe, LayoutDashboard, ChevronRight,
   Hash, Upload, XCircle, Building2, Sparkles,
   ChevronLeft, MessageSquare, Menu, UserCircle, Camera,
-  Phone, AtSign, Link as LinkIcon, Mail, Facebook, Send, ArrowLeft
+  Phone, AtSign, Link as LinkIcon, Mail, Facebook, Send, ArrowLeft,
+  FileText, Download
 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import './AdminPanel.css';
@@ -49,6 +50,17 @@ const uploadProfileImage = async (file) => {
   const { data } = supabase.storage.from(PROFILE_BUCKET).getPublicUrl(filename);
   // Append bust to force refresh since upsert reuses the same filename
   return `${data.publicUrl}?t=${Date.now()}`;
+};
+
+/* Upload for CV PDF document (profile-assets bucket) */
+const uploadCVPdf = async (file) => {
+  const filename = `cv-curriculum-${Date.now()}.pdf`;
+  const { error } = await supabase.storage
+    .from(PROFILE_BUCKET)
+    .upload(filename, file, { contentType: 'application/pdf', cacheControl: '3600', upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PROFILE_BUCKET).getPublicUrl(filename);
+  return data.publicUrl;
 };
 /* ─── Toast ───────────────────────────────────────────── */
 const Toast = ({ toast, onClose }) => {
@@ -508,6 +520,362 @@ const ProfileSection = ({ addToast }) => {
   );
 };
 
+/* ─── CV Management Section ───────────────────────────── */
+const CVSectionAdmin = ({ addToast }) => {
+  const fileInputRef                = useRef(null);
+  const [cvPdfUrl, setCvPdfUrl]     = useState(null);
+  const [requestUrl, setRequestUrl] = useState('https://wa.link/y26h7a');
+  const [customPdfInput, setCustomPdfInput] = useState('');
+  const [loading, setLoading]       = useState(true);
+  const [uploading, setUploading]   = useState(false);
+  const [savingUrls, setSavingUrls] = useState(false);
+  const [error, setError]           = useState('');
+  const [dragActive, setDragActive] = useState(false);
+  const [dirty, setDirty]           = useState(false);
+
+  const activePdf = cvPdfUrl || '/CV-sola-edisonpinza.pdf';
+
+  /* Load current CV settings */
+  useEffect(() => {
+    const loadCvSettings = async () => {
+      setLoading(true);
+      try {
+        const { data, error: fetchErr } = await supabase
+          .from('site_settings')
+          .select('key, value')
+          .in('key', ['cv_pdf_url', 'cv_full_request_url']);
+        if (!fetchErr && data) {
+          data.forEach(item => {
+            if (item.key === 'cv_pdf_url') {
+              setCvPdfUrl(item.value || null);
+              setCustomPdfInput(item.value || '');
+            }
+            if (item.key === 'cv_full_request_url' && item.value) {
+              setRequestUrl(item.value);
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Error cargando configuración de CV:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCvSettings();
+  }, []);
+
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      setError('Solo se admiten documentos en formato PDF (.pdf).');
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      setError('El tamaño máximo permitido es de 15 MB.');
+      return;
+    }
+
+    setError('');
+    setUploading(true);
+    try {
+      const publicUrl = await uploadCVPdf(file);
+      const { error: dbErr } = await supabase
+        .from('site_settings')
+        .upsert({ key: 'cv_pdf_url', value: publicUrl, updated_at: new Date().toISOString() });
+      if (dbErr) throw dbErr;
+
+      setCvPdfUrl(publicUrl);
+      setCustomPdfInput(publicUrl);
+      setDirty(false);
+      addToast('¡Hoja de Vida (CV) subida y actualizada con éxito!', 'success');
+    } catch (err) {
+      setError('Error al subir el CV: ' + (err.message || 'Error desconocido'));
+      addToast('Error al subir el archivo PDF', 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSaveUrls = async () => {
+    setSavingUrls(true);
+    try {
+      const pdfValue = customPdfInput.trim() || null;
+      const reqValue = requestUrl.trim() || 'https://wa.link/y26h7a';
+
+      const updates = [
+        { key: 'cv_pdf_url', value: pdfValue, updated_at: new Date().toISOString() },
+        { key: 'cv_full_request_url', value: reqValue, updated_at: new Date().toISOString() }
+      ];
+
+      const { error: upsertErr } = await supabase
+        .from('site_settings')
+        .upsert(updates);
+
+      if (upsertErr) throw upsertErr;
+
+      setCvPdfUrl(pdfValue);
+      setDirty(false);
+      addToast('Configuración del CV guardada correctamente', 'success');
+    } catch (err) {
+      addToast('Error al guardar enlaces: ' + err.message, 'error');
+    } finally {
+      setSavingUrls(false);
+    }
+  };
+
+  const handleRestoreDefault = async () => {
+    if (!window.confirm('¿Restaurar el CV al archivo predeterminado del sistema (/CV-sola-edisonpinza.pdf)?')) return;
+    try {
+      await supabase
+        .from('site_settings')
+        .upsert({ key: 'cv_pdf_url', value: null, updated_at: new Date().toISOString() });
+      setCvPdfUrl(null);
+      setCustomPdfInput('');
+      setDirty(false);
+      addToast('CV restaurado al archivo predeterminado del proyecto.', 'success');
+    } catch (err) {
+      addToast('Error al restaurar: ' + err.message, 'error');
+    }
+  };
+
+  return (
+    <div className="cv-admin-wrap">
+      {/* Header */}
+      <div className="cv-admin-header">
+        <div className="cv-admin-header__icon"><FileText size={20} /></div>
+        <div className="cv-admin-header__info">
+          <div className="cv-admin-header__title-row">
+            <h2 className="cv-admin-header__title">Hoja de Vida (CV)</h2>
+            {cvPdfUrl ? (
+              <span className="cv-status-badge cv-status-badge--custom">
+                <span className="cv-status-badge__dot" /> PDF Personalizado en Supabase
+              </span>
+            ) : (
+              <span className="cv-status-badge cv-status-badge--default">
+                <span className="cv-status-badge__dot" /> PDF Local por Defecto
+              </span>
+            )}
+          </div>
+          <p className="cv-admin-header__sub">
+            Administra tu hoja de vida. Se sincroniza en tiempo real en el Hero, la sección de Carnet y el visor modal de CV.
+          </p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="cv-admin-loading">
+          <Loader2 size={24} className="spin" />
+          <span>Cargando configuración del CV...</span>
+        </div>
+      ) : (
+        <div className="cv-admin-grid">
+          {/* Columna izquierda: Subida y enlaces */}
+          <div className="cv-admin-controls">
+            {/* Dropzone */}
+            <div className="cv-card">
+              <div className="cv-card__title">
+                <Upload size={15} /> Subir nuevo archivo PDF
+              </div>
+              <p className="cv-card__desc">
+                Carga tu hoja de vida más reciente. El archivo se subirá de forma segura a Supabase Storage.
+              </p>
+
+              <div
+                className={`cv-dropzone ${dragActive ? 'cv-dropzone--drag' : ''} ${uploading ? 'cv-dropzone--uploading' : ''}`}
+                onDragOver={e => { e.preventDefault(); setDragActive(true); }}
+                onDragLeave={() => setDragActive(false)}
+                onDrop={e => {
+                  e.preventDefault();
+                  setDragActive(false);
+                  if (e.dataTransfer.files?.[0]) handleFileUpload(e.dataTransfer.files[0]);
+                }}
+                onClick={() => !uploading && fileInputRef.current?.click()}
+              >
+                {uploading ? (
+                  <div className="cv-dropzone-loading">
+                    <Loader2 size={30} className="spin" />
+                    <p className="cv-dropzone-loading__text">Subiendo y actualizando tu CV...</p>
+                    <span className="cv-dropzone-loading__sub">Esto tomará solo unos segundos</span>
+                  </div>
+                ) : (
+                  <div className="cv-dropzone-content">
+                    <div className="cv-dropzone__icon">
+                      <FileText size={28} />
+                    </div>
+                    <p className="cv-dropzone__main">
+                      Arrastra y suelta tu archivo PDF aquí
+                    </p>
+                    <p className="cv-dropzone__sub">o haz clic para buscar en tus carpetas</p>
+                    <span className="cv-dropzone__tag">PDF · Hasta 15 MB</span>
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <div className="cv-error-alert">
+                  <AlertCircle size={14} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                style={{ display: 'none' }}
+                onChange={e => {
+                  if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
+                }}
+              />
+
+              <div className="cv-actions-row">
+                <button
+                  type="button"
+                  className="btn-primary btn--sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <Upload size={14} /> {cvPdfUrl ? 'Cambiar archivo PDF' : 'Seleccionar PDF'}
+                </button>
+                {cvPdfUrl && (
+                  <button
+                    type="button"
+                    className="btn-ghost btn--sm"
+                    onClick={handleRestoreDefault}
+                    disabled={uploading}
+                  >
+                    <RefreshCw size={13} /> Restaurar por defecto
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Configuración de Enlaces */}
+            <div className="cv-card">
+              <div className="cv-card__title">
+                <LinkIcon size={15} /> Enlaces y Configuración Avanzada
+              </div>
+              <p className="cv-card__desc">
+                Enlace directo al documento y destino para la solicitud de CV extendido.
+              </p>
+
+              <div className="cv-form-group">
+                <label className="cv-form-label">
+                  URL directa del archivo PDF
+                </label>
+                <div className="cv-input-wrap">
+                  <span className="cv-input-icon"><FileText size={14} /></span>
+                  <input
+                    type="text"
+                    className="cv-input"
+                    value={customPdfInput}
+                    onChange={e => {
+                      setCustomPdfInput(e.target.value);
+                      setDirty(true);
+                    }}
+                    placeholder="https://... o ruta del archivo"
+                  />
+                </div>
+                <p className="cv-form-hint">
+                  Puedes dejarla vacía para usar el archivo por defecto (/CV-sola-edisonpinza.pdf) o pegar un enlace externo.
+                </p>
+              </div>
+
+              <div className="cv-form-group">
+                <label className="cv-form-label">
+                  Enlace para "Solicitar CV Completo"
+                </label>
+                <div className="cv-input-wrap">
+                  <span className="cv-input-icon"><LinkIcon size={14} /></span>
+                  <input
+                    type="text"
+                    className="cv-input"
+                    value={requestUrl}
+                    onChange={e => {
+                      setRequestUrl(e.target.value);
+                      setDirty(true);
+                    }}
+                    placeholder="https://wa.link/y26h7a"
+                  />
+                </div>
+                <p className="cv-form-hint">
+                  Enlace que se abre cuando el usuario hace clic en el botón "Solicitar CV Completo".
+                </p>
+              </div>
+
+              <div className="cv-footer-actions">
+                {dirty && (
+                  <span className="cv-dirty-tag">
+                    <AlertCircle size={13} /> Cambios sin guardar
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="btn-primary btn--sm"
+                  onClick={handleSaveUrls}
+                  disabled={savingUrls || !dirty}
+                >
+                  {savingUrls ? (
+                    <><Loader2 size={14} className="spin" /> Guardando...</>
+                  ) : (
+                    <><Save size={14} /> Guardar Enlaces</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Columna derecha: Previsualización interactiva */}
+          <div className="cv-admin-preview-col">
+            <div className="cv-card cv-preview-card">
+              <div className="cv-preview-card__header">
+                <div className="cv-preview-card__left">
+                  <span className="cv-preview-card__dot" />
+                  <span className="cv-preview-card__title">Vista previa en tiempo real</span>
+                </div>
+                <div className="cv-preview-card__actions">
+                  <a
+                    href={activePdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="icon-btn icon-btn--ghost"
+                    title="Abrir en pestaña nueva"
+                  >
+                    <ExternalLink size={14} />
+                  </a>
+                  <a
+                    href={activePdf}
+                    download="CV-Edisson-Pinza.pdf"
+                    className="icon-btn icon-btn--ghost"
+                    title="Descargar PDF"
+                  >
+                    <Download size={14} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="cv-preview-frame-wrap">
+                <iframe
+                  src={`${activePdf}#toolbar=0&navpanes=0`}
+                  title="Visor de CV"
+                  className="cv-preview-iframe"
+                />
+              </div>
+
+              <div className="cv-preview-footer">
+                <span className="cv-preview-footer__path">
+                  Archivo en uso: <strong>{activePdf.split('?')[0]}</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /* ─── Contact Section ─────────────────────────────────── */
 /* ─── QR bucket helper ────────────────────────────────── */
 const QR_BUCKET = 'profile-assets';
@@ -945,6 +1313,14 @@ const AdminPanel = () => {
             <span className="sidebar-link__text">Foto de Perfil</span>
           </a>
           <a
+            className={`sidebar-link sidebar-link--cv ${activeSection === 'cv' ? 'sidebar-link--active' : ''}`}
+            data-tip="Hoja de Vida"
+            onClick={() => { setActiveSection('cv'); setMobileMenu(false); }}
+          >
+            <span className="sidebar-link__icon"><FileText size={16} /></span>
+            <span className="sidebar-link__text">Hoja de Vida (CV)</span>
+          </a>
+          <a
             className={`sidebar-link sidebar-link--contacto ${activeSection === 'contacto' ? 'sidebar-link--active' : ''}`}
             data-tip="Contacto"
             onClick={() => { setActiveSection('contacto'); setMobileMenu(false); }}
@@ -981,7 +1357,7 @@ const AdminPanel = () => {
         <div className="admin-mobile-bar">
           <button className="icon-btn icon-btn--ghost" onClick={() => setMobileMenu(true)}><Menu size={18} /></button>
           <span className="admin-mobile-bar__title">Admin Panel</span>
-          {activeSection !== 'perfil' && activeSection !== 'contacto' && (
+          {activeSection !== 'perfil' && activeSection !== 'cv' && activeSection !== 'contacto' && (
             <button className="btn-primary btn--xs" onClick={() => openCreate(activeSection)}><Plus size={14} /> Nuevo</button>
           )}
         </div>
@@ -996,11 +1372,15 @@ const AdminPanel = () => {
                 ? 'Software En Venta'
                 : activeSection === 'perfil'
                 ? 'Foto de Perfil'
+                : activeSection === 'cv'
+                ? 'Hoja de Vida (CV)'
                 : 'Contacto'}
             </h1>
             <p className="admin-topbar__sub">
               {activeSection === 'perfil'
                 ? 'Actualiza la imagen que aparece en el Hero'
+                : activeSection === 'cv'
+                ? 'Administra tu PDF de CV y enlaces de descarga/solicitud'
                 : activeSection === 'contacto'
                 ? 'Edita tu WhatsApp, email y redes sociales'
                 : `${projects.length} total · ${visibleCount} publicados`}
@@ -1010,7 +1390,7 @@ const AdminPanel = () => {
             <button className="btn-ghost btn--sm" onClick={fetchProjects} disabled={loading}>
               <RefreshCw size={14} className={loading ? 'spin' : ''} /> Actualizar
             </button>
-            {activeSection !== 'perfil' && activeSection !== 'contacto' && (
+            {activeSection !== 'perfil' && activeSection !== 'cv' && activeSection !== 'contacto' && (
               <button className="btn-primary btn--sm" onClick={() => openCreate(activeSection)}>
                 <Plus size={15} /> Nuevo proyecto
               </button>
@@ -1028,22 +1408,31 @@ const AdminPanel = () => {
 
         {/* Active section */}
         <AnimatePresence mode="wait">
-          {activeSection === 'empresa' ? (
+          {activeSection === 'empresa' && (
             <motion.div key="empresa" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
               <CategorySection icon={<Building2 size={17} />} title="Proyectos Empresariales" type="empresa"
                 projects={empresaProjects} loading={loading}
                 onAdd={openCreate} onEdit={openEdit} onDelete={handleDelete} onToggle={handleToggle} deleteId={deleteId} />
             </motion.div>
-          ) : activeSection === 'personal' ? (
+          )}
+          {activeSection === 'personal' && (
             <motion.div key="personal" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
               <CategorySection icon={<Sparkles size={17} />} title="Software En Venta" type="venta"
                 projects={personalProjects} loading={loading}
                 onAdd={openCreate} onEdit={openEdit} onDelete={handleDelete} onToggle={handleToggle} deleteId={deleteId} />
             </motion.div>
-          ) : (
+          )}
+          {activeSection === 'perfil' && (
             <motion.div key="perfil" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
               <div className="admin-section">
                 <ProfileSection addToast={addToast} />
+              </div>
+            </motion.div>
+          )}
+          {activeSection === 'cv' && (
+            <motion.div key="cv" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22 }}>
+              <div className="admin-section">
+                <CVSectionAdmin addToast={addToast} />
               </div>
             </motion.div>
           )}

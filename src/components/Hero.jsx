@@ -133,32 +133,42 @@ const Hero = () => {
     transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
   });
 
-  /* ── Foto de perfil dinámica desde Supabase ── */
+  /* ── Foto de perfil y CV dinámicos desde Supabase ── */
   const [heroPhoto, setHeroPhoto] = useState(profileImg);
+  const [cvPdfUrl, setCvPdfUrl]   = useState('/CV-sola-edisonpinza.pdf');
 
   useEffect(() => {
-    const fetchPhoto = async () => {
+    const fetchSettings = async () => {
       try {
         const { data, error } = await supabase
           .from('site_settings')
-          .select('value')
-          .eq('key', 'hero_photo')
-          .single();
-        if (!error && data?.value) setHeroPhoto(data.value);
+          .select('key, value')
+          .in('key', ['hero_photo', 'cv_pdf_url']);
+        if (!error && data?.length) {
+          data.forEach(item => {
+            if (item.key === 'hero_photo' && item.value) setHeroPhoto(item.value);
+            if (item.key === 'cv_pdf_url' && item.value) setCvPdfUrl(item.value);
+          });
+        }
       } catch (_) {
-        // fallback: usa imagen local
+        // fallback
       }
     };
-    fetchPhoto();
+    fetchSettings();
 
-    // Suscripción en tiempo real — la foto cambia en vivo al actualizarla desde el admin
+    // Suscripción en tiempo real — foto y CV cambian en vivo al actualizarlos desde el admin
     const channel = supabase
-      .channel('hero_photo_watch')
+      .channel('hero_settings_watch')
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'site_settings', filter: 'key=eq.hero_photo' },
+        { event: '*', schema: 'public', table: 'site_settings' },
         (payload) => {
-          if (payload.new?.value) setHeroPhoto(payload.new.value);
+          if (payload.new?.key === 'hero_photo' && payload.new?.value) {
+            setHeroPhoto(payload.new.value);
+          }
+          if (payload.new?.key === 'cv_pdf_url') {
+            setCvPdfUrl(payload.new.value || '/CV-sola-edisonpinza.pdf');
+          }
         }
       )
       .subscribe();
@@ -217,9 +227,10 @@ const Hero = () => {
                className="hero-social" aria-label="LinkedIn">
               <Linkedin size={17} />
             </a>
-            <a href="/CV-sola-edisonpinza.pdf"
+            <a href={cvPdfUrl || '/CV-sola-edisonpinza.pdf'}
                target="_blank" rel="noopener noreferrer"
-               className="hero-social" aria-label="Descargar CV">
+               className="hero-social" aria-label="Descargar CV"
+               download={cvPdfUrl?.startsWith('http') ? undefined : 'CV-Edisson-Pinza.pdf'}>
               <Download size={17} />
             </a>
             <span className="hero-social-divider" />
